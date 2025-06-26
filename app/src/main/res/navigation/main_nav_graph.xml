@@ -1,0 +1,29 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/loginScreen"> <fragment
+        android:id="@+id/loginScreen"
+        android:name="com.riversongai.ui.LoginScreen"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginScreen_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_loginScreen_to_registerScreen"
+            app:destination="@id/registerScreen" /> </fragment>
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.riversongai.ui.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/registerScreen"
+        android:name="com.riversongai.ui.RegisterScreen"
+        android:label="Register"
+        tools:layout="@layout/fragment_register" />
+
+</navigation>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">River Song AI</string>
+    <string name="welcome_message">Welcome to River Song AI!</string>
+
+    <string name="login_username_hint">Username or Email</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_button_text">Log In</string>
+    <string name="register_button_text">Register</string>
+    <string name="login_failed_toast">Login failed. Please check your credentials.</string>
+    <string name="login_empty_fields_toast">Please enter both username and password.</string>
+
+    <string name="home_welcome_prefix">Welcome, </string>
+    <string name="home_device_count_prefix">You have </string>
+    <string name="home_device_count_suffix"> smart devices.</string>
+    <string name="home_loading_devices">Loading devices…</string>
+    <string name="home_control_light_button">Control Light</string>
+
+    <string name="smart_home_title">Smart Devices</string>
+    <string name="smart_home_loading_status">Loading devices…</string>
+    <string name="smart_home_error_prefix">Error: </string>
+    <string name="smart_home_device_control_dialog_title">Control Device</string>
+    <string name="smart_home_device_turn_on">Turn On</string>
+    <string name="smart_home_device_turn_off">Turn Off</string>
+    <string name="smart_home_device_status_active">Active</string>
+    <string name="smart_home_device_status_inactive">Inactive</string>
+    <string name="smart_home_device_status_offline">Offline</string>
+
+    <string name="dashboard_welcome_prefix">Hello, </string>
+    <string name="dashboard_user_role_prefix">Role: </string>
+    <string name="dashboard_smart_home_summary_prefix">Smart Home: </string>
+    <string name="dashboard_activity_summary_prefix">Activity: </string>
+    <string name="dashboard_loading_summary">Loading summary…</string>
+
+    <string name="error_network_unavailable">Network unavailable. Please check your connection.</string>
+    <string name="error_request_timed_out">Request timed out. Please try again.</string>
+    <string name="error_unauthorized">Authentication failed. Please log in again.</string>
+    <string name="error_forbidden">You don\'t have permission to perform this action.</string>
+    <string name="error_resource_not_found">Resource not found.</string>
+    <string name="error_server_error">Server error. Please try again later.</string>
+    <string name="error_generic">An unexpected error occurred. Please try again.</string>
+
+</resources>

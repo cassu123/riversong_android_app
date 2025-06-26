@@ -1,0 +1,26 @@
+// settings.gradle.kts
+//
+// This file defines the project-wide settings for the River Song Android application.
+// It declares the name of the root project and includes all the modules
+// (like the 'app' module) that are part of this multi-module Gradle project.
+
+// Section: Root Project Name
+// Sets the name of the root project. This name is used in various Gradle contexts.
+rootProject.name = "RiverSongAndroidApp" // You can customize this name
+
+// Section: Module Inclusion
+// Declares which modules are part of this project.
+// Each module declared here will have its own build.gradle.kts file.
+include(":app")
+
+// Section: Other Modules (Placeholder)
+// If you add more modules to your Android project in the future (e.g., a 'data' module,
+// 'feature' modules, or 'library' modules), you would include them here.
+// Example:
+// include(":feature:login")
+// include(":core:utils")
+
+// Section: Dependency Resolution (Optional, often in root build.gradle.kts)
+// This section is sometimes used to declare repositories for plugin resolution
+// or other global settings, though often handled in the root build.gradle.kts's
+// 'pluginManagement' block for newer Gradle versions.

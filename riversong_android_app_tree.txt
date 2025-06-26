@@ -1,0 +1,50 @@
+./
+├── app/
+│   ├── build.gradle
+│   └── src/
+│       └── main/
+│           ├── java/
+│           │   └── com/
+│           │       └── riversongai/
+│           │           ├── AndroidManifest.xml
+│           │           ├── App.kt
+│           │           ├── data/
+│           │           │   ├── model/
+│           │           │   │   ├── Device.kt
+│           │           │   │   └── User.kt
+│           │           │   ├── remote/
+│           │           │   │   └── RiverSongApiService.kt
+│           │           │   └── repository/
+│           │           │       ├── SmartHomeRepository.kt
+│           │           │       └── UserRepository.kt
+│           │           ├── di/
+│           │           │   └── AppModule.kt
+│           │           ├── ui/
+│           │           │   ├── HomeFragment.kt
+│           │           │   ├── LoginScreen.kt
+│           │           │   ├── MainActivity.kt
+│           │           │   ├── SmartHomeControlScreen.kt
+│           │           │   └── UserDashboardScreen.kt
+│           │           └── utils/
+│           │               ├── Constants.kt
+│           │               └── ErrorHandler.kt
+│           └── res/
+│               ├── drawable/
+│               ├── layout/
+│               │   └── fragment_home.xml
+│               ├── mipmap/
+│               ├── navigation/
+│               ├── values/
+│               │   ├── strings.xml
+│               │   └── themes.xml
+│               └── xml/
+│                   ├── backup_rules.xml
+│                   └── data_extraction_rules.xml
+├── build.gradle
+├── .gitignore
+├── gradle/
+├── README.md
+├── riversong_android_app_tree.txt
+└── settings.gradle
+
+22 directories, 26 files

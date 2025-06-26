@@ -1,0 +1,155 @@
+// app/build.gradle.kts
+//
+// This file defines the build configuration for the 'app' module of the
+// River Song Android application. It declares the application's dependencies,
+// Android-specific settings (like SDK versions and build features), and
+// specifies how the module should be compiled and packaged.
+
+// Section: Plugin Application
+// These plugins are essential for building an Android application and using Kotlin.
+plugins {
+    // Applies the Android Application plugin, which enables Android-specific build tasks.
+    id("com.android.application")
+
+    // Applies the Kotlin Android plugin, enabling Kotlin language features for Android.
+    id("org.jetbrains.kotlin.android")
+
+    // Applies the Kotlin KAPT plugin for Annotation Processing (e.g., for Room, Dagger/Hilt if used later).
+    // Even if not directly used for Koin, it's good practice for Android Kotlin projects.
+    id("org.jetbrains.kotlin.kapt")
+}
+
+// Section: Android Configuration Block
+// This block configures Android-specific properties for your application module.
+android {
+    // Defines the unique package name for your application. This should match the package
+    // declared in your AndroidManifest.xml and your base package structure.
+    namespace = "com.riversongai"
+
+    // Specifies the Android API level to compile your application against.
+    // Use the latest stable SDK version available in your Android SDK Manager.
+    compileSdk = 34 // Example: Android 14
+
+    // Section: Default Configuration for Application
+    // Defines properties applied to all build variants (debug, release, etc.).
+    defaultConfig {
+        // The application ID, which uniquely identifies your app on Google Play and Android devices.
+        applicationId = "com.riversongai.riversong" // Ensure this is unique across Play Store
+
+        // The minimum Android API level required for your app to run.
+        minSdk = 26 // Example: Android 8.0 (Oreo) - for modern features like Coroutines, etc.
+
+        // The target Android API level your app is designed for. This influences runtime behavior.
+        targetSdk = 34 // Should typically match compileSdk
+
+        // Version code for internal tracking and Google Play updates. Must be an integer.
+        versionCode = 1
+
+        // User-visible version name of your application.
+        versionName = "1.0"
+
+        // Specifies the runner to use for instrumented tests.
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Enables vector drawables to be used without issues on older Android versions.
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    // Section: Build Type Configuration
+    // Configures different build types (e.g., 'release' for production, 'debug' for development).
+    buildTypes {
+        // Configuration for the release build.
+        release {
+            // Enables code shrinking, obfuscation, and optimization for release builds.
+            isMinifyEnabled = false // Set to true for production to reduce APK size
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+        // Configuration for the debug build.
+        debug {
+            // Debug builds typically don't have minification enabled for easier debugging.
+            isMinifyEnabled = false
+        }
+    }
+
+    // Section: Java and Kotlin Compatibility
+    // Specifies the Java compatibility version for source and target bytecode.
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8 // Use Java 8 features
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    // Configures Kotlin-specific compiler options.
+    kotlinOptions {
+        jvmTarget = "1.8" // Ensure Kotlin compiles for JVM 1.8 compatibility
+    }
+
+    // Section: Build Features
+    // Enables/disables specific Android build features like View Binding or Data Binding.
+    buildFeatures {
+        viewBinding = true // Enables View Binding for easier UI element access
+    }
+
+    // Section: Packaging Options
+    // Configures how the APK is packaged, particularly useful for handling duplicate files from dependencies.
+    packaging {
+        resources.excludes.add("META-INF/DEPENDENCIES")
+        resources.excludes.add("META-INF/LICENSE")
+        resources.excludes.add("META-INF/LICENSE.txt")
+        resources.excludes.add("META-INF/NOTICE")
+        resources.excludes.add("META-INF/NOTICE.txt")
+        pickFirsts.add("META-INF/LICENSE.md") // Example: If you have conflicting LICENSE.md files
+        pickFirsts.add("META-INF/AL2.0") // For Apache License 2.0 conflicts
+        pickFirsts.add("META-INF/LGPL2.1") // For LGPL 2.1 conflicts
+    }
+}
+
+// Section: Dependencies Block
+// Declares all the external libraries and modules that your 'app' module depends on.
+dependencies {
+    // Section: AndroidX Core Libraries
+    // Core KTX provides Kotlin extensions for AndroidX libraries.
+    implementation("androidx.core:core-ktx:1.13.1") // Use latest stable version
+    // AppCompat provides backward compatibility for Android features.
+    implementation("androidx.appcompat:appcompat:1.6.1") // Use latest stable version
+    // Material Design components for rich UI elements.
+    implementation("com.google.android.material:material:1.12.0") // Use latest stable version
+    // ConstraintLayout for flexible UI layouts.
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4") // Use latest stable version
+
+    // Section: Retrofit and Networking
+    // Retrofit: A type-safe HTTP client for Android and Java.
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    // Retrofit converter for Gson (JSON parsing).
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // OkHttp: HTTP client often used under the hood by Retrofit.
+    implementation("com.squareup.okhttp3:okhttp:4.12.0") // Use latest stable version
+    // OkHttp Logging Interceptor: For logging network requests and responses (very useful for debugging).
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0") // Use latest stable version
+
+    // Section: Kotlin Coroutines
+    // Kotlin Coroutines for asynchronous programming (used in your repositories).
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3") // Use latest stable version
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3") // Use latest stable version
+
+    // Section: Koin for Dependency Injection
+    // Koin Android: Integration for Android components (Activities, Fragments).
+    implementation("io.insert-koin:koin-android:3.5.0") // Use latest stable version
+    // Koin Core: The core Koin library.
+    implementation("io.insert-koin:koin-core:3.5.0")
+
+    // Section: Testing Libraries
+    // JUnit for unit testing.
+    testImplementation("junit:junit:4.13.2")
+    // AndroidX Test Ext JUnit for Android unit tests.
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    // Espresso for UI testing.
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+}
+
+// Navigation Component
+implementation("androidx.navigation:navigation-fragment-ktx:2.7.7") // Use latest stable version
+implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+
+implementation("androidx.recyclerview:recyclerview:1.3.2") // Use latest stable version
+
+implementation("androidx.core:core-splashscreen:1.0.1") // Use latest stable version

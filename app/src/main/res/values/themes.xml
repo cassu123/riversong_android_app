@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.RiverSong" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/river_song_primary</item>
+        <item name="colorOnPrimary">@color/river_song_on_primary</item>
+        <item name="colorPrimaryContainer">@color/river_song_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/river_song_on_primary_container</item>
+
+        <item name="colorSecondary">@color/river_song_secondary</item>
+        <item name="colorOnSecondary">@color/river_song_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/river_song_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/river_song_on_secondary_container</item>
+
+        <item name="colorTertiary">@color/river_song_tertiary</item>
+        <item name="colorOnTertiary">@color/river_song_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/river_song_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/river_song_on_tertiary_container</item>
+
+        <item name="colorError">@color/river_song_error</item>
+        <item name="colorOnError">@color/river_song_on_error</item>
+        <item name="colorErrorContainer">@color/river_song_error_container</item>
+        <item name="colorOnErrorContainer">@color/river_song_on_error_container</item>
+
+        <item name="android:colorBackground">@color/river_song_background</item>
+        <item name="colorOnBackground">@color/river_song_on_background</item>
+        <item name="colorSurface">@color/river_song_surface</item>
+        <item name="colorOnSurface">@color/river_song_on_surface</item>
+        <item name="colorSurfaceVariant">@color/river_song_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/river_song_on_surface_variant</item>
+        <item name="colorOutline">@color/river_song_outline</item>
+
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+    </style>
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/river_song_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo</item> <item name="windowSplashScreenAnimationDuration">1000</item>
+        <item name="postSplashScreenTheme">@style/Theme.RiverSong</item>
+    </style>
+
+    <style name="Theme.RiverSong.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.RiverSong.Fullscreen" parent="Theme.RiverSong.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+</resources>

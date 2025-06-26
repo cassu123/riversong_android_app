@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="river_song_primary">#6200EE</color>
+    <color name="river_song_on_primary">#FFFFFF</color>
+    <color name="river_song_primary_container">#BB86FC</color>
+    <color name="river_song_on_primary_container">#21005D</color>
+
+    <color name="river_song_secondary">#03DAC6</color>
+    <color name="river_song_on_secondary">#000000</color>
+    <color name="river_song_secondary_container">#66FAF4</color>
+    <color name="river_song_on_secondary_container">#003831</color>
+
+    <color name="river_song_tertiary">#018786</color>
+    <color name="river_song_on_tertiary">#FFFFFF</color>
+    <color name="river_song_tertiary_container">#A7E7E7</color>
+    <color name="river_song_on_tertiary_container">#002C2C</color>
+
+    <color name="river_song_error">#B00020</color>
+    <color name="river_song_on_error">#FFFFFF</color>
+    <color name="river_song_error_container">#FCD8DF</color>
+    <color name="river_song_on_error_container">#410002</color>
+
+    <color name="river_song_background">#F7F2F9</color>
+    <color name="river_song_on_background">#1C1B1F</color>
+    <color name="river_song_surface">#FFFBFE</color>
+    <color name="river_song_on_surface">#1C1B1F</color>
+    <color name="river_song_surface_variant">#E7E0EC</color>
+    <color name="river_song_on_surface_variant">#49454F</color>
+    <color name="river_song_outline">#79757F</color>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

@@ -1,0 +1,59 @@
+// build.gradle.kts (Project-level)
+//
+// This file defines the top-level build configuration for the entire River Song
+// Android project. It specifies global settings, common dependencies for all
+// modules, and repositories where Gradle should look for build plugins and libraries.
+
+// Section: Build Script Configuration
+// This block configures the Gradle build script itself.
+buildscript {
+    // Section: Build Script Repositories
+    // Declares repositories where Gradle should look for build script dependencies.
+    repositories {
+        // Google's Maven repository, essential for AndroidX and other Google libraries.
+        google()
+        // Maven Central repository, a large repository for open-source libraries.
+        mavenCentral()
+    }
+    // Section: Build Script Dependencies
+    // Declares plugins and libraries needed by the Gradle build script.
+    dependencies {
+        // The Android Gradle Plugin (AGP), crucial for building Android applications.
+        // Use the latest stable version compatible with your Android Studio.
+        classpath("com.android.tools.build:gradle:8.2.2") // Example version
+        // The Kotlin Gradle Plugin, enables Kotlin support in Gradle.
+        // Use the same version as your Kotlin language version if possible, or compatible.
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0") // Example version
+        // The Android Navigation Safe Args plugin, generates code for type-safe navigation.
+        // Only needed if you use Navigation Component and Safe Args.
+        // classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.7.7") // Uncomment if using Safe Args
+    }
+}
+
+// Section: All Projects Configuration
+// This block applies to all sub-projects (like your 'app' module) within this project.
+allprojects {
+    // Section: Project Repositories
+    // Declares repositories where sub-projects should look for their dependencies.
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// Section: Task Cleanup (Optional)
+// Defines a task to clean the build directories for all projects.
+tasks.register("clean", Delete::class) {
+    // Deletes the 'build' directory in the root project.
+    delete(rootProject.buildDir)
+}
+
+// Section: Plugin Management (Optional, for Gradle 7.0+ recommended)
+// Defines plugins that are managed across all subprojects, enforcing consistent versions.
+// pluginManagement {
+//    repositories {
+//        google()
+//        gradlePluginPortal()
+//        mavenCentral()
+//    }
+// }
