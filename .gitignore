@@ -1,0 +1,47 @@
+# Section: Android Specific Ignores (for 'riversong_android_app' module)
+# Generated files by the Android build system and IDE
+
+# Gradle wrapper and build cache directories
+# These are generated locally and should never be committed.
+/.gradle/
+
+# Local properties file containing SDK paths and sensitive local configurations.
+# This file is crucial for local setup but should NOT be version controlled.
+/local.properties
+
+# Android Studio and IntelliJ IDEA specific configuration files/directories.
+# These typically contain user-specific IDE settings, caches, and project state.
+/.idea/caches/
+/.idea/libraries/
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml # For Android Navigation Component editor state
+
+# Android Studio performance profiler captures.
+/captures/
+
+# The primary build output directory for the Android project.
+# Contains compiled code, APKs, AARs, and intermediate build artifacts.
+/build/
+
+# Native (NDK) build artifacts and intermediate files.
+.externalNativeBuild/
+.cxx/
+
+# Compiled Android application package files.
+*.apk
+
+# Compiled Android library package files.
+*.aar
+
+# IntelliJ/Android Studio module files.
+*.iml
+
+# Keystore files used for signing your Android application.
+# These contain cryptographic keys and MUST NEVER be committed to Git for security reasons.
+*.jks
+*.keystore
+
+# Native libraries (if you compile C/C++ code via NDK and place libraries here).
+/src/main/jniLibs/
+/src/main/libs/
