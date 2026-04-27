@@ -9,9 +9,9 @@ class SmartHomeRepository(private val apiService: RiverSongApiService) {
 
     private val tag = "SmartHomeRepository"
 
-    suspend fun getAllDevices(authToken: String): Result<List<Device>> {
+    suspend fun getAllDevices(): Result<List<Device>> {
         return try {
-            val response = apiService.getAllDevices(authToken)
+            val response = apiService.getAllDevices()
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
@@ -20,14 +20,14 @@ class SmartHomeRepository(private val apiService: RiverSongApiService) {
                 Result.failure(Exception("Failed to fetch devices: ${response.code()} - $error"))
             }
         } catch (e: Exception) {
-            Log.e(tag, "Fetch devices exception: ${e.message}", e)
+            Log.e(tag, "Fetch devices exception", e)
             Result.failure(e)
         }
     }
 
-    suspend fun getDeviceById(authToken: String, deviceId: String): Result<Device> {
+    suspend fun getDeviceById(deviceId: String): Result<Device> {
         return try {
-            val response = apiService.getDeviceById(authToken, deviceId)
+            val response = apiService.getDeviceById(deviceId)
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
@@ -36,18 +36,14 @@ class SmartHomeRepository(private val apiService: RiverSongApiService) {
                 Result.failure(Exception("Failed to fetch device: ${response.code()} - $error"))
             }
         } catch (e: Exception) {
-            Log.e(tag, "Fetch device exception: ${e.message}", e)
+            Log.e(tag, "Fetch device exception", e)
             Result.failure(e)
         }
     }
 
-    suspend fun controlDevice(
-        authToken: String,
-        deviceId: String,
-        controlRequest: DeviceControlRequest
-    ): Result<Device> {
+    suspend fun controlDevice(deviceId: String, controlRequest: DeviceControlRequest): Result<Device> {
         return try {
-            val response = apiService.controlDevice(authToken, deviceId, controlRequest)
+            val response = apiService.controlDevice(deviceId, controlRequest)
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
@@ -56,7 +52,7 @@ class SmartHomeRepository(private val apiService: RiverSongApiService) {
                 Result.failure(Exception("Failed to control device: ${response.code()} - $error"))
             }
         } catch (e: Exception) {
-            Log.e(tag, "Control device exception: ${e.message}", e)
+            Log.e(tag, "Control device exception", e)
             Result.failure(e)
         }
     }

@@ -34,15 +34,17 @@ class UserDashboardViewModel(
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
+    private val _sessionExpired = MutableLiveData<Boolean>()
+    val sessionExpired: LiveData<Boolean> = _sessionExpired
+
     fun loadDashboardData() {
-        val token = sessionManager.getBearerToken() ?: return
         _isLoading.value = true
         viewModelScope.launch {
-            userRepository.getCurrentUser(token)
+            userRepository.getCurrentUser()
                 .onSuccess { _currentUser.value = it }
-                .onFailure { _errorMessage.value = ErrorHandler.getFriendlyMessage(it) }
+                .onFailure { handleError(it) }
 
-            smartHomeRepository.getAllDevices(token)
+            smartHomeRepository.getAllDevices()
                 .onSuccess { devices ->
                     val active = devices.count { it.status == "online" || it.isOn == true }
                     val offline = devices.count { it.status == "offline" }
@@ -52,16 +54,26 @@ class UserDashboardViewModel(
                         offlineDevices = offline
                     )
                 }
-                .onFailure { _errorMessage.value = ErrorHandler.getFriendlyMessage(it) }
+                .onFailure { handleError(it) }
 
-            // Activity data will come from the backend once that module is ready
             _activitySummary.value = ActivitySummary()
-
             _isLoading.value = false
         }
     }
 
-    fun clearError() {
-        _errorMessage.value = null
+    fun logout() {
+        sessionManager.clearSession()
+        _sessionExpired.value = true
+    }
+
+    fun clearError() { _errorMessage.value = null }
+
+    private fun handleError(e: Throwable) {
+        if (e.message?.contains("401") == true) {
+            sessionManager.clearSession()
+            _sessionExpired.value = true
+        } else {
+            _errorMessage.value = ErrorHandler.getFriendlyMessage(e)
+        }
     }
 }

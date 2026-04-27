@@ -5,8 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.riversongai.R
 import com.riversongai.databinding.FragmentUserDashboardBinding
 import com.riversongai.ui.viewmodel.UserDashboardViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -29,6 +30,10 @@ class UserDashboardScreen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        userDashboardViewModel.sessionExpired.observe(viewLifecycleOwner) { expired ->
+            if (expired == true) navigateToLogin()
+        }
+
         userDashboardViewModel.currentUser.observe(viewLifecycleOwner) { user ->
             user?.let {
                 binding.textViewDashboardWelcome.text = "Hello, ${it.firstName ?: it.username}!"
@@ -39,16 +44,16 @@ class UserDashboardScreen : Fragment() {
         userDashboardViewModel.smartHomeSummary.observe(viewLifecycleOwner) { summary ->
             summary?.let {
                 binding.textViewSmartHomeSummary.text =
-                    "Smart Home: ${it.activeDevices} active / ${it.totalDevices} total devices"
+                    "${it.activeDevices} active · ${it.offlineDevices} offline · ${it.totalDevices} total"
             }
         }
 
         userDashboardViewModel.activitySummary.observe(viewLifecycleOwner) { summary ->
             summary?.let {
                 binding.textViewActivitySummary.text = if (it.stepsTaken > 0) {
-                    "Activity: ${it.stepsTaken} steps, ${it.activeMinutes} active minutes today"
+                    "${it.stepsTaken} steps · ${it.activeMinutes} active minutes today"
                 } else {
-                    "Activity: ${it.summary}"
+                    it.summary
                 }
             }
         }
@@ -60,7 +65,20 @@ class UserDashboardScreen : Fragment() {
             }
         }
 
+        binding.buttonLogout.setOnClickListener {
+            userDashboardViewModel.logout()
+        }
+
         userDashboardViewModel.loadDashboardData()
+    }
+
+    private fun navigateToLogin() {
+        findNavController().navigate(R.id.loginScreen,
+            null,
+            androidx.navigation.NavOptions.Builder()
+                .setPopUpTo(R.id.main_nav_graph, true)
+                .build()
+        )
     }
 
     override fun onDestroyView() {

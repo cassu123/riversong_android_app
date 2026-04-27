@@ -105,7 +105,7 @@
                         style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
                         android:layout_width="56dp"
                         android:layout_height="56dp"
-                        app:icon="@android:drawable/ic_menu_camera"
+                        app:icon="@drawable/ic_lightbulb"
                         android:contentDescription="Toggle lights" />
 
                     <TextView
@@ -139,7 +139,7 @@
                         style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
                         android:layout_width="56dp"
                         android:layout_height="56dp"
-                        app:icon="@android:drawable/ic_menu_manage"
+                        app:icon="@drawable/ic_devices"
                         android:contentDescription="View all devices" />
 
                     <TextView

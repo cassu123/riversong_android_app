@@ -126,7 +126,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Password"
-            app:passwordToggleEnabled="true"
+            app:endIconMode="password_toggle"
             app:layout_constraintTop_toBottomOf="@id/layoutEmail"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -146,7 +146,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Confirm Password"
-            app:passwordToggleEnabled="true"
+            app:endIconMode="password_toggle"
             app:layout_constraintTop_toBottomOf="@id/layoutPassword"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">

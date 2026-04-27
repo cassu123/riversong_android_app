@@ -31,34 +31,41 @@ class HomeViewModel(
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
+    private val _sessionExpired = MutableLiveData<Boolean>()
+    val sessionExpired: LiveData<Boolean> = _sessionExpired
+
     fun loadUserDataAndDevices() {
-        val token = sessionManager.getBearerToken() ?: return
         _isLoading.value = true
         viewModelScope.launch {
-            userRepository.getCurrentUser(token)
+            userRepository.getCurrentUser()
                 .onSuccess { _currentUser.value = it }
-                .onFailure { _errorMessage.value = ErrorHandler.getFriendlyMessage(it) }
+                .onFailure { handleError(it) }
 
-            smartHomeRepository.getAllDevices(token)
+            smartHomeRepository.getAllDevices()
                 .onSuccess { _devices.value = it }
-                .onFailure { _errorMessage.value = ErrorHandler.getFriendlyMessage(it) }
+                .onFailure { handleError(it) }
 
             _isLoading.value = false
         }
     }
 
     fun controlLightExample(deviceId: String, on: Boolean) {
-        val token = sessionManager.getBearerToken() ?: return
         viewModelScope.launch {
             smartHomeRepository.controlDevice(
-                token,
                 deviceId,
                 DeviceControlRequest(command = if (on) "turn_on" else "turn_off")
             )
         }
     }
 
-    fun clearError() {
-        _errorMessage.value = null
+    fun clearError() { _errorMessage.value = null }
+
+    private fun handleError(e: Throwable) {
+        if (e.message?.contains("401") == true) {
+            sessionManager.clearSession()
+            _sessionExpired.value = true
+        } else {
+            _errorMessage.value = ErrorHandler.getFriendlyMessage(e)
+        }
     }
 }

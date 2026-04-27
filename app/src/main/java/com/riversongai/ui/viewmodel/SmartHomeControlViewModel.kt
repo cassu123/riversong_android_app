@@ -25,41 +25,45 @@ class SmartHomeControlViewModel(
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
+    private val _sessionExpired = MutableLiveData<Boolean>()
+    val sessionExpired: LiveData<Boolean> = _sessionExpired
+
     fun fetchDevices() {
-        val token = sessionManager.getBearerToken() ?: return
         _isLoading.value = true
         viewModelScope.launch {
-            smartHomeRepository.getAllDevices(token)
+            smartHomeRepository.getAllDevices()
                 .onSuccess {
                     _devices.value = it
                     _isLoading.value = false
                 }
                 .onFailure {
-                    _errorMessage.value = ErrorHandler.getFriendlyMessage(it)
+                    handleError(it)
                     _isLoading.value = false
                 }
         }
     }
 
     fun controlDevice(deviceId: String, command: String, value: String? = null) {
-        val token = sessionManager.getBearerToken() ?: return
         viewModelScope.launch {
             smartHomeRepository.controlDevice(
-                token,
                 deviceId,
                 DeviceControlRequest(command = command, value = value)
             ).onSuccess { updatedDevice ->
-                // Replace the updated device in the list
                 _devices.value = _devices.value?.map {
                     if (it.id == updatedDevice.id) updatedDevice else it
                 }
-            }.onFailure {
-                _errorMessage.value = ErrorHandler.getFriendlyMessage(it)
-            }
+            }.onFailure { handleError(it) }
         }
     }
 
-    fun clearError() {
-        _errorMessage.value = null
+    fun clearError() { _errorMessage.value = null }
+
+    private fun handleError(e: Throwable) {
+        if (e.message?.contains("401") == true) {
+            sessionManager.clearSession()
+            _sessionExpired.value = true
+        } else {
+            _errorMessage.value = ErrorHandler.getFriendlyMessage(e)
+        }
     }
 }

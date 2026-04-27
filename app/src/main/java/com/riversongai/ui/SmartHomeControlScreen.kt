@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.riversongai.R
 import com.riversongai.databinding.FragmentSmartHomeControlBinding
 import com.riversongai.ui.adapter.DeviceAdapter
 import com.riversongai.ui.viewmodel.SmartHomeControlViewModel
@@ -38,6 +41,13 @@ class SmartHomeControlScreen : Fragment() {
         binding.recyclerViewDevices.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = deviceAdapter
+        }
+
+        smartHomeControlViewModel.sessionExpired.observe(viewLifecycleOwner) { expired ->
+            if (expired == true) {
+                findNavController().navigate(R.id.loginScreen, null,
+                    NavOptions.Builder().setPopUpTo(R.id.main_nav_graph, true).build())
+            }
         }
 
         smartHomeControlViewModel.devices.observe(viewLifecycleOwner) { devices ->

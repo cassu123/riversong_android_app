@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.NavOptions
 import com.riversongai.R
 import com.riversongai.databinding.FragmentHomeBinding
 import com.riversongai.ui.viewmodel.HomeViewModel
@@ -35,6 +36,13 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.textViewDate.text = SimpleDateFormat("EEEE, MMMM d", Locale.getDefault()).format(Date())
+
+        homeViewModel.sessionExpired.observe(viewLifecycleOwner) { expired ->
+            if (expired == true) {
+                findNavController().navigate(R.id.loginScreen, null,
+                    NavOptions.Builder().setPopUpTo(R.id.main_nav_graph, true).build())
+            }
+        }
 
         homeViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.isVisible = isLoading

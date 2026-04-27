@@ -18,7 +18,7 @@ val appModule = module {
 
     // Core
     single { SessionManager(androidContext()) }
-    single { RiverSongApiService.create(Constants.BASE_URL) }
+    single { RiverSongApiService.create(Constants.BASE_URL, get()) }
 
     // Repositories
     single { UserRepository(get()) }

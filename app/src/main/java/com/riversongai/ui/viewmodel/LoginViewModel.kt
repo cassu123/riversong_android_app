@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.riversongai.data.model.AuthResponse
-import com.riversongai.data.remote.LoginRequest
 import com.riversongai.data.repository.UserRepository
 import com.riversongai.utils.SessionManager
 import kotlinx.coroutines.launch
@@ -24,7 +23,7 @@ class LoginViewModel(
     fun login(username: String, password: String) {
         _isLoading.value = true
         viewModelScope.launch {
-            val result = userRepository.loginUser(LoginRequest(username, password))
+            val result = userRepository.loginUser(username, password)
             result.onSuccess { auth ->
                 sessionManager.saveAuthToken(auth.accessToken)
                 auth.user?.let {

@@ -3,7 +3,6 @@ package com.riversongai.data.repository
 import android.util.Log
 import com.riversongai.data.model.AuthResponse
 import com.riversongai.data.model.User
-import com.riversongai.data.remote.LoginRequest
 import com.riversongai.data.remote.RegisterRequest
 import com.riversongai.data.remote.RiverSongApiService
 
@@ -11,9 +10,9 @@ class UserRepository(private val apiService: RiverSongApiService) {
 
     private val tag = "UserRepository"
 
-    suspend fun loginUser(request: LoginRequest): Result<AuthResponse> {
+    suspend fun loginUser(username: String, password: String): Result<AuthResponse> {
         return try {
-            val response = apiService.loginUser(request)
+            val response = apiService.loginUser(username, password)
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
@@ -43,9 +42,9 @@ class UserRepository(private val apiService: RiverSongApiService) {
         }
     }
 
-    suspend fun getCurrentUser(authToken: String): Result<User> {
+    suspend fun getCurrentUser(): Result<User> {
         return try {
-            val response = apiService.getCurrentUser(authToken)
+            val response = apiService.getCurrentUser()
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
