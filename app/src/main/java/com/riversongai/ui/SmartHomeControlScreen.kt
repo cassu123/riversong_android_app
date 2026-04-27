@@ -69,6 +69,10 @@ class SmartHomeControlScreen : Fragment() {
             }
         }
 
+        binding.buttonRefresh.setOnClickListener {
+            smartHomeControlViewModel.fetchDevices()
+        }
+
         smartHomeControlViewModel.fetchDevices()
     }
 

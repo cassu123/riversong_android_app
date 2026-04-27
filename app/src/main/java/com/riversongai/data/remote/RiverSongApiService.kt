@@ -12,8 +12,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -22,13 +20,8 @@ import java.util.concurrent.TimeUnit
 
 interface RiverSongApiService {
 
-    // FastAPI's default OAuth2 token endpoint uses form-encoded fields
-    @FormUrlEncoded
-    @POST("api/v1/auth/token")
-    suspend fun loginUser(
-        @Field("username") username: String,
-        @Field("password") password: String
-    ): Response<AuthResponse>
+    @POST("api/v1/auth/login")
+    suspend fun loginUser(@Body request: LoginRequest): Response<AuthResponse>
 
     @POST("api/v1/auth/register")
     suspend fun registerUser(@Body request: RegisterRequest): Response<AuthResponse>
@@ -81,6 +74,11 @@ interface RiverSongApiService {
         }
     }
 }
+
+data class LoginRequest(
+    val username: String,
+    val password: String
+)
 
 data class RegisterRequest(
     val username: String,

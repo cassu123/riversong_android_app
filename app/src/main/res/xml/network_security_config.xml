@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--
+        Production (riversongai.com) uses HTTPS via Cloudflare — fully secure, no extra config needed.
+        This block only allows plain HTTP for local/development IP ranges so you can test on
+        your home network before the production server is up.
+
+        When you are ready for production, you can remove the <domain-config> block below.
+    -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Local network development — adjust if your home IP range differs -->
+        <domain includeSubdomains="true">192.168.1.0</domain>
+        <domain includeSubdomains="true">192.168.0.0</domain>
+        <domain includeSubdomains="true">10.0.0.0</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>  <!-- Android emulator host -->
+        <domain includeSubdomains="true">localhost</domain>
+    </domain-config>
+
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
