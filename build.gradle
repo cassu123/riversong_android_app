@@ -43,8 +43,7 @@ allprojects {
 
 // Section: Task Cleanup (Optional)
 // Defines a task to clean the build directories for all projects.
-tasks.register("clean", Delete::class) {
-    // Deletes the 'build' directory in the root project.
+tasks.register("clean") {
     delete(rootProject.buildDir)
 }
 
