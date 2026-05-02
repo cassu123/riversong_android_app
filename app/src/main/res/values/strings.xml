@@ -40,4 +40,8 @@
     <string name="error_server_error">Server error. Please try again later.</string>
     <string name="error_generic">An unexpected error occurred. Please try again.</string>
 
+    <string name="chat_status_thinking">River Song is thinking…</string>
+    <string name="chat_status_speaking">Speaking…</string>
+    <string name="chat_empty_hint">Say hello to River Song!</string>
+
 </resources>

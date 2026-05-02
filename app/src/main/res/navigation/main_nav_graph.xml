@@ -39,6 +39,12 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.riversongai.ui.ChatFragment"
+        android:label="River Song"
+        tools:layout="@layout/fragment_chat" />
+
+    <fragment
         android:id="@+id/smartHomeControlScreen"
         android:name="com.riversongai.ui.SmartHomeControlScreen"
         android:label="Devices"

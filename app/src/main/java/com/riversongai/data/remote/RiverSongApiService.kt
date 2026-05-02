@@ -2,10 +2,10 @@ package com.riversongai.data.remote
 
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
+import com.riversongai.BuildConfig
 import com.riversongai.data.model.AuthResponse
 import com.riversongai.data.model.Device
 import com.riversongai.data.model.User
-import com.riversongai.BuildConfig
 import com.riversongai.utils.SessionManager
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -15,38 +15,27 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
 import java.util.concurrent.TimeUnit
 
 interface RiverSongApiService {
 
-    @POST("api/v1/auth/login")
+    @POST("api/auth/login")
     suspend fun loginUser(@Body request: LoginRequest): Response<AuthResponse>
 
-    @POST("api/v1/auth/register")
-    suspend fun registerUser(@Body request: RegisterRequest): Response<AuthResponse>
+    @POST("api/auth/signup")
+    suspend fun signupUser(@Body request: SignupRequest): Response<Void>
 
-    @GET("api/v1/users/me")
+    @GET("api/auth/me")
     suspend fun getCurrentUser(): Response<User>
 
-    @GET("api/v1/devices")
-    suspend fun getAllDevices(): Response<List<Device>>
+    @GET("api/home/devices")
+    suspend fun getDevices(): Response<List<Device>>
 
-    @GET("api/v1/devices/{deviceId}")
-    suspend fun getDeviceById(@Path("deviceId") deviceId: String): Response<Device>
+    @POST("api/home/action")
+    suspend fun callAction(@Body request: HomeActionRequest): Response<HomeActionResponse>
 
-    @PUT("api/v1/devices/{deviceId}/control")
-    suspend fun controlDevice(
-        @Path("deviceId") deviceId: String,
-        @Body controlRequest: DeviceControlRequest
-    ): Response<Device>
-
-    @POST("api/v1/ai/audio/process")
-    suspend fun processAudio(@Body audioData: AudioProcessRequest): Response<AudioProcessResponse>
-
-    @POST("api/v1/ai/image/analyze")
-    suspend fun analyzeImage(@Body imageData: ImageAnalyzeRequest): Response<ImageAnalyzeResponse>
+    @POST("api/conversation/chat")
+    suspend fun chatHttp(@Body request: ChatRequest): Response<okhttp3.ResponseBody>
 
     companion object {
         fun create(baseUrl: String, sessionManager: SessionManager): RiverSongApiService {
@@ -55,13 +44,12 @@ interface RiverSongApiService {
                 .apply {
                     if (BuildConfig.DEBUG) {
                         addInterceptor(HttpLoggingInterceptor().apply {
-                            // BASIC only — never log bodies which may contain passwords
                             level = HttpLoggingInterceptor.Level.BASIC
                         })
                     }
                 }
                 .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .build()
 
@@ -80,44 +68,29 @@ interface RiverSongApiService {
 }
 
 data class LoginRequest(
-    val username: String,
+    val email: String,
     val password: String
 )
 
-data class RegisterRequest(
-    val username: String,
+data class SignupRequest(
     val email: String,
     val password: String,
-    val firstName: String? = null,
-    val lastName: String? = null,
-    val role: String = "PARENT"
+    @com.google.gson.annotations.SerializedName("display_name") val displayName: String
 )
 
-data class DeviceControlRequest(
-    val command: String,
-    val value: String? = null
+data class HomeActionRequest(
+    @com.google.gson.annotations.SerializedName("entity_id") val entityId: String,
+    val action: String,
+    @com.google.gson.annotations.SerializedName("brightness_pct") val brightnessPct: Int? = null,
+    val temperature: Float? = null
 )
 
-data class AudioProcessRequest(
-    val audioBase64: String,
-    val format: String = "wav",
-    val type: String = "voice_command"
+data class HomeActionResponse(
+    val ok: Boolean,
+    val detail: String? = null
 )
 
-data class AudioProcessResponse(
-    val success: Boolean,
+data class ChatRequest(
     val message: String,
-    val recognizedText: String? = null,
-    val classification: String? = null
-)
-
-data class ImageAnalyzeRequest(
-    val imageBase64: String,
-    val analysisType: String = "object_detection"
-)
-
-data class ImageAnalyzeResponse(
-    val success: Boolean,
-    val message: String,
-    val analysisResult: Map<String, String>? = null
+    val history: List<Map<String, String>> = emptyList()
 )

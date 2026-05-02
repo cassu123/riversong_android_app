@@ -51,15 +51,17 @@ class UserDashboardViewModel(
 
                 smartHomeRepository.getAllDevices()
                     .onSuccess { devices ->
-                        val active = devices.count { it.status == "online" || it.isOn == true }
-                        val offline = devices.count { it.status == "offline" }
+                        val active = devices.count { it.isOn }
+                        val offline = devices.count { it.state == "unavailable" }
                         _smartHomeSummary.value = SmartHomeSummary(
                             totalDevices = devices.size,
                             activeDevices = active,
                             offlineDevices = offline
                         )
                     }
-                    .onFailure { handleError(it) }
+                    .onFailure {
+                        _smartHomeSummary.value = SmartHomeSummary(0, 0, 0)
+                    }
 
                 _activitySummary.value = ActivitySummary()
             } finally {

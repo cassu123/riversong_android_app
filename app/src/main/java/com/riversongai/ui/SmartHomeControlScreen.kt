@@ -35,8 +35,8 @@ class SmartHomeControlScreen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        deviceAdapter = DeviceAdapter { device, command, value ->
-            smartHomeControlViewModel.controlDevice(device.id, command, value)
+        deviceAdapter = DeviceAdapter { device, action, brightnessPct ->
+            smartHomeControlViewModel.controlDevice(device.entityId, action, brightnessPct)
         }
         binding.recyclerViewDevices.apply {
             layoutManager = LinearLayoutManager(context)
@@ -45,21 +45,24 @@ class SmartHomeControlScreen : Fragment() {
 
         smartHomeControlViewModel.sessionExpired.observe(viewLifecycleOwner) { expired ->
             if (expired == true) {
-                findNavController().navigate(R.id.loginScreen, null,
-                    NavOptions.Builder().setPopUpTo(R.id.main_nav_graph, true).build())
+                findNavController().navigate(
+                    R.id.loginScreen, null,
+                    NavOptions.Builder().setPopUpTo(R.id.main_nav_graph, true).build()
+                )
             }
         }
 
         smartHomeControlViewModel.devices.observe(viewLifecycleOwner) { devices ->
             devices?.let {
                 deviceAdapter.submitList(it)
-                binding.textViewStatus.text = "${it.size} devices"
+                val active = it.count { d -> d.isOn }
+                binding.textViewStatus.text = "${it.size} devices · $active on"
             }
         }
 
         smartHomeControlViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.isVisible = isLoading
-            if (isLoading) binding.textViewStatus.text = "Loading devices…"
+            if (isLoading) binding.textViewStatus.text = "Loading…"
         }
 
         smartHomeControlViewModel.errorMessage.observe(viewLifecycleOwner) { message ->

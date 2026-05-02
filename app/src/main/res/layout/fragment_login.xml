@@ -16,9 +16,9 @@
             android:id="@+id/imageViewLogo"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="56dp"
             android:src="@mipmap/ic_launcher_round"
-            android:contentDescription="River Song AI Logo"
+            android:contentDescription="River Song AI"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -49,21 +49,21 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/layoutUsername"
+            android:id="@+id/layoutEmail"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:hint="Username or Email"
+            android:layout_marginTop="44dp"
+            android:hint="Email"
             app:layout_constraintTop_toBottomOf="@id/textViewSubtitle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextUsername"
+                android:id="@+id/editTextEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:inputType="textEmailAddress"
                 android:imeOptions="actionNext" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -75,7 +75,7 @@
             android:layout_marginTop="12dp"
             android:hint="Password"
             app:endIconMode="password_toggle"
-            app:layout_constraintTop_toBottomOf="@id/layoutUsername"
+            app:layout_constraintTop_toBottomOf="@id/layoutEmail"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -116,7 +116,7 @@
             android:id="@+id/textViewDivider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="28dp"
             android:text="Don't have an account?"
             android:textColor="@color/river_song_on_surface_variant"
             app:layout_constraintTop_toBottomOf="@id/progressBar"

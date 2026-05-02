@@ -37,21 +37,24 @@ class LoginScreen : Fragment() {
         }
 
         loginViewModel.loginResult.observe(viewLifecycleOwner) { result ->
-            result.onSuccess { auth ->
-                Toast.makeText(context, "Welcome back!", Toast.LENGTH_SHORT).show()
+            result.onSuccess {
                 findNavController().navigate(R.id.action_loginScreen_to_homeFragment)
             }.onFailure { exception ->
-                Toast.makeText(context, "Login failed: ${exception.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, exception.message ?: "Sign in failed", Toast.LENGTH_LONG).show()
             }
         }
 
         binding.buttonLogin.setOnClickListener {
-            val username = binding.editTextUsername.text.toString().trim()
+            val email = binding.editTextEmail.text.toString().trim()
             val password = binding.editTextPassword.text.toString()
-            if (username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(context, "Please enter username and password.", Toast.LENGTH_SHORT).show()
-            } else {
-                loginViewModel.login(username, password)
+            when {
+                email.isEmpty() -> binding.layoutEmail.error = "Email is required"
+                password.isEmpty() -> binding.layoutPassword.error = "Password is required"
+                else -> {
+                    binding.layoutEmail.error = null
+                    binding.layoutPassword.error = null
+                    loginViewModel.login(email, password)
+                }
             }
         }
 

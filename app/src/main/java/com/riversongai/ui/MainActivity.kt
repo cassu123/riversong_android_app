@@ -24,9 +24,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private val sessionManager: SessionManager by inject()
 
-    // Destinations that show the bottom nav bar
     private val mainDestinations = setOf(
         R.id.homeFragment,
+        R.id.chatFragment,
         R.id.smartHomeControlScreen,
         R.id.userDashboardScreen
     )

@@ -35,68 +35,22 @@
             app:layout_constraintTop_toBottomOf="@id/textViewTitle"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/layoutNameRow"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutDisplayName"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:orientation="horizontal"
-            android:weightSum="2"
+            android:hint="Display Name"
             app:layout_constraintTop_toBottomOf="@id/textViewSubtitle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutFirstName"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="6dp"
-                android:hint="First Name">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextFirstName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
-                    android:imeOptions="actionNext" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutLastName"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="6dp"
-                android:hint="Last Name">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextLastName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
-                    android:imeOptions="actionNext" />
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/layoutUsername"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:hint="Username"
-            app:layout_constraintTop_toBottomOf="@id/layoutNameRow"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextUsername"
+                android:id="@+id/editTextDisplayName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:inputType="textPersonName"
                 android:imeOptions="actionNext" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -107,7 +61,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Email"
-            app:layout_constraintTop_toBottomOf="@id/layoutUsername"
+            app:layout_constraintTop_toBottomOf="@id/layoutDisplayName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -125,7 +79,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Password"
+            android:hint="Password (min. 12 characters)"
             app:endIconMode="password_toggle"
             app:layout_constraintTop_toBottomOf="@id/layoutEmail"
             app:layout_constraintStart_toStartOf="parent"

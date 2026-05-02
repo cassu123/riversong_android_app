@@ -4,22 +4,22 @@ import android.util.Log
 import com.riversongai.data.model.AuthResponse
 import com.riversongai.data.model.User
 import com.riversongai.data.remote.LoginRequest
-import com.riversongai.data.remote.RegisterRequest
 import com.riversongai.data.remote.RiverSongApiService
+import com.riversongai.data.remote.SignupRequest
 
 class UserRepository(private val apiService: RiverSongApiService) {
 
     private val tag = "UserRepository"
 
-    suspend fun loginUser(username: String, password: String): Result<AuthResponse> {
+    suspend fun loginUser(email: String, password: String): Result<AuthResponse> {
         return try {
-            val response = apiService.loginUser(LoginRequest(username, password))
+            val response = apiService.loginUser(LoginRequest(email, password))
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
-                val error = response.errorBody()?.string() ?: "Unknown error"
+                val error = parseError(response.errorBody()?.string(), response.code())
                 Log.e(tag, "Login failed: ${response.code()} - $error")
-                Result.failure(Exception("Login failed: ${response.code()} - $error"))
+                Result.failure(Exception(error))
             }
         } catch (e: Exception) {
             Log.e(tag, "Login exception", e)
@@ -27,18 +27,18 @@ class UserRepository(private val apiService: RiverSongApiService) {
         }
     }
 
-    suspend fun registerUser(request: RegisterRequest): Result<AuthResponse> {
+    suspend fun signupUser(displayName: String, email: String, password: String): Result<Unit> {
         return try {
-            val response = apiService.registerUser(request)
-            if (response.isSuccessful && response.body() != null) {
-                Result.success(response.body()!!)
+            val response = apiService.signupUser(SignupRequest(email, password, displayName))
+            if (response.isSuccessful) {
+                Result.success(Unit)
             } else {
-                val error = response.errorBody()?.string() ?: "Unknown error"
-                Log.e(tag, "Registration failed: ${response.code()} - $error")
-                Result.failure(Exception("Registration failed: ${response.code()} - $error"))
+                val error = parseError(response.errorBody()?.string(), response.code())
+                Log.e(tag, "Signup failed: ${response.code()} - $error")
+                Result.failure(Exception(error))
             }
         } catch (e: Exception) {
-            Log.e(tag, "Registration exception", e)
+            Log.e(tag, "Signup exception", e)
             Result.failure(e)
         }
     }
@@ -49,13 +49,23 @@ class UserRepository(private val apiService: RiverSongApiService) {
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
-                val error = response.errorBody()?.string() ?: "Unknown error"
+                val error = parseError(response.errorBody()?.string(), response.code())
                 Log.e(tag, "Fetch user failed: ${response.code()} - $error")
-                Result.failure(Exception("Failed to fetch user: ${response.code()} - $error"))
+                Result.failure(Exception(error))
             }
         } catch (e: Exception) {
             Log.e(tag, "Fetch user exception", e)
             Result.failure(e)
+        }
+    }
+
+    private fun parseError(body: String?, code: Int): String {
+        if (body.isNullOrBlank()) return "Error $code"
+        return try {
+            val json = org.json.JSONObject(body)
+            json.optString("detail", "Error $code")
+        } catch (_: Exception) {
+            body
         }
     }
 }

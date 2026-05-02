@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.riversongai.R
 import com.riversongai.databinding.FragmentUserDashboardBinding
@@ -36,22 +37,26 @@ class UserDashboardScreen : Fragment() {
 
         userDashboardViewModel.currentUser.observe(viewLifecycleOwner) { user ->
             user?.let {
-                binding.textViewDashboardWelcome.text = "Hello, ${it.firstName ?: it.username}!"
-                binding.textViewUserRole.text = "Role: ${it.role.name.replace("_", " ")}"
+                binding.textViewDashboardWelcome.text = "Hello, ${it.displayName}!"
+                val roleLabel = it.role.replaceFirstChar { c -> c.uppercase() }
+                binding.textViewUserRole.text = roleLabel
             }
         }
 
         userDashboardViewModel.smartHomeSummary.observe(viewLifecycleOwner) { summary ->
             summary?.let {
-                binding.textViewSmartHomeSummary.text =
-                    "${it.activeDevices} active · ${it.offlineDevices} offline · ${it.totalDevices} total"
+                binding.textViewSmartHomeSummary.text = if (it.totalDevices == 0) {
+                    "Home Assistant not connected"
+                } else {
+                    "${it.activeDevices} on · ${it.offlineDevices} unavailable · ${it.totalDevices} total"
+                }
             }
         }
 
         userDashboardViewModel.activitySummary.observe(viewLifecycleOwner) { summary ->
             summary?.let {
                 binding.textViewActivitySummary.text = if (it.stepsTaken > 0) {
-                    "${it.stepsTaken} steps · ${it.activeMinutes} active minutes today"
+                    "${it.stepsTaken} steps · ${it.activeMinutes} active min today"
                 } else {
                     it.summary
                 }
@@ -73,11 +78,9 @@ class UserDashboardScreen : Fragment() {
     }
 
     private fun navigateToLogin() {
-        findNavController().navigate(R.id.loginScreen,
-            null,
-            androidx.navigation.NavOptions.Builder()
-                .setPopUpTo(R.id.main_nav_graph, true)
-                .build()
+        findNavController().navigate(
+            R.id.loginScreen, null,
+            NavOptions.Builder().setPopUpTo(R.id.main_nav_graph, true).build()
         )
     }
 

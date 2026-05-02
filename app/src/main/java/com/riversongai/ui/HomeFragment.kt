@@ -4,11 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import com.riversongai.R
 import com.riversongai.databinding.FragmentHomeBinding
 import com.riversongai.ui.viewmodel.HomeViewModel
@@ -39,25 +38,27 @@ class HomeFragment : Fragment() {
 
         homeViewModel.sessionExpired.observe(viewLifecycleOwner) { expired ->
             if (expired == true) {
-                findNavController().navigate(R.id.loginScreen, null,
-                    NavOptions.Builder().setPopUpTo(R.id.main_nav_graph, true).build())
+                findNavController().navigate(
+                    R.id.loginScreen, null,
+                    NavOptions.Builder().setPopUpTo(R.id.main_nav_graph, true).build()
+                )
             }
         }
 
-        homeViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.isVisible = isLoading
+        homeViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
+            binding.progressBar.isVisible = loading
         }
 
         homeViewModel.currentUser.observe(viewLifecycleOwner) { user ->
             user?.let {
-                binding.textViewWelcome.text = "Welcome, ${it.firstName ?: it.username}!"
+                binding.textViewWelcome.text = "Hi, ${it.firstName}!"
             }
         }
 
         homeViewModel.devices.observe(viewLifecycleOwner) { devices ->
             devices?.let {
-                val activeCount = devices.count { d -> d.isOn == true || d.status == "online" }
-                binding.textViewDeviceCount.text = "${it.size} devices • $activeCount active"
+                val active = it.count { d -> d.isOn }
+                binding.textViewDeviceCount.text = "${it.size} devices · $active on"
             }
         }
 
@@ -70,8 +71,7 @@ class HomeFragment : Fragment() {
         }
 
         binding.buttonControlLight.setOnClickListener {
-            homeViewModel.controlLightExample("light_id_123", true)
-            Toast.makeText(context, "Light toggled.", Toast.LENGTH_SHORT).show()
+            homeViewModel.toggleAllLights(true)
         }
 
         binding.buttonViewDevices.setOnClickListener {

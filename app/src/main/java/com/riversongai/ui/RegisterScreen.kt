@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.riversongai.R
 import com.riversongai.databinding.FragmentRegisterBinding
 import com.riversongai.ui.viewmodel.RegisterViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -38,30 +37,35 @@ class RegisterScreen : Fragment() {
 
         registerViewModel.registerResult.observe(viewLifecycleOwner) { result ->
             result.onSuccess {
-                Toast.makeText(context, "Account created! Welcome.", Toast.LENGTH_SHORT).show()
-                findNavController().navigate(R.id.action_registerScreen_to_homeFragment)
+                Toast.makeText(
+                    context,
+                    "Account created! An admin will approve your account before you can sign in.",
+                    Toast.LENGTH_LONG
+                ).show()
+                findNavController().navigateUp()
             }.onFailure { exception ->
-                Toast.makeText(context, "Registration failed: ${exception.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, exception.message ?: "Registration failed", Toast.LENGTH_LONG).show()
             }
         }
 
         binding.buttonRegister.setOnClickListener {
-            val username = binding.editTextUsername.text.toString().trim()
+            val displayName = binding.editTextDisplayName.text.toString().trim()
             val email = binding.editTextEmail.text.toString().trim()
             val password = binding.editTextPassword.text.toString()
             val confirm = binding.editTextConfirmPassword.text.toString()
-            val firstName = binding.editTextFirstName.text.toString().trim()
-            val lastName = binding.editTextLastName.text.toString().trim()
+
+            binding.layoutDisplayName.error = null
+            binding.layoutEmail.error = null
+            binding.layoutPassword.error = null
+            binding.layoutConfirmPassword.error = null
 
             when {
-                username.isEmpty() || email.isEmpty() || password.isEmpty() ->
-                    Toast.makeText(context, "Username, email and password are required.", Toast.LENGTH_SHORT).show()
-                password != confirm ->
-                    Toast.makeText(context, "Passwords do not match.", Toast.LENGTH_SHORT).show()
-                password.length < 8 ->
-                    Toast.makeText(context, "Password must be at least 8 characters.", Toast.LENGTH_SHORT).show()
-                else ->
-                    registerViewModel.register(username, email, password, firstName, lastName)
+                displayName.isEmpty() -> binding.layoutDisplayName.error = "Name is required"
+                email.isEmpty() -> binding.layoutEmail.error = "Email is required"
+                password.isEmpty() -> binding.layoutPassword.error = "Password is required"
+                password.length < 12 -> binding.layoutPassword.error = "Password must be at least 12 characters"
+                password != confirm -> binding.layoutConfirmPassword.error = "Passwords do not match"
+                else -> registerViewModel.register(displayName, email, password)
             }
         }
 

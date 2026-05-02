@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.riversongai.data.model.Device
-import com.riversongai.data.remote.DeviceControlRequest
 import com.riversongai.data.repository.SmartHomeRepository
 import com.riversongai.utils.ErrorHandler
 import com.riversongai.utils.SessionManager
@@ -47,16 +46,24 @@ class SmartHomeControlViewModel(
         }
     }
 
-    fun controlDevice(deviceId: String, command: String, value: String? = null) {
+    fun controlDevice(entityId: String, action: String, brightnessPct: Int? = null) {
         viewModelScope.launch {
-            smartHomeRepository.controlDevice(
-                deviceId,
-                DeviceControlRequest(command = command, value = value)
-            ).onSuccess { updatedDevice ->
-                _devices.value = _devices.value?.map {
-                    if (it.id == updatedDevice.id) updatedDevice else it
+            smartHomeRepository.controlDevice(entityId, action, brightnessPct)
+                .onSuccess {
+                    // Optimistically update the local state
+                    _devices.value = _devices.value?.map { d ->
+                        if (d.entityId == entityId) {
+                            val newState = when (action) {
+                                "turn_on" -> "on"
+                                "turn_off" -> "off"
+                                "toggle" -> if (d.isOn) "off" else "on"
+                                else -> d.state
+                            }
+                            d.copy(state = newState)
+                        } else d
+                    }
                 }
-            }.onFailure { handleError(it) }
+                .onFailure { handleError(it) }
         }
     }
 

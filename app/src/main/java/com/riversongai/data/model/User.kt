@@ -1,21 +1,15 @@
 package com.riversongai.data.model
 
-enum class UserRole {
-    ADMIN,
-    PARENT,
-    CHILD,
-    GUEST,
-    UNKNOWN
-}
+import com.google.gson.annotations.SerializedName
 
 data class User(
     val id: String,
-    val username: String,
     val email: String,
-    val firstName: String? = null,
-    val lastName: String? = null,
-    val role: UserRole,
-    val isActive: Boolean = true,
-    val profilePictureUrl: String? = null,
-    val lastLogin: Long? = null
-)
+    @SerializedName("display_name") val displayName: String,
+    val role: String,
+    @SerializedName("is_approved") val isApproved: Boolean = false,
+    @SerializedName("is_active") val isActive: Boolean = true
+) {
+    val isAdmin: Boolean get() = role == "admin"
+    val firstName: String get() = displayName.split(" ").first()
+}

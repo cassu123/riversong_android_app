@@ -20,16 +20,16 @@ class LoginViewModel(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    fun login(username: String, password: String) {
+    fun login(email: String, password: String) {
         _isLoading.value = true
         viewModelScope.launch {
-            val result = userRepository.loginUser(username, password)
+            val result = userRepository.loginUser(email, password)
             result.onSuccess { auth ->
-                sessionManager.saveAuthToken(auth.accessToken)
-                auth.user?.let {
-                    sessionManager.saveUserId(it.id)
-                    sessionManager.saveUsername(it.username)
-                    sessionManager.saveUserRole(it.role.name)
+                sessionManager.saveAuthToken(auth.token)
+                auth.user?.let { user ->
+                    sessionManager.saveUserId(user.id)
+                    sessionManager.saveDisplayName(user.displayName)
+                    sessionManager.saveUserRole(user.role)
                 }
             }
             _loginResult.value = result

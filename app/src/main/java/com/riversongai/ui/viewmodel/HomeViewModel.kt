@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.riversongai.data.model.Device
 import com.riversongai.data.model.User
-import com.riversongai.data.remote.DeviceControlRequest
 import com.riversongai.data.repository.SmartHomeRepository
 import com.riversongai.data.repository.UserRepository
 import com.riversongai.utils.ErrorHandler
@@ -48,19 +47,22 @@ class HomeViewModel(
 
                 smartHomeRepository.getAllDevices()
                     .onSuccess { _devices.value = it }
-                    .onFailure { handleError(it) }
+                    .onFailure { /* non-fatal — HA may not be configured */ }
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    fun controlLightExample(deviceId: String, on: Boolean) {
+    fun toggleAllLights(on: Boolean) {
+        val lights = _devices.value?.filter { it.domain == "light" } ?: return
         viewModelScope.launch {
-            smartHomeRepository.controlDevice(
-                deviceId,
-                DeviceControlRequest(command = if (on) "turn_on" else "turn_off")
-            )
+            lights.forEach { device ->
+                smartHomeRepository.controlDevice(
+                    device.entityId,
+                    if (on) "turn_on" else "turn_off"
+                )
+            }
         }
     }
 
