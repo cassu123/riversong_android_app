@@ -35,17 +35,23 @@ class HomeViewModel(
     val sessionExpired: LiveData<Boolean> = _sessionExpired
 
     fun loadUserDataAndDevices() {
+        if (!sessionManager.isLoggedIn()) {
+            _sessionExpired.value = true
+            return
+        }
         _isLoading.value = true
         viewModelScope.launch {
-            userRepository.getCurrentUser()
-                .onSuccess { _currentUser.value = it }
-                .onFailure { handleError(it) }
+            try {
+                userRepository.getCurrentUser()
+                    .onSuccess { _currentUser.value = it }
+                    .onFailure { handleError(it) }
 
-            smartHomeRepository.getAllDevices()
-                .onSuccess { _devices.value = it }
-                .onFailure { handleError(it) }
-
-            _isLoading.value = false
+                smartHomeRepository.getAllDevices()
+                    .onSuccess { _devices.value = it }
+                    .onFailure { handleError(it) }
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
@@ -61,7 +67,7 @@ class HomeViewModel(
     fun clearError() { _errorMessage.value = null }
 
     private fun handleError(e: Throwable) {
-        if (e.message?.contains("401") == true) {
+        if (e is retrofit2.HttpException && e.code() == 401) {
             sessionManager.clearSession()
             _sessionExpired.value = true
         } else {

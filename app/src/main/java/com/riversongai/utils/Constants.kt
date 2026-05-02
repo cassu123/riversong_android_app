@@ -1,9 +1,13 @@
 package com.riversongai.utils
 
+import com.riversongai.BuildConfig
+
 object Constants {
 
-    // Update this to your backend IP/domain before running
-    const val BASE_URL = "http://YOUR_BACKEND_IP:5000/"
+    // Set per build type in app/build.gradle:
+    //   debug   -> http://10.0.2.2:5000/  (local server, change to your LAN IP for a real device)
+    //   release -> https://riversongai.com/ (through Cloudflare)
+    val BASE_URL: String = BuildConfig.BASE_URL
 
     const val PREF_AUTH_TOKEN = "auth_token"
     const val PREF_USER_ID = "user_id"

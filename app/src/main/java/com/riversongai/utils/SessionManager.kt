@@ -10,6 +10,7 @@ class SessionManager(context: Context) {
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
         .build()
 
+    @Suppress("DEPRECATION")
     private val prefs = EncryptedSharedPreferences.create(
         context,
         "river_song_secure_prefs",

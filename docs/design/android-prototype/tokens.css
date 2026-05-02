@@ -1,0 +1,623 @@
+/* River Song Android — M3 Dark token system + 9 themes
+   Tokens are CSS variables on [data-theme]; default = River Song Blue Dark. */
+
+/* ──────────────────────────────────────────────────────
+   1. DEFAULT — River Song Blue (dark)
+   ────────────────────────────────────────────────────── */
+:root,
+[data-theme="default"] {
+  --rs-bg: #0F1316;
+  --rs-surface: #0F1316;
+  --rs-surface-low: #171C1F;
+  --rs-surface-c: #1B2023;
+  --rs-surface-high: #262B2E;
+  --rs-surface-highest: #313538;
+
+  --rs-primary: #96CBFF;
+  --rs-on-primary: #003354;
+  --rs-primary-c: #004A77;
+  --rs-on-primary-c: #CAE6FF;
+
+  --rs-secondary: #B6C9D9;
+  --rs-on-secondary: #213242;
+  --rs-secondary-c: #384959;
+  --rs-on-secondary-c: #D2E5F5;
+
+  --rs-tertiary: #D9BBFF;
+  --rs-on-tertiary: #3E1F77;
+  --rs-tertiary-c: #55368F;
+  --rs-on-tertiary-c: #EEDCFF;
+
+  --rs-error: #FFB4AB;
+  --rs-on-error: #690005;
+  --rs-error-c: #93000A;
+  --rs-on-error-c: #FFDAD6;
+
+  --rs-on-surface: #DEE4E9;
+  --rs-on-surface-var: #BFC8CE;
+  --rs-outline: #899398;
+  --rs-outline-variant: #40484E;
+  --rs-scrim: rgba(0,0,0,0.72);
+
+  --rs-warn: #FFB86C;
+  --rs-cost: #C4AAFF;
+
+  --rs-glow-primary: 0 0 0 transparent;
+  --rs-status-active: var(--rs-tertiary);
+  --rs-status-warn: #FFB86C;
+  --rs-status-off: var(--rs-outline);
+  --rs-status-standby: var(--rs-primary);
+}
+
+/* ──────────────────────────────────────────────────────
+   2. HALO — UNSC holographic cyan
+   ────────────────────────────────────────────────────── */
+[data-theme="halo"] {
+  --rs-bg: #050c14;
+  --rs-surface: #050c14;
+  --rs-surface-low: #0a1620;
+  --rs-surface-c: #0e1d2a;
+  --rs-surface-high: #142a3d;
+  --rs-surface-highest: #1b3a52;
+
+  --rs-primary: #00e5ff;
+  --rs-on-primary: #00232b;
+  --rs-primary-c: #003943;
+  --rs-on-primary-c: #B4F2FF;
+
+  --rs-secondary: #7fbfd1;
+  --rs-on-secondary: #0a1f28;
+  --rs-secondary-c: #1d3947;
+  --rs-on-secondary-c: #D7EDF5;
+
+  --rs-tertiary: #82E1B7;
+  --rs-on-tertiary: #003822;
+  --rs-tertiary-c: #00513a;
+  --rs-on-tertiary-c: #A7F4D0;
+
+  --rs-error: #FFB4AB;
+  --rs-on-error: #690005;
+  --rs-error-c: #93000A;
+  --rs-on-error-c: #FFDAD6;
+
+  --rs-on-surface: #d4eef5;
+  --rs-on-surface-var: #95b7c5;
+  --rs-outline: #4a7589;
+  --rs-outline-variant: #1d3949;
+  --rs-scrim: rgba(0,0,0,0.78);
+
+  --rs-warn: #FFC857;
+  --rs-cost: #82E1B7;
+}
+
+/* ──────────────────────────────────────────────────────
+   3. CRIMSON DARK — brick red
+   ────────────────────────────────────────────────────── */
+[data-theme="crimson"] {
+  --rs-bg: #140c0b;
+  --rs-surface: #140c0b;
+  --rs-surface-low: #1d1311;
+  --rs-surface-c: #261917;
+  --rs-surface-high: #2f211f;
+  --rs-surface-highest: #392a27;
+
+  --rs-primary: #ff8b73;
+  --rs-on-primary: #4d1100;
+  --rs-primary-c: #762011;
+  --rs-on-primary-c: #ffdacf;
+
+  --rs-secondary: #d8a8a0;
+  --rs-on-secondary: #3a1d18;
+  --rs-secondary-c: #54322b;
+  --rs-on-secondary-c: #fdd8cf;
+
+  --rs-tertiary: #e0c587;
+  --rs-on-tertiary: #3d2e00;
+  --rs-tertiary-c: #574510;
+  --rs-on-tertiary-c: #fee2a3;
+
+  --rs-error: #FFB4AB;
+  --rs-on-error: #690005;
+  --rs-error-c: #93000A;
+  --rs-on-error-c: #FFDAD6;
+
+  --rs-on-surface: #efdcd6;
+  --rs-on-surface-var: #c5aea8;
+  --rs-outline: #876e68;
+  --rs-outline-variant: #3a2c28;
+  --rs-scrim: rgba(0,0,0,0.74);
+}
+
+/* ──────────────────────────────────────────────────────
+   4. COMBAT — terminal green
+   ────────────────────────────────────────────────────── */
+[data-theme="combat"] {
+  --rs-bg: #050805;
+  --rs-surface: #050805;
+  --rs-surface-low: #0a120a;
+  --rs-surface-c: #0e1c0e;
+  --rs-surface-high: #142714;
+  --rs-surface-highest: #1d361d;
+
+  --rs-primary: #3dcc79;
+  --rs-on-primary: #003920;
+  --rs-primary-c: #005230;
+  --rs-on-primary-c: #B6F0CC;
+
+  --rs-secondary: #9bcdaa;
+  --rs-on-secondary: #0e2519;
+  --rs-secondary-c: #243b2c;
+  --rs-on-secondary-c: #cfeed8;
+
+  --rs-tertiary: #d4d977;
+  --rs-on-tertiary: #2a3000;
+  --rs-tertiary-c: #404400;
+  --rs-on-tertiary-c: #f1f6a3;
+
+  --rs-error: #ff6b5e;
+  --rs-on-error: #420000;
+  --rs-error-c: #690005;
+  --rs-on-error-c: #FFDAD6;
+
+  --rs-on-surface: #c8e7d2;
+  --rs-on-surface-var: #8fb09a;
+  --rs-outline: #587f64;
+  --rs-outline-variant: #1f3a26;
+  --rs-scrim: rgba(0,0,0,0.78);
+}
+
+/* ──────────────────────────────────────────────────────
+   5. MIDNIGHT VIOLET
+   ────────────────────────────────────────────────────── */
+[data-theme="violet"] {
+  --rs-bg: #1a1025;
+  --rs-surface: #1a1025;
+  --rs-surface-low: #221534;
+  --rs-surface-c: #291b3d;
+  --rs-surface-high: #322348;
+  --rs-surface-highest: #3c2d54;
+
+  --rs-primary: #d4a8d6;
+  --rs-on-primary: #401547;
+  --rs-primary-c: #5e2a64;
+  --rs-on-primary-c: #f6d6f7;
+
+  --rs-secondary: #c5b3d2;
+  --rs-on-secondary: #2c1d36;
+  --rs-secondary-c: #43324f;
+  --rs-on-secondary-c: #e3d3ee;
+
+  --rs-tertiary: #efb8c8;
+  --rs-on-tertiary: #4a1f30;
+  --rs-tertiary-c: #5f3344;
+  --rs-on-tertiary-c: #ffd8e4;
+
+  --rs-error: #FFB4AB;
+  --rs-on-error: #690005;
+  --rs-error-c: #93000A;
+  --rs-on-error-c: #FFDAD6;
+
+  --rs-on-surface: #ecddf3;
+  --rs-on-surface-var: #b9a8c4;
+  --rs-outline: #8c7596;
+  --rs-outline-variant: #3b2c47;
+  --rs-scrim: rgba(0,0,0,0.74);
+}
+
+/* ──────────────────────────────────────────────────────
+   6. PEACH DREAM — light
+   ────────────────────────────────────────────────────── */
+[data-theme="peach"] {
+  --rs-bg: #FEE7D9;
+  --rs-surface: #FFF3E9;
+  --rs-surface-low: #FDE8D7;
+  --rs-surface-c: #FADBC1;
+  --rs-surface-high: #F7CDA8;
+  --rs-surface-highest: #F4BE91;
+
+  --rs-primary: #B85339;
+  --rs-on-primary: #FFFFFF;
+  --rs-primary-c: #FFDAD0;
+  --rs-on-primary-c: #3F0E00;
+
+  --rs-secondary: #8C5040;
+  --rs-on-secondary: #FFFFFF;
+  --rs-secondary-c: #FFDAD0;
+  --rs-on-secondary-c: #381004;
+
+  --rs-tertiary: #6F5C2E;
+  --rs-on-tertiary: #FFFFFF;
+  --rs-tertiary-c: #FBE0A6;
+  --rs-on-tertiary-c: #251A00;
+
+  --rs-error: #BA1A1A;
+  --rs-on-error: #FFFFFF;
+  --rs-error-c: #FFDAD6;
+  --rs-on-error-c: #410002;
+
+  --rs-on-surface: #221A14;
+  --rs-on-surface-var: #5A4334;
+  --rs-outline: #8B7361;
+  --rs-outline-variant: #DEC4B0;
+  --rs-scrim: rgba(0,0,0,0.45);
+
+  --rs-warn: #B47419;
+  --rs-cost: #6F5C2E;
+}
+
+/* ──────────────────────────────────────────────────────
+   7. ARCTIC — light blue-steel
+   ────────────────────────────────────────────────────── */
+[data-theme="arctic"] {
+  --rs-bg: #eef3f8;
+  --rs-surface: #f8fbff;
+  --rs-surface-low: #e6edf4;
+  --rs-surface-c: #d8e2eb;
+  --rs-surface-high: #c5d2dc;
+  --rs-surface-highest: #b3c2cd;
+
+  --rs-primary: #4A7AA8;
+  --rs-on-primary: #FFFFFF;
+  --rs-primary-c: #d2e3f7;
+  --rs-on-primary-c: #0d233a;
+
+  --rs-secondary: #4d6478;
+  --rs-on-secondary: #FFFFFF;
+  --rs-secondary-c: #d2e3f7;
+  --rs-on-secondary-c: #0d1e2c;
+
+  --rs-tertiary: #5a5b7e;
+  --rs-on-tertiary: #FFFFFF;
+  --rs-tertiary-c: #e1e0fc;
+  --rs-on-tertiary-c: #161936;
+
+  --rs-error: #BA1A1A;
+  --rs-on-error: #FFFFFF;
+  --rs-error-c: #FFDAD6;
+  --rs-on-error-c: #410002;
+
+  --rs-on-surface: #1a1d22;
+  --rs-on-surface-var: #44474d;
+  --rs-outline: #75787f;
+  --rs-outline-variant: #c4c7ce;
+  --rs-scrim: rgba(0,0,0,0.4);
+}
+
+/* ──────────────────────────────────────────────────────
+   8. CYBERPUNK — neon yellow + magenta
+   ────────────────────────────────────────────────────── */
+[data-theme="cyberpunk"] {
+  --rs-bg: #050505;
+  --rs-surface: #050505;
+  --rs-surface-low: #0c0c0c;
+  --rs-surface-c: #141414;
+  --rs-surface-high: #1d1d1d;
+  --rs-surface-highest: #262626;
+
+  --rs-primary: #e8ff00;
+  --rs-on-primary: #1f2400;
+  --rs-primary-c: #2d3500;
+  --rs-on-primary-c: #f6ff7c;
+
+  --rs-secondary: #ff00ff;
+  --rs-on-secondary: #2a0033;
+  --rs-secondary-c: #4d0066;
+  --rs-on-secondary-c: #ffb0ff;
+
+  --rs-tertiary: #00f0ff;
+  --rs-on-tertiary: #002a30;
+  --rs-tertiary-c: #003e47;
+  --rs-on-tertiary-c: #9bf3ff;
+
+  --rs-error: #ff4444;
+  --rs-on-error: #320000;
+  --rs-error-c: #5a0008;
+  --rs-on-error-c: #ffd6d6;
+
+  --rs-on-surface: #f1f1f1;
+  --rs-on-surface-var: #a8a8a8;
+  --rs-outline: #5c5c5c;
+  --rs-outline-variant: #1f1f1f;
+  --rs-scrim: rgba(0,0,0,0.85);
+
+  --rs-warn: #ff9d00;
+  --rs-cost: #ff00ff;
+}
+[data-theme="cyberpunk"] .scanlines::before {
+  content: "";
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(232,255,0,0.04) 0px,
+    rgba(232,255,0,0.04) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  z-index: 1000;
+  mix-blend-mode: screen;
+}
+
+/* ──────────────────────────────────────────────────────
+   9. DUNE — sandy gold
+   ────────────────────────────────────────────────────── */
+[data-theme="dune"] {
+  --rs-bg: #0b0805;
+  --rs-surface: #0b0805;
+  --rs-surface-low: #14100a;
+  --rs-surface-c: #1d180f;
+  --rs-surface-high: #271f14;
+  --rs-surface-highest: #312819;
+
+  --rs-primary: #deb651;
+  --rs-on-primary: #3a2700;
+  --rs-primary-c: #523900;
+  --rs-on-primary-c: #fcdf91;
+
+  --rs-secondary: #d6c19a;
+  --rs-on-secondary: #382b13;
+  --rs-secondary-c: #504128;
+  --rs-on-secondary-c: #f3ddb4;
+
+  --rs-tertiary: #c8a982;
+  --rs-on-tertiary: #2e2200;
+  --rs-tertiary-c: #463210;
+  --rs-on-tertiary-c: #ebd09c;
+
+  --rs-error: #FFB4AB;
+  --rs-on-error: #690005;
+  --rs-error-c: #93000A;
+  --rs-on-error-c: #FFDAD6;
+
+  --rs-on-surface: #efe0c4;
+  --rs-on-surface-var: #b8a785;
+  --rs-outline: #897556;
+  --rs-outline-variant: #3a2f1d;
+  --rs-scrim: rgba(0,0,0,0.78);
+}
+
+/* ──────────────────────────────────────────────────────
+   Shape, elevation, motion tokens (theme-agnostic)
+   ────────────────────────────────────────────────────── */
+:root {
+  --rs-r-xs: 4px;
+  --rs-r-sm: 8px;
+  --rs-r-md: 12px;
+  --rs-r-lg: 16px;
+  --rs-r-xl: 20px;
+  --rs-r-2xl: 24px;
+  --rs-r-3xl: 28px;
+  --rs-r-full: 9999px;
+
+  --rs-elev-1: 0px 1px 2px rgba(0,0,0,.3), 0px 1px 3px 1px rgba(0,0,0,.15);
+  --rs-elev-2: 0px 1px 2px rgba(0,0,0,.3), 0px 2px 6px 2px rgba(0,0,0,.15);
+  --rs-elev-3: 0px 4px 8px 3px rgba(0,0,0,.15), 0px 1px 3px rgba(0,0,0,.3);
+
+  --rs-motion-fast: 150ms cubic-bezier(0,0,0.2,1);
+  --rs-motion: 200ms cubic-bezier(0,0,0.2,1);
+  --rs-motion-slow: 300ms cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ──────────────────────────────────────────────────────
+   Base + typography
+   ────────────────────────────────────────────────────── */
+.rs {
+  font-family: 'Roboto', system-ui, -apple-system, sans-serif;
+  color: var(--rs-on-surface);
+  background: var(--rs-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Type scale */
+.rs-page-title { font-size: 1.75rem; font-weight: 400; line-height: 1.2; letter-spacing: -0.01em; }
+.rs-section-title {
+  font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--rs-primary);
+}
+.rs-body { font-size: 0.9375rem; line-height: 1.65; }
+.rs-label { font-size: 0.75rem; font-weight: 500; }
+.rs-micro { font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+.rs-role { font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* Material Symbols */
+.material-symbols-rounded {
+  font-family: 'Material Symbols Rounded';
+  font-weight: 400; font-style: normal;
+  font-size: 24px; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  letter-spacing: normal; text-transform: none;
+  white-space: nowrap; word-wrap: normal; direction: ltr;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+}
+.material-symbols-rounded.fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.material-symbols-rounded.sm { font-size: 18px; }
+.material-symbols-rounded.lg { font-size: 32px; }
+
+/* ──────────────────────────────────────────────────────
+   Component primitives
+   ────────────────────────────────────────────────────── */
+.rs-card {
+  background: var(--rs-surface-c);
+  border-radius: var(--rs-r-md);
+  padding: 16px;
+}
+.rs-card.elevated {
+  background: var(--rs-surface-low);
+  box-shadow: var(--rs-elev-1);
+}
+.rs-card.outlined {
+  background: var(--rs-surface);
+  border: 1px solid var(--rs-outline-variant);
+}
+.rs-card-title {
+  font-size: 0.75rem; font-weight: 500; letter-spacing: 0.08em;
+  color: var(--rs-primary); text-transform: uppercase;
+  border-bottom: 1px solid var(--rs-outline-variant);
+  padding-bottom: 10px; margin-bottom: 12px;
+}
+
+/* Buttons (pill) */
+.rs-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; height: 40px; padding: 0 24px;
+  border-radius: var(--rs-r-full); border: 0;
+  font-family: inherit; font-size: 0.875rem; font-weight: 500;
+  letter-spacing: 0.01em; cursor: pointer; user-select: none;
+  transition: background var(--rs-motion), box-shadow var(--rs-motion);
+  position: relative; overflow: hidden;
+}
+.rs-btn.primary { background: var(--rs-primary); color: var(--rs-on-primary); box-shadow: var(--rs-elev-1); }
+.rs-btn.tonal { background: var(--rs-secondary-c); color: var(--rs-on-secondary-c); }
+.rs-btn.outlined { background: transparent; color: var(--rs-primary); border: 1px solid var(--rs-outline); }
+.rs-btn.text { background: transparent; color: var(--rs-primary); padding: 0 12px; }
+.rs-btn.elevated { background: var(--rs-surface-low); color: var(--rs-primary); box-shadow: var(--rs-elev-1); }
+.rs-btn.danger { background: var(--rs-error-c); color: var(--rs-on-error-c); }
+.rs-btn.icon-only { width: 40px; padding: 0; }
+
+/* FAB */
+.rs-fab {
+  width: 56px; height: 56px; border-radius: var(--rs-r-2xl);
+  background: var(--rs-primary-c); color: var(--rs-on-primary-c);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--rs-elev-3); border: 0; cursor: pointer;
+  transition: box-shadow var(--rs-motion);
+}
+.rs-fab.large { width: 96px; height: 96px; }
+.rs-fab.extended { width: auto; padding: 0 20px; height: 56px; gap: 8px; }
+
+/* Chip */
+.rs-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 16px;
+  border-radius: var(--rs-r-full);
+  background: transparent; border: 1px solid var(--rs-outline);
+  color: var(--rs-on-surface-var);
+  font-family: inherit; font-size: 0.8125rem; font-weight: 500;
+  cursor: pointer; transition: background var(--rs-motion), color var(--rs-motion);
+}
+.rs-chip.selected {
+  background: var(--rs-secondary-c); color: var(--rs-on-secondary-c); border-color: transparent;
+}
+
+/* Text fields */
+.rs-tf {
+  background: var(--rs-surface-highest);
+  border: 0; border-bottom: 1px solid var(--rs-outline);
+  border-radius: var(--rs-r-xs) var(--rs-r-xs) 0 0;
+  color: var(--rs-on-surface);
+  font-family: inherit; font-size: 0.9375rem;
+  padding: 14px 16px 12px; width: 100%;
+  outline: none; transition: border-color var(--rs-motion);
+}
+.rs-tf:focus { border-bottom: 2px solid var(--rs-primary); padding-bottom: 11px; }
+.rs-tf::placeholder { color: var(--rs-on-surface-var); }
+.rs-tf-outlined {
+  background: transparent;
+  border: 1px solid var(--rs-outline);
+  border-radius: var(--rs-r-xs);
+}
+.rs-tf-outlined:focus { border: 1px solid var(--rs-primary); }
+
+/* Switch */
+.rs-switch {
+  position: relative; width: 52px; height: 32px;
+  background: var(--rs-surface-highest); border: 2px solid var(--rs-outline);
+  border-radius: var(--rs-r-full); cursor: pointer;
+  transition: background var(--rs-motion), border-color var(--rs-motion);
+  flex-shrink: 0;
+}
+.rs-switch::after {
+  content: ""; position: absolute; left: 6px; top: 50%;
+  transform: translateY(-50%);
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--rs-outline);
+  transition: transform var(--rs-motion), width var(--rs-motion), height var(--rs-motion), background var(--rs-motion);
+}
+.rs-switch.on { background: var(--rs-primary); border-color: var(--rs-primary); }
+.rs-switch.on::after {
+  width: 24px; height: 24px; left: 4px;
+  background: var(--rs-on-primary);
+  transform: translate(20px, -50%);
+}
+
+/* Status dot */
+.rs-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.rs-dot.active { background: var(--rs-tertiary); box-shadow: 0 0 8px var(--rs-tertiary); }
+.rs-dot.warn { background: #FFB86C; }
+.rs-dot.off { background: var(--rs-outline); }
+.rs-dot.standby { background: var(--rs-primary); }
+
+/* Badge / micro-label */
+.rs-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 6px; border-radius: var(--rs-r-full);
+  font-size: 0.625rem; font-weight: 500; letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.rs-badge.gpu { background: color-mix(in srgb, var(--rs-primary) 14%, transparent); color: var(--rs-primary); }
+.rs-badge.cpu { background: rgba(255,184,108,0.12); color: #FFB86C; }
+.rs-badge.cost { background: rgba(170,136,255,0.12); color: var(--rs-cost, #C4AAFF); }
+.rs-badge.speak { background: color-mix(in srgb, var(--rs-tertiary) 14%, transparent); color: var(--rs-tertiary); }
+
+/* Scrollbars (everywhere) */
+.rs *::-webkit-scrollbar, .rs::-webkit-scrollbar { width: 4px; height: 4px; }
+.rs *::-webkit-scrollbar-track, .rs::-webkit-scrollbar-track { background: transparent; }
+.rs *::-webkit-scrollbar-thumb, .rs::-webkit-scrollbar-thumb { background: var(--rs-outline-variant); border-radius: 2px; }
+
+/* Animations */
+@keyframes rs-pulse-listen {
+  0%, 100% { box-shadow: var(--rs-elev-2), 0 0 0 0 color-mix(in srgb, var(--rs-primary) 60%, transparent); }
+  50% { box-shadow: var(--rs-elev-3), 0 0 0 14px color-mix(in srgb, var(--rs-primary) 0%, transparent); }
+}
+@keyframes rs-pulse-thinking {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+@keyframes rs-page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes rs-blink { 0%, 49% { opacity: 1 } 50%, 100% { opacity: 0 } }
+@keyframes rs-spin { to { transform: rotate(360deg); } }
+
+.rs-page { animation: rs-page-in var(--rs-motion); }
+.rs-listening { animation: rs-pulse-listen 1.6s infinite; }
+.rs-cursor { display: inline-block; width: 8px; height: 1em; background: currentColor; vertical-align: text-bottom; animation: rs-blink 0.75s step-end infinite; margin-left: 2px; }
+
+/* Nav drawer item */
+.rs-nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-radius: var(--rs-r-full);
+  color: var(--rs-on-surface-var);
+  cursor: pointer; transition: background var(--rs-motion), color var(--rs-motion);
+  font-size: 0.875rem; font-weight: 500;
+}
+.rs-nav-item:hover { background: color-mix(in srgb, var(--rs-on-surface) 8%, transparent); }
+.rs-nav-item.active {
+  background: var(--rs-secondary-c); color: var(--rs-on-secondary-c);
+}
+.rs-nav-item .material-symbols-rounded { font-size: 22px; }
+
+/* Bottom-nav (compact 4-tab variant) */
+.rs-bottomnav {
+  display: flex; height: 80px;
+  background: var(--rs-surface-c);
+  border-top: 1px solid var(--rs-outline-variant);
+}
+.rs-bottomnav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 4px;
+  color: var(--rs-on-surface-var); cursor: pointer;
+  font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.04em;
+  padding-top: 12px; padding-bottom: 16px;
+  position: relative;
+}
+.rs-bottomnav-item .pill {
+  width: 64px; height: 32px; border-radius: var(--rs-r-full);
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--rs-motion);
+}
+.rs-bottomnav-item.active { color: var(--rs-on-secondary-c); }
+.rs-bottomnav-item.active .pill { background: var(--rs-secondary-c); }
+.rs-bottomnav-item.active .material-symbols-rounded { font-variation-settings: 'FILL' 1, 'wght' 400; }

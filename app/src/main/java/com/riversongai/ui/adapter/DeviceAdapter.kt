@@ -39,12 +39,12 @@ class DeviceAdapter(
 
             device.temperature?.let {
                 binding.textViewDeviceDetail.text = "%.1f°C".format(it)
-            }
-            device.brightness?.let {
+            } ?: device.brightness?.let {
                 binding.textViewDeviceDetail.text = "Brightness: $it%"
-            }
-            device.batteryLevel?.let {
+            } ?: device.batteryLevel?.let {
                 binding.textViewDeviceDetail.text = "Battery: $it%"
+            } ?: run {
+                binding.textViewDeviceDetail.text = ""
             }
         }
     }

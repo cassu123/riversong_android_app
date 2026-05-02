@@ -1,4 +1,6 @@
-// settings.gradle.kts
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}// settings.gradle.kts
 //
 // This file defines the project-wide settings for the River Song Android application.
 // It declares the name of the root project and includes all the modules

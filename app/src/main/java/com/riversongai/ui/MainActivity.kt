@@ -53,8 +53,10 @@ class MainActivity : AppCompatActivity() {
             binding.appBarLayout.isVisible = isMainDest
         }
 
-        // Skip login screen if the user already has a valid session
-        if (sessionManager.isLoggedIn()) {
+        // Only navigate if we are actually on the login screen — otherwise the
+        // action doesn't exist on the current destination and will crash.
+        if (sessionManager.isLoggedIn() &&
+            navController.currentDestination?.id == R.id.loginScreen) {
             navController.navigate(R.id.action_loginScreen_to_homeFragment)
         }
 

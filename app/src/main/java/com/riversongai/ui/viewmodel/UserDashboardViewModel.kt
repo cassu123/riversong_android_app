@@ -38,26 +38,33 @@ class UserDashboardViewModel(
     val sessionExpired: LiveData<Boolean> = _sessionExpired
 
     fun loadDashboardData() {
+        if (!sessionManager.isLoggedIn()) {
+            _sessionExpired.value = true
+            return
+        }
         _isLoading.value = true
         viewModelScope.launch {
-            userRepository.getCurrentUser()
-                .onSuccess { _currentUser.value = it }
-                .onFailure { handleError(it) }
+            try {
+                userRepository.getCurrentUser()
+                    .onSuccess { _currentUser.value = it }
+                    .onFailure { handleError(it) }
 
-            smartHomeRepository.getAllDevices()
-                .onSuccess { devices ->
-                    val active = devices.count { it.status == "online" || it.isOn == true }
-                    val offline = devices.count { it.status == "offline" }
-                    _smartHomeSummary.value = SmartHomeSummary(
-                        totalDevices = devices.size,
-                        activeDevices = active,
-                        offlineDevices = offline
-                    )
-                }
-                .onFailure { handleError(it) }
+                smartHomeRepository.getAllDevices()
+                    .onSuccess { devices ->
+                        val active = devices.count { it.status == "online" || it.isOn == true }
+                        val offline = devices.count { it.status == "offline" }
+                        _smartHomeSummary.value = SmartHomeSummary(
+                            totalDevices = devices.size,
+                            activeDevices = active,
+                            offlineDevices = offline
+                        )
+                    }
+                    .onFailure { handleError(it) }
 
-            _activitySummary.value = ActivitySummary()
-            _isLoading.value = false
+                _activitySummary.value = ActivitySummary()
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
@@ -69,7 +76,7 @@ class UserDashboardViewModel(
     fun clearError() { _errorMessage.value = null }
 
     private fun handleError(e: Throwable) {
-        if (e.message?.contains("401") == true) {
+        if (e is retrofit2.HttpException && e.code() == 401) {
             sessionManager.clearSession()
             _sessionExpired.value = true
         } else {

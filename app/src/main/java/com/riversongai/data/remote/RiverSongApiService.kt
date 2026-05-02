@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import com.riversongai.data.model.AuthResponse
 import com.riversongai.data.model.Device
 import com.riversongai.data.model.User
+import com.riversongai.BuildConfig
 import com.riversongai.utils.SessionManager
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -49,13 +50,16 @@ interface RiverSongApiService {
 
     companion object {
         fun create(baseUrl: String, sessionManager: SessionManager): RiverSongApiService {
-            val logging = HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            }
-
             val client = OkHttpClient.Builder()
                 .addInterceptor(AuthInterceptor(sessionManager))
-                .addInterceptor(logging)
+                .apply {
+                    if (BuildConfig.DEBUG) {
+                        addInterceptor(HttpLoggingInterceptor().apply {
+                            // BASIC only — never log bodies which may contain passwords
+                            level = HttpLoggingInterceptor.Level.BASIC
+                        })
+                    }
+                }
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)

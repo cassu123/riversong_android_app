@@ -29,6 +29,10 @@ class SmartHomeControlViewModel(
     val sessionExpired: LiveData<Boolean> = _sessionExpired
 
     fun fetchDevices() {
+        if (!sessionManager.isLoggedIn()) {
+            _sessionExpired.value = true
+            return
+        }
         _isLoading.value = true
         viewModelScope.launch {
             smartHomeRepository.getAllDevices()
@@ -59,7 +63,7 @@ class SmartHomeControlViewModel(
     fun clearError() { _errorMessage.value = null }
 
     private fun handleError(e: Throwable) {
-        if (e.message?.contains("401") == true) {
+        if (e is retrofit2.HttpException && e.code() == 401) {
             sessionManager.clearSession()
             _sessionExpired.value = true
         } else {
