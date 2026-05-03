@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.riversongai.databinding.FragmentMemoryBinding
@@ -45,13 +46,26 @@ class MemoryFragment : Fragment() {
             adapter = factAdapter
         }
 
-        memoryViewModel.facts.observe(viewLifecycleOwner) { facts ->
+        binding.swipeRefreshMemory.apply {
+            val typedValue = android.util.TypedValue()
+            context.theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
+            setColorSchemeColors(typedValue.data)
+            setOnRefreshListener { memoryViewModel.loadFacts() }
+        }
+
+        binding.editTextSearch.doAfterTextChanged { text ->
+            memoryViewModel.setFilterQuery(text?.toString().orEmpty())
+        }
+
+        memoryViewModel.filteredFacts.observe(viewLifecycleOwner) { facts ->
             factAdapter.submitList(facts)
             binding.textViewMemoryEmpty.isVisible = facts.isEmpty()
         }
 
         memoryViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
-            binding.progressBarMemory.isVisible = loading
+            binding.swipeRefreshMemory.isRefreshing = loading
+            // Hide progress bar if we have SwipeRefresh
+            binding.progressBarMemory.isVisible = loading && !binding.swipeRefreshMemory.isRefreshing
         }
 
         memoryViewModel.error.observe(viewLifecycleOwner) { error ->

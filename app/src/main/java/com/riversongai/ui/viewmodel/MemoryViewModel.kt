@@ -1,6 +1,7 @@
 package com.riversongai.ui.viewmodel
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +12,18 @@ import kotlinx.coroutines.launch
 class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewModel() {
 
     private val _facts = MutableLiveData<List<Fact>>(emptyList())
-    val facts: LiveData<List<Fact>> = _facts
+    
+    private val _filterQuery = MutableLiveData("")
+    val filterQuery: LiveData<String> = _filterQuery
+
+    val filteredFacts = MediatorLiveData<List<Fact>>().apply {
+        addSource(_facts) { facts ->
+            value = filterList(facts, _filterQuery.value.orEmpty())
+        }
+        addSource(_filterQuery) { query ->
+            value = filterList(_facts.value.orEmpty(), query)
+        }
+    }
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -35,6 +47,18 @@ class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewMode
                 onFailure = { _error.value = it.message }
             )
             _isLoading.value = false
+        }
+    }
+
+    fun setFilterQuery(query: String) {
+        _filterQuery.value = query
+    }
+
+    private fun filterList(facts: List<Fact>, query: String): List<Fact> {
+        if (query.isBlank()) return facts
+        return facts.filter {
+            it.key.contains(query, ignoreCase = true) ||
+            it.value.contains(query, ignoreCase = true)
         }
     }
 

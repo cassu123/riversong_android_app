@@ -3,6 +3,7 @@ package com.riversongai.data.repository
 import android.util.Log
 import com.riversongai.data.model.Routine
 import com.riversongai.data.model.RoutineCreate
+import com.riversongai.data.model.RoutineRunResponse
 import com.riversongai.data.remote.RiverSongApiService
 
 class RoutinesRepository(private val apiService: RiverSongApiService) {
@@ -73,11 +74,11 @@ class RoutinesRepository(private val apiService: RiverSongApiService) {
         }
     }
 
-    suspend fun runRoutine(routineId: String): Result<String> {
+    suspend fun runRoutine(routineId: String): Result<RoutineRunResponse> {
         return try {
             val response = apiService.runRoutine(routineId)
             if (response.isSuccessful && response.body() != null) {
-                Result.success(response.body()!!.output)
+                Result.success(response.body()!!)
             } else {
                 val msg = "Failed to run routine: ${response.code()}"
                 Log.e(tag, msg)

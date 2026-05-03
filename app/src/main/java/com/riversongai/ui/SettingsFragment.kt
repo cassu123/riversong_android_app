@@ -8,9 +8,11 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
 import com.riversongai.data.model.ModelEntry
 import com.riversongai.databinding.FragmentSettingsBinding
 import com.riversongai.ui.viewmodel.SettingsViewModel
+import com.riversongai.utils.ThemeManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsFragment : Fragment() {
@@ -69,9 +71,20 @@ class SettingsFragment : Fragment() {
             }
         }
 
+        settingsViewModel.connectionTestResult.observe(viewLifecycleOwner) { result ->
+            result?.let {
+                Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG)
+                    .setBackgroundTint(requireContext().getColor(android.R.color.holo_green_dark))
+                    .show()
+                settingsViewModel.clearConnectionTestResult()
+            }
+        }
+
         settingsViewModel.error.observe(viewLifecycleOwner) { error ->
             error?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG)
+                    .setBackgroundTint(requireContext().getColor(android.R.color.holo_red_dark))
+                    .show()
                 settingsViewModel.clearError()
             }
         }
@@ -82,6 +95,15 @@ class SettingsFragment : Fragment() {
                 return@setOnClickListener
             }
             settingsViewModel.saveModel(selectedProvider, selectedModelId)
+        }
+
+        binding.buttonTestConnection.setOnClickListener {
+            settingsViewModel.testConnection()
+        }
+
+        binding.switchDarkMode.isChecked = ThemeManager.isDarkModeEnabled(requireContext())
+        binding.switchDarkMode.setOnCheckedChangeListener { _, checked ->
+            ThemeManager.setDarkMode(requireContext(), checked)
         }
     }
 

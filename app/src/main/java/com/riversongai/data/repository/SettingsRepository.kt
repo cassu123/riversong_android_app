@@ -60,4 +60,17 @@ class SettingsRepository(private val apiService: RiverSongApiService) {
             Result.failure(e)
         }
     }
+
+    suspend fun testConnection(): Result<com.riversongai.data.model.DashboardStats> {
+        return try {
+            val response = apiService.getDashboard()
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("Connection failed: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

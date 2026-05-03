@@ -35,4 +35,10 @@ data class Device(
         "input_boolean" -> "🔘"
         else -> "📱"
     }
+
+    val stateDisplay: String get() = state.replace("_", " ").replaceFirstChar { it.uppercase() }
+
+    val room: String get() = (attributes["area"] as? String)
+        ?: (attributes["room"] as? String)
+        ?: "Other"
 }

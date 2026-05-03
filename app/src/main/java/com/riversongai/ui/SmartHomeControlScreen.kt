@@ -11,8 +11,10 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.riversongai.R
+import com.riversongai.data.model.Device
 import com.riversongai.databinding.FragmentSmartHomeControlBinding
-import com.riversongai.ui.adapter.DeviceAdapter
+import com.riversongai.ui.adapter.SmartHomeGroupedAdapter
+import com.riversongai.ui.adapter.SmartHomeListItem
 import com.riversongai.ui.viewmodel.SmartHomeControlViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -22,7 +24,7 @@ class SmartHomeControlScreen : Fragment() {
     private val binding get() = _binding!!
 
     private val smartHomeControlViewModel: SmartHomeControlViewModel by viewModel()
-    private lateinit var deviceAdapter: DeviceAdapter
+    private lateinit var deviceAdapter: SmartHomeGroupedAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,9 +37,16 @@ class SmartHomeControlScreen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        deviceAdapter = DeviceAdapter { device, action, brightnessPct ->
-            smartHomeControlViewModel.controlDevice(device.entityId, action, brightnessPct)
-        }
+        deviceAdapter = SmartHomeGroupedAdapter(
+            onItemClick = { device ->
+                DeviceDetailBottomSheet.newInstance(device.entityId)
+                    .show(childFragmentManager, "DeviceDetail")
+            },
+            onQuickToggle = { device, checked ->
+                smartHomeControlViewModel.controlDevice(device.entityId, if (checked) "turn_on" else "turn_off")
+            }
+        )
+        
         binding.recyclerViewDevices.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = deviceAdapter
@@ -54,7 +63,8 @@ class SmartHomeControlScreen : Fragment() {
 
         smartHomeControlViewModel.devices.observe(viewLifecycleOwner) { devices ->
             devices?.let {
-                deviceAdapter.submitList(it)
+                val groupedList = groupDevices(it)
+                deviceAdapter.submitList(groupedList)
                 val active = it.count { d -> d.isOn }
                 binding.textViewStatus.text = "${it.size} devices · $active on"
             }
@@ -77,6 +87,25 @@ class SmartHomeControlScreen : Fragment() {
         }
 
         smartHomeControlViewModel.fetchDevices()
+    }
+
+    private fun groupDevices(devices: List<Device>): List<SmartHomeListItem> {
+        val groupedMap = devices.groupBy { it.room }
+        val sortedRooms = groupedMap.keys.sortedWith { r1, r2 ->
+            when {
+                r1 == "Other" -> 1
+                r2 == "Other" -> -1
+                else -> r1.compareTo(r2)
+            }
+        }
+
+        val result = mutableListOf<SmartHomeListItem>()
+        for (room in sortedRooms) {
+            result.add(SmartHomeListItem.Header(room))
+            val roomDevices = groupedMap[room]?.sortedBy { it.name } ?: emptyList()
+            result.addAll(roomDevices.map { SmartHomeListItem.DeviceItem(it) })
+        }
+        return result
     }
 
     override fun onDestroyView() {

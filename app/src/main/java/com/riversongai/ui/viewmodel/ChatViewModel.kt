@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.riversongai.data.model.ChatMessage
 import com.riversongai.data.repository.ConversationRepository
 import com.riversongai.utils.AudioRecorder
+import com.riversongai.utils.ChatHistoryManager
 import com.riversongai.utils.Constants
+import com.riversongai.utils.NotificationHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -33,6 +35,7 @@ class ChatViewModel(
     val isRecording: Boolean get() = audioRecorder.isActive
 
     init {
+        _messages.value = ChatHistoryManager.load(app)
         connect()
     }
 
@@ -63,10 +66,13 @@ class ChatViewModel(
 
     fun sendMessage(text: String) {
         if (text.isBlank()) return
-        appendMessage(ChatMessage("user", text.trim()))
+        val userMsg = ChatMessage("user", text.trim())
+        appendMessage(userMsg)
         _status.value = "thinking"
         if (!conversationRepository.isConnected()) connect()
         conversationRepository.sendText(text.trim())
+        
+        ChatHistoryManager.save(getApplication(), _messages.value.orEmpty())
     }
 
     @androidx.annotation.RequiresPermission(android.Manifest.permission.RECORD_AUDIO)
@@ -103,12 +109,16 @@ class ChatViewModel(
     fun clearHistory() {
         _messages.value = emptyList()
         conversationRepository.resetHistory()
+        ChatHistoryManager.save(getApplication(), emptyList())
     }
 
     fun reconnect() {
         conversationRepository.disconnect()
         connect()
     }
+
+    private val _responseCompleteEvent = MutableLiveData<String?>()
+    val responseCompleteEvent: LiveData<String?> = _responseCompleteEvent
 
     private fun handleServerMessage(type: String, text: String?) {
         viewModelScope.launch(Dispatchers.Main) {
@@ -134,6 +144,10 @@ class ChatViewModel(
                     }
                     _messages.value = current
                     _status.value = "idle"
+                    _responseCompleteEvent.value = fullText
+                    
+                    ChatHistoryManager.save(getApplication(), current)
+                    NotificationHelper.showChatMessage(getApplication(), fullText)
                 }
                 "thinking" -> _status.value = "thinking"
                 "transcribing" -> _status.value = "transcribing"
@@ -145,6 +159,10 @@ class ChatViewModel(
                 }
             }
         }
+    }
+
+    fun clearResponseCompleteEvent() {
+        _responseCompleteEvent.value = null
     }
 
     private fun appendMessage(message: ChatMessage) {

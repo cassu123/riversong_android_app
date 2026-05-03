@@ -1,15 +1,17 @@
 package com.riversongai.ui.viewmodel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.riversongai.data.model.Routine
 import com.riversongai.data.model.RoutineCreate
 import com.riversongai.data.repository.RoutinesRepository
+import com.riversongai.utils.NotificationHelper
 import kotlinx.coroutines.launch
 
-class RoutinesViewModel(private val routinesRepository: RoutinesRepository) : ViewModel() {
+class RoutinesViewModel(app: Application, private val routinesRepository: RoutinesRepository) : AndroidViewModel(app) {
 
     private val _routines = MutableLiveData<List<Routine>>(emptyList())
     val routines: LiveData<List<Routine>> = _routines
@@ -22,6 +24,9 @@ class RoutinesViewModel(private val routinesRepository: RoutinesRepository) : Vi
 
     private val _actionResult = MutableLiveData<String?>()
     val actionResult: LiveData<String?> = _actionResult
+
+    private val _routineRunOutput = MutableLiveData<String?>()
+    val routineRunOutput: LiveData<String?> = _routineRunOutput
 
     init {
         loadRoutines()
@@ -87,17 +92,22 @@ class RoutinesViewModel(private val routinesRepository: RoutinesRepository) : Vi
     }
 
     fun runRoutine(routineId: String) {
+        val routineName = _routines.value?.find { it.id == routineId }?.name ?: "Routine"
         viewModelScope.launch {
+            _isLoading.value = true
             routinesRepository.runRoutine(routineId).fold(
-                onSuccess = { output ->
-                    _actionResult.value = if (output.isNotBlank()) output else "Routine ran successfully"
+                onSuccess = { response ->
+                    _routineRunOutput.value = response.output
+                    NotificationHelper.showRoutineComplete(getApplication(), routineName, response.output)
                     loadRoutines()
                 },
                 onFailure = { _error.value = it.message }
             )
+            _isLoading.value = false
         }
     }
 
     fun clearActionResult() { _actionResult.value = null }
     fun clearError() { _error.value = null }
+    fun clearRoutineRunOutput() { _routineRunOutput.value = null }
 }

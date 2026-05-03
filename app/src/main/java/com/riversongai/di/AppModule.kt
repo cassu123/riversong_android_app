@@ -40,12 +40,12 @@ val appModule = module {
 
     viewModel { LoginViewModel(get(), get()) }
     viewModel { RegisterViewModel(get()) }
-    viewModel { HomeViewModel(get(), get(), get()) }
-    viewModel { UserDashboardViewModel(get(), get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get(), get()) }
+    viewModel { UserDashboardViewModel(get(), get(), get(), get(), get()) }
     viewModel { SmartHomeControlViewModel(get(), get()) }
     viewModel { ChatViewModel(androidApplication(), get()) }
     viewModel { MemoryViewModel(get()) }
     viewModel { FeedsViewModel(get()) }
-    viewModel { RoutinesViewModel(get()) }
+    viewModel { RoutinesViewModel(androidApplication(), get()) }
     viewModel { SettingsViewModel(get()) }
 }

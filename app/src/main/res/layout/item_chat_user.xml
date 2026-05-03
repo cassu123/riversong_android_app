@@ -3,10 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:gravity="end"
-    android:paddingHorizontal="12dp"
-    android:paddingVertical="4dp">
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="4dp"
+    android:background="?attr/selectableItemBackground">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="wrap_content"
@@ -29,5 +30,15 @@
             android:maxWidth="260dp" />
 
     </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/textViewMessageTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="4dp"
+        android:textSize="10sp"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:text="12:00" />
 
 </LinearLayout>

@@ -37,10 +37,21 @@ class UserDashboardScreen : Fragment() {
 
         userDashboardViewModel.currentUser.observe(viewLifecycleOwner) { user ->
             user?.let {
-                binding.textViewDashboardWelcome.text = "Hello, ${it.displayName}!"
+                binding.textViewDisplayName.text = it.displayName
+                binding.textViewEmail.text = it.email
+                binding.textViewAvatarInitial.text = it.displayName.take(1).uppercase()
+                
                 val roleLabel = it.role.replaceFirstChar { c -> c.uppercase() }
-                binding.textViewUserRole.text = roleLabel
+                binding.chipRole.text = roleLabel
             }
+        }
+
+        userDashboardViewModel.factsCount.observe(viewLifecycleOwner) { count ->
+            binding.textViewFactsCount.text = count.toString()
+        }
+
+        userDashboardViewModel.routinesCount.observe(viewLifecycleOwner) { count ->
+            binding.textViewRoutinesCount.text = count.toString()
         }
 
         userDashboardViewModel.smartHomeSummary.observe(viewLifecycleOwner) { summary ->
@@ -49,16 +60,6 @@ class UserDashboardScreen : Fragment() {
                     "Home Assistant not connected"
                 } else {
                     "${it.activeDevices} on · ${it.offlineDevices} unavailable · ${it.totalDevices} total"
-                }
-            }
-        }
-
-        userDashboardViewModel.activitySummary.observe(viewLifecycleOwner) { summary ->
-            summary?.let {
-                binding.textViewActivitySummary.text = if (it.stepsTaken > 0) {
-                    "${it.stepsTaken} steps · ${it.activeMinutes} active min today"
-                } else {
-                    it.summary
                 }
             }
         }

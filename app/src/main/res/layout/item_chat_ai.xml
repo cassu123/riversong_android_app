@@ -7,7 +7,8 @@
     android:orientation="horizontal"
     android:gravity="start"
     android:paddingHorizontal="12dp"
-    android:paddingVertical="4dp">
+    android:paddingVertical="4dp"
+    android:background="?attr/selectableItemBackground">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="wrap_content"
@@ -45,5 +46,15 @@
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/textViewMessageTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginStart="4dp"
+        android:textSize="10sp"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:text="12:00" />
 
 </LinearLayout>

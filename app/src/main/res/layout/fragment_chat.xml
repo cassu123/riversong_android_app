@@ -35,6 +35,14 @@
             android:layout_weight="1" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonTtsToggle"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:icon="@drawable/ic_volume_up"
+            android:contentDescription="Toggle TTS" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonClearHistory"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"

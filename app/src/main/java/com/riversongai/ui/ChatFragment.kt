@@ -3,6 +3,7 @@ package com.riversongai.ui
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,14 +18,18 @@ import com.riversongai.databinding.FragmentChatBinding
 import com.riversongai.ui.adapter.ChatAdapter
 import com.riversongai.ui.viewmodel.ChatViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.Locale
 
-class ChatFragment : Fragment() {
+class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
 
     private var _binding: FragmentChatBinding? = null
     private val binding get() = _binding!!
 
     private val chatViewModel: ChatViewModel by viewModel()
     private lateinit var chatAdapter: ChatAdapter
+
+    private var tts: TextToSpeech? = null
+    private var isTtsEnabled = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +41,15 @@ class ChatFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        tts = TextToSpeech(requireContext(), this)
+
+        arguments?.getString("message")?.let {
+            if (it.isNotBlank()) {
+                chatViewModel.sendMessage(it)
+                arguments?.remove("message") // Only send once
+            }
+        }
 
         chatAdapter = ChatAdapter()
         binding.recyclerViewChat.apply {
@@ -100,6 +114,13 @@ class ChatFragment : Fragment() {
             }
         }
 
+        chatViewModel.responseCompleteEvent.observe(viewLifecycleOwner) { text ->
+            text?.let {
+                if (isTtsEnabled) speak(it)
+                chatViewModel.clearResponseCompleteEvent()
+            }
+        }
+
         binding.buttonSend.setOnClickListener { sendMessage() }
 
         binding.editTextMessage.setOnEditorActionListener { _, actionId, _ ->
@@ -118,6 +139,11 @@ class ChatFragment : Fragment() {
             chatViewModel.clearHistory()
         }
 
+        binding.buttonTtsToggle.setOnClickListener {
+            isTtsEnabled = !isTtsEnabled
+            updateTtsIcon()
+        }
+
         binding.buttonMic.setOnClickListener {
             if (chatViewModel.isRecording) {
                 chatViewModel.stopVoiceInput()
@@ -128,6 +154,25 @@ class ChatFragment : Fragment() {
                     Toast.makeText(context, "Microphone permission required", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+
+        updateTtsIcon()
+    }
+
+    private fun updateTtsIcon() {
+        binding.buttonTtsToggle.setIconResource(
+            if (isTtsEnabled) android.R.drawable.ic_lock_silent_mode_off 
+            else android.R.drawable.ic_lock_silent_mode
+        )
+    }
+
+    private fun speak(text: String) {
+        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "response_id")
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            tts?.language = Locale.getDefault()
         }
     }
 
@@ -144,6 +189,8 @@ class ChatFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         chatViewModel.cancelVoiceIfActive()
+        tts?.stop()
+        tts?.shutdown()
         _binding = null
     }
 }

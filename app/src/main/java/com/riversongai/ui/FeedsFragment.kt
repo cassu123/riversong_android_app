@@ -54,6 +54,13 @@ class FeedsFragment : Fragment() {
             adapter = stockAdapter
         }
 
+        binding.swipeRefreshFeeds.apply {
+            val typedValue = android.util.TypedValue()
+            context.theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
+            setColorSchemeColors(typedValue.data)
+            setOnRefreshListener { feedsViewModel.loadAll() }
+        }
+
         setupTabs()
         observeViewModel()
     }
@@ -77,17 +84,26 @@ class FeedsFragment : Fragment() {
         binding.recyclerViewNews.isVisible = currentTab == 0
         binding.scrollViewWeather.isVisible = currentTab == 1
         binding.recyclerViewStocks.isVisible = currentTab == 2
+
+        binding.textViewNewsEmpty.isVisible = false
+        binding.textViewStocksEmpty.isVisible = false
     }
 
     private fun observeViewModel() {
         feedsViewModel.news.observe(viewLifecycleOwner) { articles ->
             newsAdapter.submitList(articles)
+            if (currentTab == 0) {
+                binding.textViewNewsEmpty.isVisible = articles.isEmpty()
+            }
         }
 
         feedsViewModel.stocks.observe(viewLifecycleOwner) { stocks ->
             stockAdapter.submitList(stocks)
+            if (currentTab == 2) {
+                binding.textViewStocksEmpty.isVisible = stocks.isEmpty()
+            }
         }
-
+    ...
         feedsViewModel.weather.observe(viewLifecycleOwner) { weather ->
             if (weather != null) {
                 val c = weather.current
@@ -110,8 +126,13 @@ class FeedsFragment : Fragment() {
             }
         }
 
-        val loadingObs = { loading: Boolean ->
-            binding.progressBarFeeds.isVisible = loading
+        val loadingObs = { _: Boolean ->
+            val isLoading = feedsViewModel.isLoadingNews.value == true ||
+                           feedsViewModel.isLoadingWeather.value == true ||
+                           feedsViewModel.isLoadingStocks.value == true
+            
+            binding.swipeRefreshFeeds.isRefreshing = isLoading
+            binding.progressBarFeeds.isVisible = isLoading && !binding.swipeRefreshFeeds.isRefreshing
         }
         feedsViewModel.isLoadingNews.observe(viewLifecycleOwner, loadingObs)
         feedsViewModel.isLoadingWeather.observe(viewLifecycleOwner, loadingObs)

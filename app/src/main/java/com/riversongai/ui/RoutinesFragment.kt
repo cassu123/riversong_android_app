@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.riversongai.databinding.FragmentRoutinesBinding
 import com.riversongai.ui.adapter.RoutineAdapter
 import com.riversongai.ui.viewmodel.RoutinesViewModel
@@ -52,13 +53,21 @@ class RoutinesFragment : Fragment() {
             adapter = routineAdapter
         }
 
+        binding.swipeRefreshRoutines.apply {
+            val typedValue = android.util.TypedValue()
+            context.theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
+            setColorSchemeColors(typedValue.data)
+            setOnRefreshListener { routinesViewModel.loadRoutines() }
+        }
+
         routinesViewModel.routines.observe(viewLifecycleOwner) { routines ->
             routineAdapter.submitList(routines)
             binding.textViewRoutinesEmpty.isVisible = routines.isEmpty()
         }
 
         routinesViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
-            binding.progressBarRoutines.isVisible = loading
+            binding.swipeRefreshRoutines.isRefreshing = loading
+            binding.progressBarRoutines.isVisible = loading && !binding.swipeRefreshRoutines.isRefreshing
         }
 
         routinesViewModel.error.observe(viewLifecycleOwner) { error ->
@@ -75,7 +84,22 @@ class RoutinesFragment : Fragment() {
             }
         }
 
+        routinesViewModel.routineRunOutput.observe(viewLifecycleOwner) { output ->
+            output?.let {
+                showRunOutputDialog(it)
+                routinesViewModel.clearRoutineRunOutput()
+            }
+        }
+
         binding.fabAddRoutine.setOnClickListener { showCreateRoutineDialog() }
+    }
+
+    private fun showRunOutputDialog(output: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Routine Output")
+            .setMessage(output)
+            .setPositiveButton("OK", null)
+            .show()
     }
 
     private fun showCreateRoutineDialog() {

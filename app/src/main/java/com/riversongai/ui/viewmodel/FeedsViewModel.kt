@@ -9,6 +9,7 @@ import com.riversongai.data.model.NewsArticle
 import com.riversongai.data.model.StockQuote
 import com.riversongai.data.model.WeatherData
 import com.riversongai.data.repository.FeedsRepository
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class FeedsViewModel(private val feedsRepository: FeedsRepository) : ViewModel() {
@@ -45,9 +46,14 @@ class FeedsViewModel(private val feedsRepository: FeedsRepository) : ViewModel()
     }
 
     fun loadAll() {
-        loadNews()
-        loadWeather()
-        loadStocks()
+        viewModelScope.launch {
+            val newsJob = async { loadNews() }
+            val weatherJob = async { loadWeather() }
+            val stocksJob = async { loadStocks() }
+            newsJob.await()
+            weatherJob.await()
+            stocksJob.await()
+        }
     }
 
     fun loadNews() {
@@ -66,7 +72,7 @@ class FeedsViewModel(private val feedsRepository: FeedsRepository) : ViewModel()
             _isLoadingWeather.value = true
             feedsRepository.getWeather().fold(
                 onSuccess = { _weather.value = it },
-                onFailure = { /* weather may just not be configured */ }
+                onFailure = { _weather.value = null }
             )
             _isLoadingWeather.value = false
         }
@@ -77,7 +83,7 @@ class FeedsViewModel(private val feedsRepository: FeedsRepository) : ViewModel()
             _isLoadingStocks.value = true
             feedsRepository.getStocks().fold(
                 onSuccess = { _stocks.value = it },
-                onFailure = { /* stocks may not be configured */ }
+                onFailure = { /* non-fatal */ }
             )
             _isLoadingStocks.value = false
         }

@@ -82,6 +82,22 @@
                     android:layout_height="wrap_content"
                     android:text="Save Model" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonTestConnection"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Test Connection" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchDarkMode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Dark Mode"
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

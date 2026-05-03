@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.riversongai.data.model.Device
 import com.riversongai.data.model.User
+import com.riversongai.data.model.WeatherData
+import com.riversongai.data.repository.FeedsRepository
 import com.riversongai.data.repository.SmartHomeRepository
 import com.riversongai.data.repository.UserRepository
 import com.riversongai.utils.ErrorHandler
@@ -15,6 +17,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val userRepository: UserRepository,
     private val smartHomeRepository: SmartHomeRepository,
+    private val feedsRepository: FeedsRepository,
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
@@ -23,6 +26,9 @@ class HomeViewModel(
 
     private val _devices = MutableLiveData<List<Device>>()
     val devices: LiveData<List<Device>> = _devices
+
+    private val _weather = MutableLiveData<WeatherData?>()
+    val weather: LiveData<WeatherData?> = _weather
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -48,21 +54,20 @@ class HomeViewModel(
                 smartHomeRepository.getAllDevices()
                     .onSuccess { _devices.value = it }
                     .onFailure { /* non-fatal — HA may not be configured */ }
+
+                feedsRepository.getWeather()
+                    .onSuccess { _weather.value = it }
+                    .onFailure { _weather.value = null }
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    fun toggleAllLights(on: Boolean) {
-        val lights = _devices.value?.filter { it.domain == "light" } ?: return
+    fun toggleDevice(entityId: String, on: Boolean) {
         viewModelScope.launch {
-            lights.forEach { device ->
-                smartHomeRepository.controlDevice(
-                    device.entityId,
-                    if (on) "turn_on" else "turn_off"
-                )
-            }
+            smartHomeRepository.controlDevice(entityId, if (on) "turn_on" else "turn_off")
+                .onSuccess { loadUserDataAndDevices() }
         }
     }
 
