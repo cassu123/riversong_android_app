@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    android:background="?attr/colorPrimaryContainer"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textViewHeaderLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RS"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorOnPrimaryContainer"
+        android:background="@drawable/splash_logo"
+        android:padding="8dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="River Song"
+        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+        android:textColor="?attr/colorOnPrimaryContainer" />
+
+    <TextView
+        android:id="@+id/textViewUserEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="v0.1 · ALPHA"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        android:textColor="?attr/colorOnPrimaryContainer"
+        android:alpha="0.7" />
+
+</LinearLayout>

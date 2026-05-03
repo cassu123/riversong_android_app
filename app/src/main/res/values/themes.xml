@@ -1,43 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Base Theme -->
     <style name="Theme.RiverSong" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/river_song_primary</item>
-        <item name="colorOnPrimary">@color/river_song_on_primary</item>
-        <item name="colorPrimaryContainer">@color/river_song_primary_container</item>
-        <item name="colorOnPrimaryContainer">@color/river_song_on_primary_container</item>
+        <!-- Default: River Song Blue (Dark) -->
+        <item name="colorPrimary">@color/rs_blue_primary</item>
+        <item name="colorOnPrimary">@color/rs_blue_on_primary</item>
+        <item name="colorPrimaryContainer">@color/rs_blue_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/rs_blue_on_primary_container</item>
 
-        <item name="colorSecondary">@color/river_song_secondary</item>
-        <item name="colorOnSecondary">@color/river_song_on_secondary</item>
-        <item name="colorSecondaryContainer">@color/river_song_secondary_container</item>
-        <item name="colorOnSecondaryContainer">@color/river_song_on_secondary_container</item>
+        <item name="colorSecondary">@color/rs_blue_secondary</item>
+        <item name="colorOnSecondary">@color/rs_blue_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/rs_blue_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/rs_blue_on_secondary_container</item>
 
-        <item name="colorTertiary">@color/river_song_tertiary</item>
-        <item name="colorOnTertiary">@color/river_song_on_tertiary</item>
-        <item name="colorTertiaryContainer">@color/river_song_tertiary_container</item>
-        <item name="colorOnTertiaryContainer">@color/river_song_on_tertiary_container</item>
+        <item name="colorTertiary">@color/rs_blue_tertiary</item>
+        <item name="colorOnTertiary">@color/rs_blue_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/rs_blue_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/rs_blue_on_tertiary_container</item>
 
-        <item name="colorError">@color/river_song_error</item>
-        <item name="colorOnError">@color/river_song_on_error</item>
-        <item name="colorErrorContainer">@color/river_song_error_container</item>
-        <item name="colorOnErrorContainer">@color/river_song_on_error_container</item>
+        <item name="colorError">@color/rs_blue_error</item>
+        <item name="colorOnError">@color/rs_blue_on_error</item>
+        <item name="colorErrorContainer">@color/rs_blue_error_container</item>
+        <item name="colorOnErrorContainer">@color/rs_blue_on_error_container</item>
 
-        <item name="android:colorBackground">@color/river_song_background</item>
-        <item name="colorOnBackground">@color/river_song_on_background</item>
-        <item name="colorSurface">@color/river_song_surface</item>
-        <item name="colorOnSurface">@color/river_song_on_surface</item>
-        <item name="colorSurfaceVariant">@color/river_song_surface_variant</item>
-        <item name="colorOnSurfaceVariant">@color/river_song_on_surface_variant</item>
-        <item name="colorOutline">@color/river_song_outline</item>
+        <item name="android:colorBackground">@color/rs_blue_background</item>
+        <item name="colorOnBackground">@color/rs_blue_on_surface</item>
+        <item name="colorSurface">@color/rs_blue_surface</item>
+        <item name="colorOnSurface">@color/rs_blue_on_surface</item>
+        <item name="colorSurfaceVariant">@color/rs_blue_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/rs_blue_on_surface_variant</item>
+        <item name="colorOutline">@color/rs_blue_outline</item>
+        <item name="colorOutlineVariant">@color/rs_blue_outline_variant</item>
+        <item name="colorWarning">@color/rs_blue_warn</item>
 
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:navigationBarColor">?attr/colorSurface</item>
+
+        <!-- Shape Appearances -->
+        <!-- Use standard Material3 attributes -->
+        <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.RiverSong.XS</item>
+        <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.RiverSong.SM</item>
+        <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.RiverSong.MD</item>
+        <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.RiverSong.LG</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.RiverSong.XL</item>
     </style>
 
+    <!-- Specific Themes -->
+    <style name="Theme.RiverSong.Halo" parent="Theme.RiverSong">
+        <item name="android:colorBackground">@color/halo_bg</item>
+        <item name="colorSurface">@color/halo_surface</item>
+        <item name="colorPrimary">@color/halo_primary</item>
+        <item name="colorSecondary">@color/halo_secondary</item>
+        <item name="colorTertiary">@color/halo_tertiary</item>
+        <item name="colorOnSurface">@color/halo_text</item>
+        <item name="colorOnSurfaceVariant">@color/halo_text_dim</item>
+        <item name="colorError">@color/halo_error</item>
+        <item name="colorWarning">@color/halo_warn</item>
+    </style>
+
+    <style name="Theme.RiverSong.Crimson" parent="Theme.RiverSong">
+        <item name="android:colorBackground">@color/crimson_bg</item>
+        <item name="colorSurface">@color/crimson_surface</item>
+        <item name="colorPrimary">@color/crimson_primary</item>
+        <item name="colorOnSurface">@color/crimson_text</item>
+        <item name="colorOnSurfaceVariant">@color/crimson_text_dim</item>
+        <item name="colorError">@color/crimson_error</item>
+    </style>
+
+    <style name="Theme.RiverSong.Combat" parent="Theme.RiverSong">
+        <item name="android:colorBackground">@color/combat_bg</item>
+        <item name="colorSurface">@color/combat_surface</item>
+        <item name="colorPrimary">@color/combat_primary</item>
+        <item name="colorSecondary">@color/combat_secondary</item>
+        <item name="colorOnSurface">@color/combat_text</item>
+        <item name="colorError">@color/combat_error</item>
+    </style>
+
+    <style name="Theme.RiverSong.Violet" parent="Theme.RiverSong">
+        <item name="android:colorBackground">@color/violet_bg</item>
+        <item name="colorSurface">@color/violet_surface</item>
+        <item name="colorPrimary">@color/violet_primary</item>
+        <item name="colorSecondary">@color/violet_secondary</item>
+        <item name="colorOnSurface">@color/violet_text</item>
+    </style>
+
+    <style name="Theme.RiverSong.Peach" parent="Theme.RiverSong">
+        <item name="android:colorBackground">@color/peach_bg</item>
+        <item name="colorSurface">@color/peach_surface</item>
+        <item name="colorPrimary">@color/peach_primary</item>
+        <item name="colorSecondary">@color/peach_secondary</item>
+        <item name="colorOnSurface">@color/peach_text</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.RiverSong.Arctic" parent="Theme.RiverSong">
+        <item name="android:colorBackground">@color/arctic_bg</item>
+        <item name="colorSurface">@color/arctic_surface</item>
+        <item name="colorPrimary">@color/arctic_primary</item>
+        <item name="colorSecondary">@color/arctic_secondary</item>
+        <item name="colorOnSurface">@color/arctic_text</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.RiverSong.Cyberpunk" parent="Theme.RiverSong">
+        <item name="android:colorBackground">@color/cyberpunk_bg</item>
+        <item name="colorSurface">@color/cyberpunk_surface</item>
+        <item name="colorPrimary">@color/cyberpunk_primary</item>
+        <item name="colorSecondary">@color/cyberpunk_secondary</item>
+        <item name="colorOnSurface">@color/cyberpunk_text</item>
+        <item name="colorWarning">@color/cyberpunk_warn</item>
+    </style>
+
+    <style name="Theme.RiverSong.Dune" parent="Theme.RiverSong">
+        <item name="android:colorBackground">@color/dune_bg</item>
+        <item name="colorSurface">@color/dune_surface</item>
+        <item name="colorPrimary">@color/dune_primary</item>
+        <item name="colorSecondary">@color/dune_secondary</item>
+        <item name="colorOnSurface">@color/dune_text</item>
+    </style>
+
+    <!-- Shape Styles -->
+    <style name="ShapeAppearance.RiverSong.XS" parent="">
+        <item name="cornerSize">4dp</item>
+    </style>
+    <style name="ShapeAppearance.RiverSong.SM" parent="">
+        <item name="cornerSize">8dp</item>
+    </style>
+    <style name="ShapeAppearance.RiverSong.MD" parent="">
+        <item name="cornerSize">12dp</item>
+    </style>
+    <style name="ShapeAppearance.RiverSong.LG" parent="">
+        <item name="cornerSize">16dp</item>
+    </style>
+    <style name="ShapeAppearance.RiverSong.XL" parent="">
+        <item name="cornerSize">20dp</item>
+    </style>
+
+    <!-- Other Styles -->
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/river_song_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo</item> <item name="windowSplashScreenAnimationDuration">1000</item>
+        <item name="windowSplashScreenBackground">@color/rs_blue_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
         <item name="postSplashScreenTheme">@style/Theme.RiverSong</item>
     </style>
 
@@ -56,29 +161,8 @@
     </style>
 
     <style name="CustomBottomSheetStyle" parent="Widget.Material3.BottomSheet.Modal">
-        <item name="shapeAppearance">@style/CustomShapeAppearanceBottomSheet</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.RiverSong.LG</item>
         <item name="backgroundTint">?attr/colorSurface</item>
-    </style>
-
-    <style name="CustomShapeAppearanceBottomSheet" parent="ShapeAppearance.Material3.LargeComponent">
-        <item name="cornerSizeTopLeft">16dp</item>
-        <item name="cornerSizeTopRight">16dp</item>
-        <item name="cornerSizeBottomLeft">0dp</item>
-        <item name="cornerSizeBottomRight">0dp</item>
-    </style>
-
-    <style name="Theme.RiverSong.Ocean" parent="Theme.RiverSong">
-        <item name="colorPrimary">#0097A7</item>
-        <item name="colorSecondary">#00BCD4</item>
-        <item name="colorPrimaryContainer">#B2EBF2</item>
-        <item name="colorOnPrimaryContainer">#006064</item>
-    </style>
-
-    <style name="Theme.RiverSong.Sunset" parent="Theme.RiverSong">
-        <item name="colorPrimary">#E64A19</item>
-        <item name="colorSecondary">#FF7043</item>
-        <item name="colorPrimaryContainer">#FFCCBC</item>
-        <item name="colorOnPrimaryContainer">#BF360C</item>
     </style>
 
 </resources>

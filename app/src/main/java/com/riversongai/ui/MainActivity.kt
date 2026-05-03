@@ -26,10 +26,14 @@ class MainActivity : AppCompatActivity() {
 
     private val mainDestinations = setOf(
         R.id.homeFragment,
+        R.id.speakFragment,
         R.id.chatFragment,
         R.id.smartHomeControlScreen,
         R.id.feedsFragment,
-        R.id.moreFragment
+        R.id.memoryFragment,
+        R.id.routinesFragment,
+        R.id.settingsFragment,
+        R.id.userDashboardScreen
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,15 +48,23 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        val appBarConfig = AppBarConfiguration(mainDestinations)
+        val appBarConfig = AppBarConfiguration(mainDestinations, binding.drawerLayout)
         setupActionBarWithNavController(navController, appBarConfig)
         binding.bottomNavigationView.setupWithNavController(navController)
+        binding.navigationView.setupWithNavController(navController)
 
         // Show/hide bottom nav and toolbar based on current destination
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val isMainDest = destination.id in mainDestinations
-            binding.bottomNavigationView.isVisible = isMainDest
+            // We use drawer for regular navigation on mobile as per design
+            binding.bottomNavigationView.isVisible = false 
             binding.appBarLayout.isVisible = isMainDest
+            
+            if (!isMainDest) {
+                binding.drawerLayout.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            } else {
+                binding.drawerLayout.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_UNLOCKED)
+            }
         }
 
         // Only navigate if we are actually on the login screen — otherwise the

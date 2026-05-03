@@ -125,9 +125,34 @@ class SettingsFragment : Fragment() {
             settingsViewModel.testConnection()
         }
 
-        binding.switchDarkMode.isChecked = ThemeManager.getSelectedTheme(requireContext()) == ThemeManager.THEME_DARK
-        binding.switchDarkMode.setOnCheckedChangeListener { _, checked ->
-            ThemeManager.setTheme(requireContext(), if (checked) ThemeManager.THEME_DARK else ThemeManager.THEME_DEFAULT)
+        setupThemeSelector()
+    }
+
+    private fun setupThemeSelector() {
+        val themes = listOf(
+            ThemeManager.THEME_DEFAULT to "River Song Blue (Dark)",
+            ThemeManager.THEME_HALO to "Halo (Cyan)",
+            ThemeManager.THEME_CRIMSON to "Crimson (Red)",
+            ThemeManager.THEME_COMBAT to "Combat (Green)",
+            ThemeManager.THEME_VIOLET to "Violet (Plum)",
+            ThemeManager.THEME_PEACH to "Peach Dream (Light)",
+            ThemeManager.THEME_ARCTIC to "Arctic (Light)",
+            ThemeManager.THEME_CYBERPUNK to "Cyberpunk (Neon)",
+            ThemeManager.THEME_DUNE to "Dune (Gold)"
+        )
+
+        val names = themes.map { it.second }
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, names)
+        binding.spinnerTheme.setAdapter(adapter)
+
+        val currentTheme = ThemeManager.getSelectedTheme(requireContext())
+        val currentName = themes.find { it.first == currentTheme }?.second ?: names[0]
+        binding.spinnerTheme.setText(currentName, false)
+
+        binding.spinnerTheme.setOnItemClickListener { _, _, position, _ ->
+            val themeKey = themes[position].first
+            ThemeManager.setTheme(requireContext(), themeKey)
+            requireActivity().recreate()
         }
     }
 

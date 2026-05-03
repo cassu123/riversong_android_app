@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/speakFragment"
+            android:icon="@drawable/ic_mic"
+            android:title="Speak" />
+        <item
+            android:id="@+id/chatFragment"
+            android:icon="@drawable/ic_chat"
+            android:title="Chat" />
+        <item
+            android:id="@+id/memoryFragment"
+            android:icon="@drawable/ic_memory"
+            android:title="Memory" />
+        <item
+            android:id="@+id/smartHomeControlScreen"
+            android:icon="@drawable/ic_devices"
+            android:title="Devices" />
+        <item
+            android:id="@+id/routinesFragment"
+            android:icon="@drawable/ic_routines"
+            android:title="Routines" />
+        <item
+            android:id="@+id/feedsFragment"
+            android:icon="@drawable/ic_feeds"
+            android:title="Feeds" />
+    </group>
+
+    <item android:title="System">
+        <menu>
+            <item
+                android:id="@+id/settingsFragment"
+                android:icon="@drawable/ic_settings_nav"
+                android:title="Settings" />
+            <item
+                android:id="@+id/userDashboardScreen"
+                android:icon="@drawable/ic_profile"
+                android:title="Profile" />
+        </menu>
+    </item>
+
+</menu>

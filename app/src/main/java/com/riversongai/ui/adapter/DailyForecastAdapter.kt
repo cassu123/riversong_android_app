@@ -28,13 +28,14 @@ class DailyForecastAdapter : ListAdapter<DailyForecast, DailyForecastAdapter.Vie
         }
     }
 
-    private fun getEmojiForCondition(text: String): String {
+    private fun getEmojiForCondition(text: String?): String {
+        val t = text ?: ""
         return when {
-            text.contains("sun", true) -> "☀️"
-            text.contains("cloud", true) -> "☁️"
-            text.contains("rain", true) -> "🌧️"
-            text.contains("snow", true) -> "❄️"
-            text.contains("storm", true) -> "⛈️"
+            t.contains("sun", true) -> "☀️"
+            t.contains("cloud", true) -> "☁️"
+            t.contains("rain", true) -> "🌧️"
+            t.contains("snow", true) -> "❄️"
+            t.contains("storm", true) -> "⛈️"
             else -> "⛅"
         }
     }

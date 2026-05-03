@@ -13,10 +13,10 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="18dp"
+        app:cardCornerRadius="0dp"
         app:cardElevation="0dp"
-        app:cardMaxElevation="0dp"
-        android:backgroundTint="@color/river_song_surface_variant">
+        app:strokeWidth="0dp"
+        android:background="@drawable/bg_chat_bubble_ai">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -24,7 +24,8 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingHorizontal="16dp"
-            android:paddingVertical="10dp">
+            android:paddingVertical="10dp"
+            android:background="@drawable/bg_chat_bubble_ai">
 
             <TextView
                 android:id="@+id/textViewMessage"

@@ -9,9 +9,14 @@ object ThemeManager {
     private const val KEY_THEME = "app_theme"
 
     const val THEME_DEFAULT = "default"
-    const val THEME_DARK = "dark"
-    const val THEME_OCEAN = "ocean"
-    const val THEME_SUNSET = "sunset"
+    const val THEME_HALO = "halo"
+    const val THEME_CRIMSON = "crimson"
+    const val THEME_COMBAT = "combat"
+    const val THEME_VIOLET = "violet"
+    const val THEME_PEACH = "peach"
+    const val THEME_ARCTIC = "arctic"
+    const val THEME_CYBERPUNK = "cyberpunk"
+    const val THEME_DUNE = "dune"
 
     fun initialize(context: Context) {
         applyTheme(context)
@@ -31,22 +36,29 @@ object ThemeManager {
     fun applyTheme(context: Context) {
         val themeKey = getSelectedTheme(context)
         when (themeKey) {
-            THEME_DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            THEME_DEFAULT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            THEME_PEACH, THEME_ARCTIC -> {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
             else -> {
-                // Ocean and Sunset are custom themes applied in Activity.setTheme()
-                // But we should also decide on night mode for them.
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                // Most of our custom themes are dark by design
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             }
         }
     }
 
     fun applyThemeToActivity(context: Context) {
         val themeKey = getSelectedTheme(context)
-        when (themeKey) {
-            THEME_OCEAN -> context.setTheme(R.style.Theme_RiverSong_Ocean)
-            THEME_SUNSET -> context.setTheme(R.style.Theme_RiverSong_Sunset)
-            else -> context.setTheme(R.style.Theme_RiverSong)
+        val themeResId = when (themeKey) {
+            THEME_HALO -> R.style.Theme_RiverSong_Halo
+            THEME_CRIMSON -> R.style.Theme_RiverSong_Crimson
+            THEME_COMBAT -> R.style.Theme_RiverSong_Combat
+            THEME_VIOLET -> R.style.Theme_RiverSong_Violet
+            THEME_PEACH -> R.style.Theme_RiverSong_Peach
+            THEME_ARCTIC -> R.style.Theme_RiverSong_Arctic
+            THEME_CYBERPUNK -> R.style.Theme_RiverSong_Cyberpunk
+            THEME_DUNE -> R.style.Theme_RiverSong_Dune
+            else -> R.style.Theme_RiverSong
         }
+        context.setTheme(themeResId)
     }
 }

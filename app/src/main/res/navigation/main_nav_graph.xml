@@ -33,6 +33,12 @@
     </fragment>
 
     <fragment
+        android:id="@+id/speakFragment"
+        android:name="com.riversongai.ui.SpeakFragment"
+        android:label="Speak"
+        tools:layout="@layout/fragment_speak" />
+
+    <fragment
         android:id="@+id/homeFragment"
         android:name="com.riversongai.ui.HomeFragment"
         android:label="Home"

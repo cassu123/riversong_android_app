@@ -90,13 +90,29 @@
                     android:layout_marginTop="8dp"
                     android:text="@string/settings_test_connection" />
 
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/switchDarkMode"
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/settings_dark_mode"
-                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+                    android:hint="App Theme"
+                    android:layout_marginTop="16dp">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/spinnerTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/textViewThemeDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Select UI visual style"
+                    android:textSize="12sp"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

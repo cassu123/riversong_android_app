@@ -81,9 +81,9 @@ class UserDashboardScreen : Fragment() {
         }
 
         binding.cardThemeDefault.setOnClickListener { switchTheme(ThemeManager.THEME_DEFAULT) }
-        binding.cardThemeDark.setOnClickListener { switchTheme(ThemeManager.THEME_DARK) }
-        binding.cardThemeOcean.setOnClickListener { switchTheme(ThemeManager.THEME_OCEAN) }
-        binding.cardThemeSunset.setOnClickListener { switchTheme(ThemeManager.THEME_SUNSET) }
+        binding.cardThemeHalo.setOnClickListener { switchTheme(ThemeManager.THEME_HALO) }
+        binding.cardThemeCyberpunk.setOnClickListener { switchTheme(ThemeManager.THEME_CYBERPUNK) }
+        binding.cardThemeCrimson.setOnClickListener { switchTheme(ThemeManager.THEME_CRIMSON) }
 
         binding.buttonLogout.setOnClickListener {
             userDashboardViewModel.logout()
@@ -93,22 +93,15 @@ class UserDashboardScreen : Fragment() {
     private fun switchTheme(themeKey: String) {
         ThemeManager.setTheme(requireContext(), themeKey)
         updateThemeSelectionUI()
-        // Re-apply to activity to see immediate effect for custom themes
-        ThemeManager.applyThemeToActivity(requireActivity())
-        // For some changes we might need to recreate
-        if (themeKey == ThemeManager.THEME_OCEAN || themeKey == ThemeManager.THEME_SUNSET || 
-            ThemeManager.getSelectedTheme(requireContext()) == ThemeManager.THEME_OCEAN ||
-            ThemeManager.getSelectedTheme(requireContext()) == ThemeManager.THEME_SUNSET) {
-            requireActivity().recreate()
-        }
+        requireActivity().recreate()
     }
 
     private fun updateThemeSelectionUI() {
         val selected = ThemeManager.getSelectedTheme(requireContext())
         binding.imageCheckDefault.isVisible = selected == ThemeManager.THEME_DEFAULT
-        binding.imageCheckDark.isVisible = selected == ThemeManager.THEME_DARK
-        binding.imageCheckOcean.isVisible = selected == ThemeManager.THEME_OCEAN
-        binding.imageCheckSunset.isVisible = selected == ThemeManager.THEME_SUNSET
+        binding.imageCheckHalo.isVisible = selected == ThemeManager.THEME_HALO
+        binding.imageCheckCyberpunk.isVisible = selected == ThemeManager.THEME_CYBERPUNK
+        binding.imageCheckCrimson.isVisible = selected == ThemeManager.THEME_CRIMSON
     }
 
     private fun observeViewModel() {

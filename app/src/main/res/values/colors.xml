@@ -1,40 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="river_song_primary">#6200EE</color>
-    <color name="river_song_on_primary">#FFFFFF</color>
-    <color name="river_song_primary_container">#BB86FC</color>
-    <color name="river_song_on_primary_container">#21005D</color>
+    <!-- Default Blue Theme Hex Values -->
+    <color name="rs_blue_primary">#96CBFF</color>
+    <color name="rs_blue_on_primary">#003354</color>
+    <color name="rs_blue_primary_container">#004A77</color>
+    <color name="rs_blue_on_primary_container">#CAE6FF</color>
 
-    <color name="river_song_secondary">#03DAC6</color>
-    <color name="river_song_on_secondary">#000000</color>
-    <color name="river_song_secondary_container">#66FAF4</color>
-    <color name="river_song_on_secondary_container">#003831</color>
+    <color name="rs_blue_secondary">#B6C9D9</color>
+    <color name="rs_blue_on_secondary">#213242</color>
+    <color name="rs_blue_secondary_container">#384959</color>
+    <color name="rs_blue_on_secondary_container">#D2E5F5</color>
 
-    <color name="river_song_tertiary">#018786</color>
-    <color name="river_song_on_tertiary">#FFFFFF</color>
-    <color name="river_song_tertiary_container">#A7E7E7</color>
-    <color name="river_song_on_tertiary_container">#002C2C</color>
+    <color name="rs_blue_tertiary">#D9BBFF</color>
+    <color name="rs_blue_on_tertiary">#3E1F77</color>
+    <color name="rs_blue_tertiary_container">#55368F</color>
+    <color name="rs_blue_on_tertiary_container">#EEDCFF</color>
 
-    <color name="river_song_error">#B00020</color>
-    <color name="river_song_on_error">#FFFFFF</color>
-    <color name="river_song_error_container">#FCD8DF</color>
-    <color name="river_song_on_error_container">#410002</color>
+    <color name="rs_blue_error">#FFB4AB</color>
+    <color name="rs_blue_on_error">#690005</color>
+    <color name="rs_blue_error_container">#93000A</color>
+    <color name="rs_blue_on_error_container">#FFDAD6</color>
 
-    <color name="river_song_background">#F7F2F9</color>
-    <color name="river_song_on_background">#1C1B1F</color>
-    <color name="river_song_surface">#FFFBFE</color>
-    <color name="river_song_on_surface">#1C1B1F</color>
-    <color name="river_song_surface_variant">#E7E0EC</color>
-    <color name="river_song_on_surface_variant">#49454F</color>
-    <color name="river_song_outline">#79757F</color>
-    <color name="river_song_outline_variant">#C7C0CC</color>
+    <color name="rs_blue_background">#0F1316</color>
+    <color name="rs_blue_on_background">#DEE4E9</color>
+    <color name="rs_blue_surface">#0F1316</color>
+    <color name="rs_blue_on_surface">#DEE4E9</color>
+    <color name="rs_blue_surface_variant">#1B2023</color>
+    <color name="rs_blue_on_surface_variant">#BFC8CE</color>
+    <color name="rs_blue_outline">#899398</color>
+    <color name="rs_blue_outline_variant">#40484E</color>
+    <color name="rs_blue_warn">#FFB86C</color>
 
-    <color name="river_song_success_container">#E8F5E9</color>
-    <color name="river_song_warning_container">#FFF3E0</color>
+    <!-- Legacy / Expected Layout Names (Mapping to Default Blue) -->
+    <color name="river_song_primary">#96CBFF</color>
+    <color name="river_song_on_primary">#003354</color>
+    <color name="river_song_primary_container">#004A77</color>
+    <color name="river_song_on_primary_container">#CAE6FF</color>
+    <color name="river_song_secondary">#B6C9D9</color>
+    <color name="river_song_on_secondary">#213242</color>
+    <color name="river_song_secondary_container">#384959</color>
+    <color name="river_song_on_secondary_container">#D2E5F5</color>
+    <color name="river_song_tertiary">#D9BBFF</color>
+    <color name="river_song_on_tertiary">#3E1F77</color>
+    <color name="river_song_tertiary_container">#55368F</color>
+    <color name="river_song_on_tertiary_container">#EEDCFF</color>
+    <color name="river_song_error">#FFB4AB</color>
+    <color name="river_song_on_error">#690005</color>
+    <color name="river_song_error_container">#93000A</color>
+    <color name="river_song_on_error_container">#FFDAD6</color>
+    <color name="river_song_background">#0F1316</color>
+    <color name="river_song_on_background">#DEE4E9</color>
+    <color name="river_song_surface">#0F1316</color>
+    <color name="river_song_on_surface">#DEE4E9</color>
+    <color name="river_song_surface_variant">#1B2023</color>
+    <color name="river_song_on_surface_variant">#BFC8CE</color>
+    <color name="river_song_outline">#899398</color>
+    <color name="river_song_outline_variant">#40484E</color>
+    <color name="river_song_warn">#FFB86C</color>
+    <color name="river_song_success_container">#1B2023</color>
+    <color name="river_song_warning_container">#1B2023</color>
 
-    <color name="status_connected">#C8E6C9</color>
-    <color name="status_disconnected">#FFCDD2</color>
+    <!-- Other Themes -->
+    <color name="halo_bg">#050c14</color>
+    <color name="halo_surface">#0c1a2d</color>
+    <color name="halo_primary">#00e5ff</color>
+    <color name="halo_secondary">#0099ff</color>
+    <color name="halo_tertiary">#33ccff</color>
+    <color name="halo_text">#e6f7ff</color>
+    <color name="halo_text_dim">#80b3ff</color>
+    <color name="halo_error">#e54b4b</color>
+    <color name="halo_warn">#f5b841</color>
+    <color name="crimson_bg">#140c0b</color>
+    <color name="crimson_surface">#241514</color>
+    <color name="crimson_primary">#ff8c76</color>
+    <color name="crimson_text">#f2e8e6</color>
+    <color name="crimson_text_dim">#bda6a1</color>
+    <color name="crimson_error">#ef4444</color>
+    <color name="combat_bg">#050805</color>
+    <color name="combat_surface">#0e1a0e</color>
+    <color name="combat_primary">#3dcc79</color>
+    <color name="combat_secondary">#68d999</color>
+    <color name="combat_text">#d9ead3</color>
+    <color name="combat_error">#ff4d4d</color>
+    <color name="violet_bg">#1a1025</color>
+    <color name="violet_surface">#1f142c</color>
+    <color name="violet_primary">#d9a8dd</color>
+    <color name="violet_secondary">#b38fbf</color>
+    <color name="violet_text">#f0eaf5</color>
+    <color name="peach_bg">#FEE7D9</color>
+    <color name="peach_surface">#FBD5C0</color>
+    <color name="peach_primary">#A63D2F</color>
+    <color name="peach_secondary">#3F7A30</color>
+    <color name="peach_text">#111827</color>
+    <color name="arctic_bg">#eef3f8</color>
+    <color name="arctic_surface">#dce6f0</color>
+    <color name="arctic_primary">#1F5F8A</color>
+    <color name="arctic_secondary">#2A6B78</color>
+    <color name="arctic_text">#1a2a3a</color>
+    <color name="cyberpunk_bg">#050505</color>
+    <color name="cyberpunk_surface">#101010</color>
+    <color name="cyberpunk_primary">#e8ff00</color>
+    <color name="cyberpunk_secondary">#ff00ff</color>
+    <color name="cyberpunk_text">#fdffe6</color>
+    <color name="cyberpunk_warn">#ff8c00</color>
+    <color name="dune_bg">#0b0805</color>
+    <color name="dune_surface">#1a120a</color>
+    <color name="dune_primary">#deb651</color>
+    <color name="dune_secondary">#de6d33</color>
+    <color name="dune_text">#fff4e0</color>
 
+    <!-- UI Status Colors -->
+    <color name="status_connected">#D9BBFF</color>
+    <color name="status_disconnected">#FFB4AB</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>

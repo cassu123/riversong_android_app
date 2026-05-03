@@ -82,7 +82,7 @@ data class SportsEvent(
 )
 
 data class FeedPreferences(
-    @SerializedName("news_sources") val newsSources: List<String> = emptyList(),
+    @SerializedName("news_sources") val newsSources: List<Any> = emptyList(),
     @SerializedName("weather_lat") val weatherLat: Double? = null,
     @SerializedName("weather_lon") val weatherLon: Double? = null,
     @SerializedName("weather_unit") val weatherUnit: String = "celsius",
