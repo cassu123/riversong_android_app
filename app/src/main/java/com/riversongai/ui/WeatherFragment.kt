@@ -44,7 +44,7 @@ class WeatherFragment : Fragment(R.layout.fragment_feeds_weather) {
 
         viewModel.weather.observe(viewLifecycleOwner) { weather ->
             weather?.let {
-                binding.editTextLocation.setText(it.location?.name ?: "", false)
+                binding.editTextLocation.setText(it.location?.name ?: "")
                 
                 val current = it.current
                 binding.textViewWeatherTemp.text = "%.0f°C".format(current.tempC)

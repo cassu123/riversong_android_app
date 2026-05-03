@@ -22,7 +22,7 @@ class MemoryFactsFragment : Fragment(R.layout.fragment_memory_facts) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMemoryFactsBinding.bind(view)
 
-        factAdapter = FactAdapter(onDeleteClick = { fact ->
+        factAdapter = FactAdapter(onDelete = { fact ->
             viewModel.deleteFact(fact.id)
         })
 

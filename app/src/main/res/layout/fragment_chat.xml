@@ -177,7 +177,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonMic"
-            style="@style/Widget.Material3.Button.IconButton.Tonal"
+            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginStart="8dp"

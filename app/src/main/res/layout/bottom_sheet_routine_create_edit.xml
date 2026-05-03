@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@drawable/bottom_sheet_background">
+    android:background="?attr/colorSurface">
 
     <TextView
         android:id="@+id/textViewSheetTitle"

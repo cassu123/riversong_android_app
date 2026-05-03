@@ -170,7 +170,7 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
         chatViewModel.messages.observe(viewLifecycleOwner) { messages ->
             chatAdapter.submitList(messages) {
                 if (messages.isNotEmpty()) {
-                    binding.recyclerViewChat.smoothScrollToPosition(messages.size - 1)
+                    binding.recyclerViewChat.scrollToPosition(messages.size - 1)
                 }
             }
             binding.textViewEmpty.isVisible = messages.isEmpty()
@@ -193,14 +193,14 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
                 "listening" -> {
                     binding.textViewStatus.isVisible = true
                     binding.textViewStatus.text = "Listening…"
-                    binding.buttonMic.setImageResource(R.drawable.ic_mic)
+                    binding.buttonMic.setIconResource(R.drawable.ic_mic)
                     binding.buttonSend.isEnabled = false
                 }
                 else -> {
                     binding.textViewStatus.isVisible = false
                     binding.buttonSend.isEnabled = binding.editTextMessage.text?.isNotBlank() == true
                     binding.buttonMic.isEnabled = true
-                    binding.buttonMic.setImageResource(R.drawable.ic_mic)
+                    binding.buttonMic.setIconResource(R.drawable.ic_mic)
                 }
             }
         }
@@ -213,10 +213,10 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
             updateStatusChip(chatViewModel.isConnected.value ?: false, isReplay)
             if (isReplay) {
                 binding.buttonReconnect.isVisible = true
-                binding.buttonReconnect.setImageResource(R.drawable.ic_close)
+                binding.buttonReconnect.setIconResource(R.drawable.ic_close)
                 Toast.makeText(context, "Viewing history (Replay Mode)", Toast.LENGTH_SHORT).show()
             } else {
-                binding.buttonReconnect.setImageResource(R.drawable.ic_refresh)
+                binding.buttonReconnect.setIconResource(R.drawable.ic_refresh)
             }
         }
 

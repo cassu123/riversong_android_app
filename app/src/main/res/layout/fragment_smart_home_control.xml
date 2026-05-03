@@ -47,8 +47,7 @@
         android:layout_height="4dp"
         android:indeterminate="true"
         android:visibility="gone"
-        app:layout_anchor="@android:id/content"
-        app:layout_anchorGravity="top" />
+        android:layout_gravity="top" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewDevices"

@@ -27,6 +27,10 @@
     <color name="river_song_surface_variant">#E7E0EC</color>
     <color name="river_song_on_surface_variant">#49454F</color>
     <color name="river_song_outline">#79757F</color>
+    <color name="river_song_outline_variant">#C7C0CC</color>
+
+    <color name="river_song_success_container">#E8F5E9</color>
+    <color name="river_song_warning_container">#FFF3E0</color>
 
     <color name="status_connected">#C8E6C9</color>
     <color name="status_disconnected">#FFCDD2</color>

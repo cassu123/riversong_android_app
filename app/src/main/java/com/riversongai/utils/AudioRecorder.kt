@@ -42,14 +42,27 @@ class AudioRecorder(private val context: Context) {
     suspend fun stopAndEncode(): String = withContext(Dispatchers.IO) {
         isRecording = false
         val record = audioRecord ?: return@withContext ""
+        
+        try {
+            record.stop()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
         val pcm = ByteArrayOutputStream()
         val buffer = ByteArray(4096)
+        
+        // Read what's left in the buffer after stopping
         var read: Int
-        while (record.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
+        while (true) {
             read = record.read(buffer, 0, buffer.size)
-            if (read > 0) pcm.write(buffer, 0, read)
+            if (read > 0) {
+                pcm.write(buffer, 0, read)
+            } else {
+                break
+            }
         }
-        record.stop()
+
         record.release()
         audioRecord = null
 
