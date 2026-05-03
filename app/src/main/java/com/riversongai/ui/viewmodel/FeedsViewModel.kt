@@ -41,6 +41,9 @@ class FeedsViewModel(private val feedsRepository: FeedsRepository) : ViewModel()
     private val _saveResult = MutableLiveData<String?>()
     val saveResult: LiveData<String?> = _saveResult
 
+    private val _newsCategory = MutableLiveData("All")
+    val newsCategory: LiveData<String> = _newsCategory
+
     init {
         loadAll()
     }
@@ -59,12 +62,17 @@ class FeedsViewModel(private val feedsRepository: FeedsRepository) : ViewModel()
     fun loadNews() {
         viewModelScope.launch {
             _isLoadingNews.value = true
-            feedsRepository.getNews().fold(
+            feedsRepository.getNews(_newsCategory.value).fold(
                 onSuccess = { _news.value = it },
                 onFailure = { _error.value = it.message }
             )
             _isLoadingNews.value = false
         }
+    }
+
+    fun setNewsCategory(category: String) {
+        _newsCategory.value = category
+        loadNews()
     }
 
     fun loadWeather() {
@@ -73,6 +81,20 @@ class FeedsViewModel(private val feedsRepository: FeedsRepository) : ViewModel()
             feedsRepository.getWeather().fold(
                 onSuccess = { _weather.value = it },
                 onFailure = { _weather.value = null }
+            )
+            _isLoadingWeather.value = false
+        }
+    }
+
+    fun saveWeatherLocation(location: String) {
+        viewModelScope.launch {
+            _isLoadingWeather.value = true
+            feedsRepository.saveWeatherLocation(location).fold(
+                onSuccess = {
+                    _saveResult.value = "Location updated"
+                    loadWeather()
+                },
+                onFailure = { _error.value = it.message }
             )
             _isLoadingWeather.value = false
         }

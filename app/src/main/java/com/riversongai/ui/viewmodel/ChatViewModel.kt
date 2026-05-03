@@ -11,6 +11,9 @@ import com.riversongai.utils.AudioRecorder
 import com.riversongai.utils.ChatHistoryManager
 import com.riversongai.utils.Constants
 import com.riversongai.utils.NotificationHelper
+import com.riversongai.data.model.ChatModel
+import com.riversongai.data.model.ChatSession
+import com.riversongai.data.model.ChatSessionDetail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -31,17 +34,34 @@ class ChatViewModel(
     private val _connectionError = MutableLiveData<String?>()
     val connectionError: LiveData<String?> = _connectionError
 
+    private val _availableModels = MutableLiveData<List<ChatModel>>(emptyList())
+    val availableModels: LiveData<List<ChatModel>> = _availableModels
+
+    private val _selectedModel = MutableLiveData<ChatModel?>(null)
+    val selectedModel: LiveData<ChatModel?> = _selectedModel
+
+    private val _chatHistory = MutableLiveData<List<ChatSession>>(emptyList())
+    val chatHistory: LiveData<List<ChatSession>> = _chatHistory
+
+    private val _historyDetail = MutableLiveData<ChatSessionDetail?>(null)
+    val historyDetail: LiveData<ChatSessionDetail?> = _historyDetail
+
+    private val _isReplayMode = MutableLiveData(false)
+    val isReplayMode: LiveData<Boolean> = _isReplayMode
+
     private val audioRecorder = AudioRecorder(app)
     val isRecording: Boolean get() = audioRecorder.isActive
 
     init {
         _messages.value = ChatHistoryManager.load(app)
+        loadModels()
         connect()
     }
 
     private fun connect() {
         conversationRepository.connect(
             baseUrl = Constants.BASE_URL,
+            modelId = _selectedModel.value?.id,
             onMessage = { type, text -> handleServerMessage(type, text) },
             onConnected = {
                 viewModelScope.launch(Dispatchers.Main) {
@@ -64,7 +84,66 @@ class ChatViewModel(
         )
     }
 
+    fun loadModels() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = conversationRepository.getModels()
+                if (response.isSuccessful) {
+                    _availableModels.postValue(response.body() ?: emptyList())
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun selectModel(model: ChatModel) {
+        _selectedModel.value = model
+        reconnect()
+    }
+
+    fun loadHistory() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = conversationRepository.getHistory()
+                if (response.isSuccessful) {
+                    _chatHistory.postValue(response.body() ?: emptyList())
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun loadHistoryDetail(sessionId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = conversationRepository.getSessionDetail(sessionId)
+                if (response.isSuccessful) {
+                    val detail = response.body()
+                    _historyDetail.postValue(detail)
+                    if (detail != null) {
+                        _isReplayMode.postValue(true)
+                        _messages.postValue(detail.messages)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun exitReplayMode() {
+        _isReplayMode.value = false
+        _messages.value = emptyList()
+        _historyDetail.value = null
+        reconnect()
+    }
+
     fun sendMessage(text: String) {
+        if (_isReplayMode.value == true) {
+            exitReplayMode()
+        }
         if (text.isBlank()) return
         val userMsg = ChatMessage("user", text.trim())
         appendMessage(userMsg)
@@ -107,6 +186,7 @@ class ChatViewModel(
     }
 
     fun clearHistory() {
+        _isReplayMode.value = false
         _messages.value = emptyList()
         conversationRepository.resetHistory()
         ChatHistoryManager.save(getApplication(), emptyList())

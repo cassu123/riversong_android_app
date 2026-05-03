@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.riversongai.data.model.LlmSettings
 import com.riversongai.data.model.ModelCatalog
+import com.riversongai.data.model.MemoryTtlSettings
+import com.riversongai.data.model.VoiceOption
 import com.riversongai.data.repository.SettingsRepository
 import kotlinx.coroutines.launch
 
@@ -16,6 +18,18 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
 
     private val _llmSettings = MutableLiveData<LlmSettings?>()
     val llmSettings: LiveData<LlmSettings?> = _llmSettings
+
+    private val _voices = MutableLiveData<List<VoiceOption>>(emptyList())
+    val voices: LiveData<List<VoiceOption>> = _voices
+
+    private val _selectedVoice = MutableLiveData<VoiceOption?>(null)
+    val selectedVoice: LiveData<VoiceOption?> = _selectedVoice
+
+    private val _memoryTtl = MutableLiveData<MemoryTtlSettings?>()
+    val memoryTtl: LiveData<MemoryTtlSettings?> = _memoryTtl
+
+    private val _voicePreviewData = MutableLiveData<ByteArray?>()
+    val voicePreviewData: LiveData<ByteArray?> = _voicePreviewData
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -32,6 +46,46 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
     init {
         loadSettings()
     }
+
+    fun loadVoices() {
+        viewModelScope.launch {
+            settingsRepository.getVoices().onSuccess { _voices.value = it }
+        }
+    }
+
+    fun loadMemoryTtl() {
+        viewModelScope.launch {
+            settingsRepository.getMemoryTtl().onSuccess { _memoryTtl.value = it }
+        }
+    }
+
+    fun saveMemoryTtl(settings: MemoryTtlSettings) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            settingsRepository.saveMemoryTtl(settings).fold(
+                onSuccess = {
+                    _memoryTtl.value = it
+                    _saveResult.value = "Memory TTL saved"
+                },
+                onFailure = { _error.value = it.message }
+            )
+            _isLoading.value = false
+        }
+    }
+
+    fun selectVoice(voice: VoiceOption) {
+        _selectedVoice.value = voice
+    }
+
+    fun testVoice(voiceId: String) {
+        viewModelScope.launch {
+            settingsRepository.testVoice(voiceId).onSuccess {
+                _voicePreviewData.value = it
+            }
+        }
+    }
+
+    fun clearVoicePreviewData() { _voicePreviewData.value = null }
 
     fun loadSettings() {
         viewModelScope.launch {

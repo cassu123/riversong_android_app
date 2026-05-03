@@ -61,6 +61,38 @@ class SettingsRepository(private val apiService: RiverSongApiService) {
         }
     }
 
+    suspend fun getVoices() = try {
+        val response = apiService.getVoices()
+        if (response.isSuccessful) Result.success(response.body() ?: emptyList())
+        else Result.failure(Exception("Error: ${response.code()}"))
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    suspend fun getMemoryTtl() = try {
+        val response = apiService.getMemoryTtl()
+        if (response.isSuccessful && response.body() != null) Result.success(response.body()!!)
+        else Result.failure(Exception("Error: ${response.code()}"))
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    suspend fun saveMemoryTtl(settings: com.riversongai.data.model.MemoryTtlSettings) = try {
+        val response = apiService.updateMemoryTtl(settings)
+        if (response.isSuccessful && response.body() != null) Result.success(response.body()!!)
+        else Result.failure(Exception("Error: ${response.code()}"))
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    suspend fun testVoice(voiceId: String) = try {
+        val response = apiService.testVoice(mapOf("voice_id" to voiceId))
+        if (response.isSuccessful && response.body() != null) Result.success(response.body()!!.bytes())
+        else Result.failure(Exception("Error: ${response.code()}"))
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
     suspend fun testConnection(): Result<com.riversongai.data.model.DashboardStats> {
         return try {
             val response = apiService.getDashboard()

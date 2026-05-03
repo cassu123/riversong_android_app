@@ -67,4 +67,18 @@
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
+    <style name="Theme.RiverSong.Ocean" parent="Theme.RiverSong">
+        <item name="colorPrimary">#0097A7</item>
+        <item name="colorSecondary">#00BCD4</item>
+        <item name="colorPrimaryContainer">#B2EBF2</item>
+        <item name="colorOnPrimaryContainer">#006064</item>
+    </style>
+
+    <style name="Theme.RiverSong.Sunset" parent="Theme.RiverSong">
+        <item name="colorPrimary">#E64A19</item>
+        <item name="colorSecondary">#FF7043</item>
+        <item name="colorPrimaryContainer">#FFCCBC</item>
+        <item name="colorOnPrimaryContainer">#BF360C</item>
+    </style>
+
 </resources>

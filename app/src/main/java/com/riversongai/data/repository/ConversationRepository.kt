@@ -1,6 +1,10 @@
 package com.riversongai.data.repository
 
 import android.util.Log
+import com.riversongai.data.model.ChatModel
+import com.riversongai.data.model.ChatSession
+import com.riversongai.data.model.ChatSessionDetail
+import com.riversongai.data.remote.RiverSongApiService
 import com.riversongai.utils.SessionManager
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -10,7 +14,10 @@ import okhttp3.WebSocketListener
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
-class ConversationRepository(private val sessionManager: SessionManager) {
+class ConversationRepository(
+    private val apiService: RiverSongApiService,
+    private val sessionManager: SessionManager
+) {
 
     private val tag = "ConversationRepository"
 
@@ -23,6 +30,7 @@ class ConversationRepository(private val sessionManager: SessionManager) {
 
     fun connect(
         baseUrl: String,
+        modelId: String? = null,
         onMessage: (type: String, text: String?) -> Unit,
         onConnected: () -> Unit,
         onDisconnected: () -> Unit,
@@ -32,10 +40,14 @@ class ConversationRepository(private val sessionManager: SessionManager) {
             onError("Not authenticated")
             return
         }
-        val wsUrl = baseUrl
+        var wsUrl = baseUrl
             .replace("https://", "wss://")
             .replace("http://", "ws://")
             .trimEnd('/') + "/ws/conversation?token=$token"
+
+        if (modelId != null) {
+            wsUrl += "&model=$modelId"
+        }
 
         Log.d(tag, "Connecting to $wsUrl")
         val request = Request.Builder().url(wsUrl).build()
@@ -43,8 +55,20 @@ class ConversationRepository(private val sessionManager: SessionManager) {
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(ws: WebSocket, response: Response) {
                 Log.d(tag, "WebSocket connected")
+                // If model selection is needed as a separate message, we could do it here
+                // but adding it to query params is common.
+                // The prompt said: "When selectedModel is non-null, include "model": model.id in the WebSocket connect message"
+                // If "connect message" means the first message sent:
+                if (modelId != null) {
+                    val connectMsg = JSONObject().apply {
+                        put("type", "connect")
+                        put("model", modelId)
+                    }
+                    ws.send(connectMsg.toString())
+                }
                 onConnected()
             }
+// ... rest of methods unchanged
 
             override fun onMessage(ws: WebSocket, text: String) {
                 try {
@@ -98,4 +122,8 @@ class ConversationRepository(private val sessionManager: SessionManager) {
         webSocket?.close(1000, "User disconnected")
         webSocket = null
     }
+
+    suspend fun getModels() = apiService.getChatModels()
+    suspend fun getHistory() = apiService.getChatHistory()
+    suspend fun getSessionDetail(sessionId: String) = apiService.getChatSessionDetail(sessionId)
 }

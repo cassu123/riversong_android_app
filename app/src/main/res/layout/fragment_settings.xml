@@ -101,6 +101,119 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Voice Settings Card -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="VOICE"
+            android:textSize="12sp"
+            android:textAllCaps="true"
+            android:textColor="?attr/colorPrimary"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="8dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="1dp"
+            app:cardCornerRadius="12dp"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="TTS Provider"
+                    android:layout_marginBottom="8dp">
+                    <AutoCompleteTextView
+                        android:id="@+id/spinnerTtsProvider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Voice"
+                    android:layout_marginBottom="12dp">
+                    <AutoCompleteTextView
+                        android:id="@+id/spinnerVoice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonTestVoice"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Test Voice"
+                    app:icon="@drawable/ic_volume_up" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Memory TTL Card -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MEMORY RETENTION"
+            android:textSize="12sp"
+            android:textAllCaps="true"
+            android:textColor="?attr/colorPrimary"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="8dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="1dp"
+            app:cardCornerRadius="12dp"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <RadioGroup
+                    android:id="@+id/radioGroupMemoryTtl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <RadioButton android:id="@+id/radioTtl7d" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="7 days" />
+                    <RadioButton android:id="@+id/radioTtl30d" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="30 days" />
+                    <RadioButton android:id="@+id/radioTtl90d" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="90 days" />
+                    <RadioButton android:id="@+id/radioTtl1y" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1 year" />
+                    <RadioButton android:id="@+id/radioTtlForever" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Forever" />
+                </RadioGroup>
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchAutoExtend"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Auto-extend on activity" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonSaveMemoryTtl"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Save TTL" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <ProgressBar
             android:id="@+id/progressBarSettings"
             android:layout_width="wrap_content"

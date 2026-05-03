@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        com.riversongai.utils.ThemeManager.applyThemeToActivity(this)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

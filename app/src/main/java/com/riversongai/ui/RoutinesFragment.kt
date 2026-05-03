@@ -36,13 +36,17 @@ class RoutinesFragment : Fragment() {
         routineAdapter = RoutineAdapter(
             onToggle = { routine, enabled -> routinesViewModel.toggleRoutine(routine.id, enabled) },
             onRun = { routine ->
-                Toast.makeText(context, getString(R.string.routines_running_prefix, routine.name), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Running ${routine.name}…", Toast.LENGTH_SHORT).show()
                 routinesViewModel.runRoutine(routine.id)
+            },
+            onEdit = { routine ->
+                routinesViewModel.setEditingRoutine(routine)
+                RoutineCreateEditBottomSheet().show(childFragmentManager, RoutineCreateEditBottomSheet.TAG)
             },
             onDelete = { routine ->
                 AlertDialog.Builder(requireContext())
-                    .setTitle(R.string.routines_delete_confirm_title)
-                    .setMessage(getString(R.string.routines_delete_confirm_message, routine.name))
+                    .setTitle("Delete Routine")
+                    .setMessage("Are you sure you want to delete ${routine.name}?")
                     .setPositiveButton(android.R.string.ok) { _, _ -> routinesViewModel.deleteRoutine(routine.id) }
                     .setNegativeButton(android.R.string.cancel, null)
                     .show()
@@ -92,37 +96,17 @@ class RoutinesFragment : Fragment() {
             }
         }
 
-        binding.fabAddRoutine.setOnClickListener { showCreateRoutineDialog() }
+        binding.fabAddRoutine.setOnClickListener { 
+            routinesViewModel.setEditingRoutine(null)
+            RoutineCreateEditBottomSheet().show(childFragmentManager, RoutineCreateEditBottomSheet.TAG)
+        }
     }
 
     private fun showRunOutputDialog(output: String) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.routines_output_title)
+            .setTitle("Routine Output")
             .setMessage(output)
             .setPositiveButton(android.R.string.ok, null)
-            .show()
-    }
-
-    private fun showCreateRoutineDialog() {
-        val layout = android.widget.LinearLayout(context).apply {
-            orientation = android.widget.LinearLayout.VERTICAL
-            setPadding(48, 32, 48, 0)
-        }
-        val nameInput = EditText(context).apply { hint = getString(R.string.routines_name_hint) }
-        val promptInput = EditText(context).apply {
-            hint = getString(R.string.routines_prompt_hint)
-            minLines = 2
-        }
-        layout.addView(nameInput)
-        layout.addView(promptInput)
-
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.routines_create)
-            .setView(layout)
-            .setPositiveButton(R.string.memory_save) { _, _ ->
-                routinesViewModel.createRoutine(nameInput.text.toString(), promptInput.text.toString())
-            }
-            .setNegativeButton(R.string.memory_cancel, null)
             .show()
     }
 

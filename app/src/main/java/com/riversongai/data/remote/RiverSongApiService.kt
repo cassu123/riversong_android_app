@@ -44,6 +44,12 @@ interface RiverSongApiService {
     @GET("api/auth/me")
     suspend fun getCurrentUser(): Response<User>
 
+    @PATCH("api/user/profile")
+    suspend fun updateProfile(@Body request: com.riversongai.data.model.UpdateProfileRequest): Response<User>
+
+    @POST("api/user/change-password")
+    suspend fun changePassword(@Body request: com.riversongai.data.model.ChangePasswordRequest): Response<Void>
+
     @GET("api/home/devices")
     suspend fun getDevices(): Response<List<Device>>
 
@@ -52,6 +58,15 @@ interface RiverSongApiService {
 
     @POST("api/conversation/chat")
     suspend fun chatHttp(@Body request: ChatRequest): Response<okhttp3.ResponseBody>
+
+    @GET("api/chat/models")
+    suspend fun getChatModels(): Response<List<com.riversongai.data.model.ChatModel>>
+
+    @GET("api/chat/history")
+    suspend fun getChatHistory(): Response<List<com.riversongai.data.model.ChatSession>>
+
+    @GET("api/chat/history/{sessionId}")
+    suspend fun getChatSessionDetail(@Path("sessionId") sessionId: String): Response<com.riversongai.data.model.ChatSessionDetail>
 
     // Memory
     @GET("api/memory/facts")
@@ -62,6 +77,12 @@ interface RiverSongApiService {
 
     @DELETE("api/memory/facts/{id}")
     suspend fun deleteFact(@Path("id") factId: String): Response<Void>
+
+    @GET("api/memory/preferences")
+    suspend fun getMemoryPreferences(): Response<List<com.riversongai.data.model.MemoryPreference>>
+
+    @GET("api/memory/summaries")
+    suspend fun getMemorySummaries(): Response<List<com.riversongai.data.model.MemorySummary>>
 
     // Routines
     @GET("api/routines")
@@ -81,7 +102,7 @@ interface RiverSongApiService {
 
     // Feeds
     @GET("api/feeds/news")
-    suspend fun getNews(): Response<List<NewsArticle>>
+    suspend fun getNews(@retrofit2.http.Query("category") category: String? = null): Response<List<NewsArticle>>
 
     @GET("api/feeds/weather")
     suspend fun getWeather(): Response<WeatherData>
@@ -95,6 +116,28 @@ interface RiverSongApiService {
     @PUT("api/feeds/preferences")
     suspend fun saveFeedPreferences(@Body prefs: FeedPreferences): Response<Void>
 
+    @POST("api/settings")
+    suspend fun saveSettings(@Body body: Map<String, String>): Response<Void>
+
+    // Sports
+    @GET("api/sports/following")
+    suspend fun getSportsFollowing(): Response<List<com.riversongai.data.model.SportsTeam>>
+
+    @GET("api/sports/results")
+    suspend fun getSportsResults(@retrofit2.http.Query("teamId") teamId: String?): Response<List<com.riversongai.data.model.SportsMatch>>
+
+    @GET("api/sports/fixtures")
+    suspend fun getSportsFixtures(@retrofit2.http.Query("teamId") teamId: String?): Response<List<com.riversongai.data.model.SportsMatch>>
+
+    @POST("api/sports/follow")
+    suspend fun followSportsTeam(@Body body: Map<String, String>): Response<Void>
+
+    @DELETE("api/sports/follow/{teamId}")
+    suspend fun unfollowSportsTeam(@Path("teamId") teamId: String): Response<Void>
+
+    @GET("api/sports/search")
+    suspend fun searchSportsTeams(@retrofit2.http.Query("q") query: String): Response<List<com.riversongai.data.model.SportsTeam>>
+
     // Settings
     @GET("api/models")
     suspend fun getModels(): Response<ModelCatalog>
@@ -104,6 +147,18 @@ interface RiverSongApiService {
 
     @POST("api/settings/llm")
     suspend fun saveLlmSettings(@Body body: Map<String, @JvmSuppressWildcards Any?>): Response<Void>
+
+    @GET("api/settings/voices")
+    suspend fun getVoices(): Response<List<com.riversongai.data.model.VoiceOption>>
+
+    @GET("api/settings/memory-ttl")
+    suspend fun getMemoryTtl(): Response<com.riversongai.data.model.MemoryTtlSettings>
+
+    @PATCH("api/settings/memory-ttl")
+    suspend fun updateMemoryTtl(@Body settings: com.riversongai.data.model.MemoryTtlSettings): Response<com.riversongai.data.model.MemoryTtlSettings>
+
+    @POST("api/tts/preview")
+    suspend fun testVoice(@Body body: Map<String, String>): Response<okhttp3.ResponseBody>
 
     // Dashboard
     @GET("api/dashboard")

@@ -2,6 +2,9 @@ package com.riversongai.data.model
 
 import com.google.gson.annotations.SerializedName
 
+data class UpdateProfileRequest(val firstName: String, val lastName: String, val callsign: String?)
+data class ChangePasswordRequest(val currentPassword: String, val newPassword: String)
+
 data class User(
     val id: String,
     val email: String,

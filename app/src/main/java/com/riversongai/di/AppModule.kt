@@ -32,11 +32,12 @@ val appModule = module {
 
     single { UserRepository(get()) }
     single { SmartHomeRepository(get()) }
-    single { ConversationRepository(get()) }
+    single { ConversationRepository(get(), get()) }
     single { MemoryRepository(get()) }
     single { FeedsRepository(get()) }
     single { RoutinesRepository(get()) }
     single { SettingsRepository(get()) }
+    single { com.riversongai.data.repository.SportsRepository(get()) }
 
     viewModel { LoginViewModel(get(), get()) }
     viewModel { RegisterViewModel(get()) }
@@ -46,6 +47,7 @@ val appModule = module {
     viewModel { ChatViewModel(androidApplication(), get()) }
     viewModel { MemoryViewModel(get()) }
     viewModel { FeedsViewModel(get()) }
+    viewModel { com.riversongai.ui.viewmodel.SportsViewModel(get()) }
     viewModel { RoutinesViewModel(androidApplication(), get()) }
     viewModel { SettingsViewModel(get()) }
 }

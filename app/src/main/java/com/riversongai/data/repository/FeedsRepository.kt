@@ -11,9 +11,9 @@ class FeedsRepository(private val apiService: RiverSongApiService) {
 
     private val tag = "FeedsRepository"
 
-    suspend fun getNews(): Result<List<NewsArticle>> {
+    suspend fun getNews(category: String? = null): Result<List<NewsArticle>> {
         return try {
-            val response = apiService.getNews()
+            val response = apiService.getNews(category)
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
@@ -93,6 +93,16 @@ class FeedsRepository(private val apiService: RiverSongApiService) {
             }
         } catch (e: Exception) {
             Log.e(tag, "saveFeedPreferences exception", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun saveWeatherLocation(location: String): Result<Unit> {
+        return try {
+            val response = apiService.saveSettings(mapOf("weather_location" to location))
+            if (response.isSuccessful) Result.success(Unit)
+            else Result.failure(Exception("Error ${response.code()}"))
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }

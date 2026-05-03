@@ -59,6 +59,26 @@ class UserRepository(private val apiService: RiverSongApiService) {
         }
     }
 
+    suspend fun updateProfile(firstName: String, lastName: String, callsign: String?): Result<User> {
+        return try {
+            val response = apiService.updateProfile(com.riversongai.data.model.UpdateProfileRequest(firstName, lastName, callsign))
+            if (response.isSuccessful && response.body() != null) Result.success(response.body()!!)
+            else Result.failure(Exception(parseError(response.errorBody()?.string(), response.code())))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun changePassword(current: String, newPass: String): Result<Unit> {
+        return try {
+            val response = apiService.changePassword(com.riversongai.data.model.ChangePasswordRequest(current, newPass))
+            if (response.isSuccessful) Result.success(Unit)
+            else Result.failure(Exception(parseError(response.errorBody()?.string(), response.code())))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     private fun parseError(body: String?, code: Int): String {
         if (body.isNullOrBlank()) return "Error $code"
         return try {

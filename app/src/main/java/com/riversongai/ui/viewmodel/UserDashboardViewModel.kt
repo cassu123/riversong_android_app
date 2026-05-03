@@ -48,6 +48,12 @@ class UserDashboardViewModel(
     private val _sessionExpired = MutableLiveData<Boolean>()
     val sessionExpired: LiveData<Boolean> = _sessionExpired
 
+    private val _profileUpdateResult = MutableLiveData<String?>()
+    val profileUpdateResult: LiveData<String?> = _profileUpdateResult
+
+    private val _passwordChangeResult = MutableLiveData<String?>()
+    val passwordChangeResult: LiveData<String?> = _passwordChangeResult
+
     fun loadDashboardData() {
         if (!sessionManager.isLoggedIn()) {
             _sessionExpired.value = true
@@ -97,6 +103,37 @@ class UserDashboardViewModel(
             } finally {
                 _isLoading.value = false
             }
+        }
+    }
+
+    fun updateProfile(firstName: String, lastName: String, callsign: String?) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            userRepository.updateProfile(firstName, lastName, callsign).fold(
+                onSuccess = {
+                    _currentUser.value = it
+                    _profileUpdateResult.value = "Profile updated successfully"
+                },
+                onFailure = { 
+                    _profileUpdateResult.value = "Error: ${it.message}"
+                }
+            )
+            _isLoading.value = false
+        }
+    }
+
+    fun changePassword(current: String, newPass: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            userRepository.changePassword(current, newPass).fold(
+                onSuccess = {
+                    _passwordChangeResult.value = "Password updated successfully"
+                },
+                onFailure = {
+                    _passwordChangeResult.value = "Error: ${it.message}"
+                }
+            )
+            _isLoading.value = false
         }
     }
 

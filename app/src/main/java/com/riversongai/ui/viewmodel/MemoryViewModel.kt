@@ -6,6 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.riversongai.data.model.Fact
+import com.riversongai.data.model.MemoryPreference
+import com.riversongai.data.model.MemoryStats
+import com.riversongai.data.model.MemorySummary
 import com.riversongai.data.repository.MemoryRepository
 import kotlinx.coroutines.launch
 
@@ -13,6 +16,15 @@ class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewMode
 
     private val _facts = MutableLiveData<List<Fact>>(emptyList())
     
+    private val _preferences = MutableLiveData<List<MemoryPreference>>(emptyList())
+    val preferences: LiveData<List<MemoryPreference>> = _preferences
+
+    private val _summaries = MutableLiveData<List<MemorySummary>>(emptyList())
+    val summaries: LiveData<List<MemorySummary>> = _summaries
+
+    private val _memoryStats = MutableLiveData<MemoryStats>()
+    val memoryStats: LiveData<MemoryStats> = _memoryStats
+
     private val _filterQuery = MutableLiveData("")
     val filterQuery: LiveData<String> = _filterQuery
 
@@ -36,6 +48,8 @@ class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewMode
 
     init {
         loadFacts()
+        loadPreferences()
+        loadSummaries()
     }
 
     fun loadFacts() {
@@ -43,11 +57,46 @@ class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewMode
             _isLoading.value = true
             _error.value = null
             memoryRepository.getFacts().fold(
-                onSuccess = { _facts.value = it },
+                onSuccess = { 
+                    _facts.value = it
+                    updateStats()
+                },
                 onFailure = { _error.value = it.message }
             )
             _isLoading.value = false
         }
+    }
+
+    fun loadPreferences() {
+        viewModelScope.launch {
+            memoryRepository.getPreferences().fold(
+                onSuccess = {
+                    _preferences.value = it
+                    updateStats()
+                },
+                onFailure = { _error.value = it.message }
+            )
+        }
+    }
+
+    fun loadSummaries() {
+        viewModelScope.launch {
+            memoryRepository.getSummaries().fold(
+                onSuccess = {
+                    _summaries.value = it
+                    updateStats()
+                },
+                onFailure = { _error.value = it.message }
+            )
+        }
+    }
+
+    private fun updateStats() {
+        _memoryStats.value = MemoryStats(
+            factsCount = _facts.value?.size ?: 0,
+            prefsCount = _preferences.value?.size ?: 0,
+            sessionsCount = _summaries.value?.size ?: 0
+        )
     }
 
     fun setFilterQuery(query: String) {

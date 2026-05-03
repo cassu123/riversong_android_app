@@ -17,13 +17,15 @@ import com.riversongai.ui.adapter.FactAdapter
 import com.riversongai.ui.viewmodel.MemoryViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+import com.google.android.material.tabs.TabLayoutMediator
+import com.riversongai.ui.adapter.MemoryPagerAdapter
+
 class MemoryFragment : Fragment() {
 
     private var _binding: FragmentMemoryBinding? = null
     private val binding get() = _binding!!
 
     private val memoryViewModel: MemoryViewModel by viewModel()
-    private lateinit var factAdapter: FactAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMemoryBinding.inflate(inflater, container, false)
@@ -33,40 +35,42 @@ class MemoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        factAdapter = FactAdapter(onDelete = { fact ->
-            AlertDialog.Builder(requireContext())
-                .setTitle(R.string.memory_delete_confirm_title)
-                .setMessage(getString(R.string.memory_delete_confirm_message, fact.key))
-                .setPositiveButton(android.R.string.ok) { _, _ -> memoryViewModel.deleteFact(fact.id) }
-                .setNegativeButton(android.R.string.cancel, null)
-                .show()
-        })
+        setupViewPager()
+        setupRefresh()
+        observeViewModel()
+    }
 
-        binding.recyclerViewFacts.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = factAdapter
+    private fun setupViewPager() {
+        binding.viewPagerMemory.adapter = MemoryPagerAdapter(this)
+        TabLayoutMediator(binding.tabLayoutMemory, binding.viewPagerMemory) { tab, position ->
+            tab.text = when (position) {
+                0 -> "Facts"
+                1 -> "Preferences"
+                2 -> "Summaries"
+                else -> ""
+            }
+        }.attach()
+    }
+
+    private fun setupRefresh() {
+        binding.swipeRefreshMemory.setOnRefreshListener {
+            when (binding.tabLayoutMemory.selectedTabPosition) {
+                0 -> memoryViewModel.loadFacts()
+                1 -> memoryViewModel.loadPreferences()
+                2 -> memoryViewModel.loadSummaries()
+            }
         }
+    }
 
-        binding.swipeRefreshMemory.apply {
-            val typedValue = android.util.TypedValue()
-            context.theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
-            setColorSchemeColors(typedValue.data)
-            setOnRefreshListener { memoryViewModel.loadFacts() }
-        }
-
-        binding.editTextSearch.doAfterTextChanged { text ->
-            memoryViewModel.setFilterQuery(text?.toString().orEmpty())
-        }
-
-        memoryViewModel.filteredFacts.observe(viewLifecycleOwner) { facts ->
-            factAdapter.submitList(facts)
-            binding.textViewMemoryEmpty.isVisible = facts.isEmpty()
+    private fun observeViewModel() {
+        memoryViewModel.memoryStats.observe(viewLifecycleOwner) { stats ->
+            binding.textStatFacts.text = "${stats.factsCount} Facts"
+            binding.textStatPrefs.text = "${stats.prefsCount} Preferences"
+            binding.textStatSessions.text = "${stats.sessionsCount} Summaries"
         }
 
         memoryViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
             binding.swipeRefreshMemory.isRefreshing = loading
-            // Hide progress bar if we have SwipeRefresh
-            binding.progressBarMemory.isVisible = loading && !binding.swipeRefreshMemory.isRefreshing
         }
 
         memoryViewModel.error.observe(viewLifecycleOwner) { error ->
@@ -82,26 +86,24 @@ class MemoryFragment : Fragment() {
                 memoryViewModel.clearActionResult()
             }
         }
-
-        binding.fabAddFact.setOnClickListener { showAddFactDialog() }
     }
 
-    private fun showAddFactDialog() {
+    fun showAddFactDialog() {
         val layout = android.widget.LinearLayout(context).apply {
             orientation = android.widget.LinearLayout.VERTICAL
             setPadding(48, 32, 48, 0)
         }
-        val keyInput = EditText(context).apply { hint = getString(R.string.memory_fact_key_hint) }
-        val valueInput = EditText(context).apply { hint = getString(R.string.memory_fact_value_hint) }
+        val keyInput = EditText(context).apply { hint = "Fact key (e.g. Favorite Color)" }
+        val valueInput = EditText(context).apply { hint = "Fact value (e.g. Blue)" }
         layout.addView(keyInput)
         layout.addView(valueInput)
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.memory_add_fact_title)
+            .setTitle("Add Memory Fact")
             .setView(layout)
-            .setPositiveButton(R.string.memory_save) { _, _ ->
+            .setPositiveButton("Save") { _, _ ->
                 memoryViewModel.addFact(keyInput.text.toString(), valueInput.text.toString())
             }
-            .setNegativeButton(R.string.memory_cancel, null)
+            .setNegativeButton("Cancel", null)
             .show()
     }
 

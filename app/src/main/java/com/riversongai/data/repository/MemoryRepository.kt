@@ -56,4 +56,20 @@ class MemoryRepository(private val apiService: RiverSongApiService) {
             Result.failure(e)
         }
     }
+
+    suspend fun getPreferences() = try {
+        val response = apiService.getMemoryPreferences()
+        if (response.isSuccessful) Result.success(response.body() ?: emptyList())
+        else Result.failure(Exception("Error: ${response.code()}"))
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    suspend fun getSummaries() = try {
+        val response = apiService.getMemorySummaries()
+        if (response.isSuccessful) Result.success(response.body() ?: emptyList())
+        else Result.failure(Exception("Error: ${response.code()}"))
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 }

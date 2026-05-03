@@ -5,78 +5,102 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="4dp"
-    app:cardElevation="1dp"
-    app:cardCornerRadius="12dp">
+    android:layout_marginVertical="6dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="?attr/colorOutlineVariant">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/textViewRoutineName"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="15sp"
-            android:textColor="?attr/colorOnSurface"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/switchRoutineEnabled" />
+            android:text="Routine Name"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/textViewRoutineTrigger"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="?attr/colorPrimary"
-            android:layout_marginTop="2dp"
-            app:layout_constraintTop_toBottomOf="@id/textViewRoutineName"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/switchRoutineEnabled" />
-
-        <TextView
-            android:id="@+id/textViewRoutineLastRun"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="11sp"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:layout_marginTop="2dp"
-            app:layout_constraintTop_toBottomOf="@id/textViewRoutineTrigger"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/switchRoutineEnabled"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switchRoutineEnabled"
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipRoutineSchedule"
+            style="@style/Widget.Material3.Chip.Suggestion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/buttonRunRoutine"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            android:layout_marginTop="4dp"
+            android:text="Daily 08:00"
+            app:chipIcon="@drawable/ic_schedule"
+            app:chipIconSize="16dp"
+            app:chipMinHeight="28dp"
+            android:textSize="12sp" />
 
-        <ImageButton
-            android:id="@+id/buttonRunRoutine"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@android:drawable/ic_media_play"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Run routine"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/buttonDeleteRoutine"
-            app:layout_constraintBottom_toBottomOf="parent" />
+        <TextView
+            android:id="@+id/textViewPromptPreview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Prompt preview text..."
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
-        <ImageButton
-            android:id="@+id/buttonDeleteRoutine"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@android:drawable/ic_menu_delete"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Delete routine"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+        <TextView
+            android:id="@+id/textViewLastRun"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Last run: 2 hours ago"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            android:textColor="?attr/colorOnSurfaceVariant" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonRunRoutine"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Run"
+                app:icon="@android:drawable/ic_media_play"
+                android:paddingHorizontal="12dp" />
+
+            <View android:layout_width="8dp" android:layout_height="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonEditRoutine"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                app:icon="@drawable/ic_edit"
+                android:paddingHorizontal="12dp" />
+
+            <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchRoutineEnabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <View android:layout_width="8dp" android:layout_height="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonDeleteRoutine"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:icon="@android:drawable/ic_menu_delete" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
 </com.google.android.material.card.MaterialCardView>

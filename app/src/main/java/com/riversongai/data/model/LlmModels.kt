@@ -2,6 +2,10 @@ package com.riversongai.data.model
 
 import com.google.gson.annotations.SerializedName
 
+data class ChatModel(val id: String, val name: String, val provider: String, val isLocal: Boolean)
+data class ChatSession(val id: String, val title: String, val timestamp: Long, val messageCount: Int, val model: String)
+data class ChatSessionDetail(val id: String, val messages: List<ChatMessage>)
+
 data class ModelEntry(
     val provider: String,
     @SerializedName("model_id") val modelId: String,

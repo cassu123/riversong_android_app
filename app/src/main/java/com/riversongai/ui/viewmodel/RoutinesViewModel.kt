@@ -28,6 +28,9 @@ class RoutinesViewModel(app: Application, private val routinesRepository: Routin
     private val _routineRunOutput = MutableLiveData<String?>()
     val routineRunOutput: LiveData<String?> = _routineRunOutput
 
+    private val _editingRoutine = MutableLiveData<Routine?>(null)
+    val editingRoutine: LiveData<Routine?> = _editingRoutine
+
     init {
         loadRoutines()
     }
@@ -44,14 +47,20 @@ class RoutinesViewModel(app: Application, private val routinesRepository: Routin
         }
     }
 
-    fun createRoutine(name: String, prompt: String) {
+    fun createRoutine(name: String, prompt: String, trigger: String, time: String?, days: List<String>?) {
         if (name.isBlank()) {
             _error.value = "Routine name cannot be empty"
             return
         }
         viewModelScope.launch {
             _isLoading.value = true
-            val create = RoutineCreate(name = name.trim(), prompt = prompt.trim())
+            val create = RoutineCreate(
+                name = name.trim(),
+                prompt = prompt.trim(),
+                triggerType = trigger,
+                scheduleTime = time,
+                scheduleDays = days
+            )
             routinesRepository.createRoutine(create).fold(
                 onSuccess = {
                     _actionResult.value = "Routine created"
@@ -61,6 +70,32 @@ class RoutinesViewModel(app: Application, private val routinesRepository: Routin
             )
             _isLoading.value = false
         }
+    }
+
+    fun updateRoutine(routineId: String, name: String, prompt: String, trigger: String, time: String?, days: List<String>?, enabled: Boolean) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val fields = mapOf(
+                "name" to name.trim(),
+                "prompt" to prompt.trim(),
+                "trigger_type" to trigger,
+                "schedule_time" to time,
+                "schedule_days" to days,
+                "is_enabled" to enabled
+            )
+            routinesRepository.updateRoutine(routineId, fields).fold(
+                onSuccess = {
+                    _actionResult.value = "Routine updated"
+                    loadRoutines()
+                },
+                onFailure = { _error.value = it.message }
+            )
+            _isLoading.value = false
+        }
+    }
+
+    fun setEditingRoutine(routine: Routine?) {
+        _editingRoutine.value = routine
     }
 
     fun toggleRoutine(routineId: String, enabled: Boolean) {

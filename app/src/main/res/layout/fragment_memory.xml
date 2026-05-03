@@ -11,51 +11,91 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/layoutSearch"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        <!-- Memory Stats Header -->
+        <LinearLayout
+            android:id="@+id/layoutMemoryStats"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:hint="Search facts…"
-            app:startIconDrawable="@android:drawable/ic_menu_search">
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp"
+            android:gravity="center">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextSearch"
-                android:layout_width="match_parent"
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutlineVariant">
+                <TextView
+                    android:id="@+id/textStatFacts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:text="0 Facts"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <View android:layout_width="8dp" android:layout_height="1dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutlineVariant">
+                <TextView
+                    android:id="@+id/textStatPrefs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:text="0 Preferences"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <View android:layout_width="8dp" android:layout_height="1dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutlineVariant">
+                <TextView
+                    android:id="@+id/textStatSessions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:text="0 Summaries"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayoutMemory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabMode="fixed" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshMemory"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewFacts"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPagerMemory"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="8dp"
-                android:paddingBottom="80dp"
-                android:clipToPadding="false"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                android:layout_height="match_parent" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/textViewMemoryEmpty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="No memory facts yet.\nTap + to add one."
-        android:textAlignment="center"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:textSize="15sp"
-        android:visibility="gone" />
 
     <ProgressBar
         android:id="@+id/progressBarMemory"
@@ -63,15 +103,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddFact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:contentDescription="Add fact"
-        android:src="@android:drawable/ic_input_add"
-        app:elevation="6dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

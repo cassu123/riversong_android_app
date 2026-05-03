@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/bottom_sheet_background">
+
+    <TextView
+        android:id="@+id/textViewSheetTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Routine"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+        android:layout_marginBottom="16dp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutRoutineName"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Routine Name"
+        android:layout_marginBottom="12dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextRoutineName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapWords" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutRoutinePrompt"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="AI Prompt"
+        android:layout_marginBottom="12dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextRoutinePrompt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="3"
+            android:gravity="top"
+            android:inputType="textMultiLine|textCapSentences" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Trigger Type"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+        android:layout_marginBottom="8dp" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupTrigger"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+        <RadioButton android:id="@+id/radioDaily" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Daily" />
+        <RadioButton android:id="@+id/radioWeekly" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Weekly" />
+        <RadioButton android:id="@+id/radioManual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Manual" android:checked="true" />
+        <RadioButton android:id="@+id/radioStartup" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Startup" />
+    </RadioGroup>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutRoutineTime"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Schedule Time"
+        app:startIconDrawable="@drawable/ic_schedule"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextRoutineTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:clickable="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutWeeklyDays"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Days"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+            android:layout_marginBottom="4dp" />
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupDays"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:selectionRequired="false">
+                <com.google.android.material.chip.Chip android:id="@+id/chipMon" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mon" />
+                <com.google.android.material.chip.Chip android:id="@+id/chipTue" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tue" />
+                <com.google.android.material.chip.Chip android:id="@+id/chipWed" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Wed" />
+                <com.google.android.material.chip.Chip android:id="@+id/chipThu" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thu" />
+                <com.google.android.material.chip.Chip android:id="@+id/chipFri" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fri" />
+                <com.google.android.material.chip.Chip android:id="@+id/chipSat" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sat" />
+                <com.google.android.material.chip.Chip android:id="@+id/chipSun" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sun" />
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonSaveRoutine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Routine"
+        android:paddingVertical="12dp"
+        app:cornerRadius="12dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonCancel"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:layout_marginTop="4dp" />
+
+</LinearLayout>

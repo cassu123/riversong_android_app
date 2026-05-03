@@ -22,9 +22,45 @@ data class WeatherCurrent(
 
 data class WeatherData(
     val current: WeatherCurrent = WeatherCurrent(),
-    val forecast: List<Any?> = emptyList(),
-    val location: Any? = null
+    val hourly: List<HourlyForecast> = emptyList(),
+    val daily: List<DailyForecast> = emptyList(),
+    val alerts: List<WeatherAlert> = emptyList(),
+    val location: WeatherLocation? = null
 )
+
+data class HourlyForecast(
+    val time: String,
+    @SerializedName("temp_c") val tempC: Float,
+    @SerializedName("precip_mm") val precipMm: Float,
+    @SerializedName("condition_text") val conditionText: String,
+    @SerializedName("condition_icon") val conditionIcon: String
+)
+
+data class DailyForecast(
+    val date: String,
+    @SerializedName("max_temp_c") val maxTempC: Float,
+    @SerializedName("min_temp_c") val minTempC: Float,
+    @SerializedName("condition_text") val conditionText: String,
+    @SerializedName("condition_icon") val conditionIcon: String,
+    @SerializedName("precip_mm") val precipMm: Float
+)
+
+data class WeatherAlert(
+    val headline: String,
+    val severity: String,
+    val description: String
+)
+
+data class WeatherLocation(
+    val name: String,
+    val region: String,
+    val country: String,
+    val lat: Double,
+    val lon: Double
+)
+
+data class SportsTeam(val id: String, val name: String, val leagueId: String, val leagueName: String)
+data class SportsMatch(val id: String, val homeTeam: String, val awayTeam: String, val homeScore: Int?, val awayScore: Int?, val kickoff: Long, val leagueName: String, val status: String)
 
 data class StockQuote(
     val symbol: String,

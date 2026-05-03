@@ -43,17 +43,21 @@ class RoutinesRepository(private val apiService: RiverSongApiService) {
     }
 
     suspend fun toggleRoutine(routineId: String, enabled: Boolean): Result<Routine> {
+        return updateRoutine(routineId, mapOf("is_enabled" to enabled))
+    }
+
+    suspend fun updateRoutine(routineId: String, fields: Map<String, Any?>): Result<Routine> {
         return try {
-            val response = apiService.updateRoutine(routineId, mapOf("enabled" to enabled))
+            val response = apiService.updateRoutine(routineId, fields)
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
-                val msg = "Failed to toggle routine: ${response.code()}"
+                val msg = "Failed to update routine: ${response.code()}"
                 Log.e(tag, msg)
                 Result.failure(Exception(msg))
             }
         } catch (e: Exception) {
-            Log.e(tag, "toggleRoutine exception", e)
+            Log.e(tag, "updateRoutine exception", e)
             Result.failure(e)
         }
     }
