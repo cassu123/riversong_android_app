@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.riversongai.R
 import com.riversongai.databinding.FragmentRoutinesBinding
 import com.riversongai.ui.adapter.RoutineAdapter
 import com.riversongai.ui.viewmodel.RoutinesViewModel
@@ -35,15 +36,15 @@ class RoutinesFragment : Fragment() {
         routineAdapter = RoutineAdapter(
             onToggle = { routine, enabled -> routinesViewModel.toggleRoutine(routine.id, enabled) },
             onRun = { routine ->
-                Toast.makeText(context, "Running ${routine.name}…", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.routines_running_prefix, routine.name), Toast.LENGTH_SHORT).show()
                 routinesViewModel.runRoutine(routine.id)
             },
             onDelete = { routine ->
                 AlertDialog.Builder(requireContext())
-                    .setTitle("Delete routine")
-                    .setMessage("Delete \"${routine.name}\"?")
-                    .setPositiveButton("Delete") { _, _ -> routinesViewModel.deleteRoutine(routine.id) }
-                    .setNegativeButton("Cancel", null)
+                    .setTitle(R.string.routines_delete_confirm_title)
+                    .setMessage(getString(R.string.routines_delete_confirm_message, routine.name))
+                    .setPositiveButton(android.R.string.ok) { _, _ -> routinesViewModel.deleteRoutine(routine.id) }
+                    .setNegativeButton(android.R.string.cancel, null)
                     .show()
             }
         )
@@ -96,9 +97,9 @@ class RoutinesFragment : Fragment() {
 
     private fun showRunOutputDialog(output: String) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Routine Output")
+            .setTitle(R.string.routines_output_title)
             .setMessage(output)
-            .setPositiveButton("OK", null)
+            .setPositiveButton(android.R.string.ok, null)
             .show()
     }
 
@@ -107,21 +108,21 @@ class RoutinesFragment : Fragment() {
             orientation = android.widget.LinearLayout.VERTICAL
             setPadding(48, 32, 48, 0)
         }
-        val nameInput = EditText(context).apply { hint = "Routine name" }
+        val nameInput = EditText(context).apply { hint = getString(R.string.routines_name_hint) }
         val promptInput = EditText(context).apply {
-            hint = "Prompt (what should River Song do?)"
+            hint = getString(R.string.routines_prompt_hint)
             minLines = 2
         }
         layout.addView(nameInput)
         layout.addView(promptInput)
 
         AlertDialog.Builder(requireContext())
-            .setTitle("Create Routine")
+            .setTitle(R.string.routines_create)
             .setView(layout)
-            .setPositiveButton("Create") { _, _ ->
+            .setPositiveButton(R.string.memory_save) { _, _ ->
                 routinesViewModel.createRoutine(nameInput.text.toString(), promptInput.text.toString())
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.memory_cancel, null)
             .show()
     }
 

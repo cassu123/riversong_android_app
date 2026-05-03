@@ -51,23 +51,54 @@
     <string name="memory_add_fact">Add Fact</string>
     <string name="memory_fact_key_hint">Key (e.g. favorite_color)</string>
     <string name="memory_fact_value_hint">Value (e.g. purple)</string>
+    <string name="memory_delete_confirm_title">Delete fact</string>
+    <string name="memory_delete_confirm_message">Delete \"%1$s\"?</string>
+    <string name="memory_add_fact_title">Add Memory Fact</string>
+    <string name="memory_save">Save</string>
+    <string name="memory_cancel">Cancel</string>
 
     <string name="feeds_tab_news">News</string>
     <string name="feeds_tab_weather">Weather</string>
     <string name="feeds_tab_stocks">Stocks</string>
     <string name="feeds_weather_not_configured">Weather not configured.\nGo to Feed Settings to set your location.</string>
+    <string name="feeds_news_empty">No news articles. Pull to refresh.</string>
+    <string name="feeds_stocks_empty">No stocks configured. Go to Feed Settings.</string>
 
     <string name="routines_title">Routines</string>
     <string name="routines_empty">No routines yet.\nTap + to create one.</string>
     <string name="routines_create">Create Routine</string>
     <string name="routines_name_hint">Routine name</string>
     <string name="routines_prompt_hint">What should River Song do?</string>
+    <string name="routines_delete_confirm_title">Delete routine</string>
+    <string name="routines_delete_confirm_message">Delete \"%1$s\"?</string>
+    <string name="routines_running_prefix">Running %1$s…</string>
+    <string name="routines_output_title">Routine Output</string>
+
+    <string name="home_greeting_morning">Good morning</string>
+    <string name="home_greeting_afternoon">Good afternoon</string>
+    <string name="home_greeting_evening">Good evening</string>
+    <string name="home_weather_unavailable">Weather unavailable</string>
+    <string name="home_no_devices">No devices found</string>
 
     <string name="settings_title">Settings</string>
     <string name="settings_ai_model">AI Model</string>
     <string name="settings_provider_hint">Provider</string>
     <string name="settings_model_hint">Model</string>
     <string name="settings_save_model">Save Model</string>
+    <string name="settings_test_connection">Test Connection</string>
+    <string name="settings_dark_mode">Dark Mode</string>
+    <string name="settings_connection_success">Connected — uptime %1$ds</string>
+    <string name="settings_select_model_error">Select a provider and model</string>
 
-    <string name="more_title">More Features</string>
+    <string name="profile_facts_stat">Facts</string>
+    <string name="profile_routines_stat">Routines</string>
+    <string name="profile_smart_home_title">Smart Home</string>
+    <string name="profile_ha_not_connected">Home Assistant not connected</string>
+    <string name="profile_smart_home_summary">%1$d on · %2$d unavailable · %3$d total</string>
+    <string name="profile_sign_out">Sign Out</string>
+
+    <string name="chat_copy_toast">Copied</string>
+    <string name="chat_permission_mic_error">Microphone permission required</string>
+    <string name="chat_notification_permission_title">Notification Permission</string>
+    <string name="chat_notification_permission_message">River Song needs permission to notify you when routine completes or new messages arrive.</string>
 </resources>

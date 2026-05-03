@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.riversongai.R
 import com.riversongai.data.model.ChatMessage
 import com.riversongai.databinding.ItemChatAiBinding
 import com.riversongai.databinding.ItemChatUserBinding
@@ -73,7 +74,7 @@ class ChatAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallba
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = android.content.ClipData.newPlainText("Chat Message", text)
             clipboard.setPrimaryClip(clip)
-            Toast.makeText(context, "Copied", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.chat_copy_toast), Toast.LENGTH_SHORT).show()
         }
     }
 

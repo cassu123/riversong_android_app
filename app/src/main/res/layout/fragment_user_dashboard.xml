@@ -94,9 +94,10 @@
                         android:textColor="?attr/colorOnSurfaceVariant" />
 
                     <TextView
+                        android:id="@+id/textViewFactsCountLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Facts"
+                        android:text="@string/profile_facts_stat"
                         android:textSize="12sp"
                         android:textColor="?attr/colorOnSurfaceVariant" />
                 </LinearLayout>
@@ -128,9 +129,10 @@
                         android:textColor="?attr/colorOnSurfaceVariant" />
 
                     <TextView
+                        android:id="@+id/textViewRoutinesCountLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Routines"
+                        android:text="@string/profile_routines_stat"
                         android:textSize="12sp"
                         android:textColor="?attr/colorOnSurfaceVariant" />
                 </LinearLayout>
@@ -154,9 +156,10 @@
                 android:padding="16dp">
 
                 <TextView
+                    android:id="@+id/textViewSmartHomeTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Smart Home"
+                    android:text="@string/profile_smart_home_title"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:textAllCaps="true"
@@ -167,7 +170,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Loading devices…"
+                    android:text="@string/dashboard_loading_summary"
                     android:textSize="14sp"
                     android:textColor="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
@@ -180,7 +183,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:text="Sign Out"
+            android:text="@string/profile_sign_out"
             android:textColor="?attr/colorError"
             app:icon="@drawable/ic_logout"
             app:iconTint="?attr/colorError" />

@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="AI Model"
+            android:text="@string/settings_ai_model"
             android:textSize="12sp"
             android:textAllCaps="true"
             android:textColor="?attr/colorPrimary"
@@ -49,7 +49,7 @@
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Provider"
+                    android:hint="@string/settings_provider_hint"
                     android:layout_marginBottom="8dp">
 
                     <AutoCompleteTextView
@@ -65,7 +65,7 @@
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Model"
+                    android:hint="@string/settings_model_hint"
                     android:layout_marginBottom="16dp">
 
                     <AutoCompleteTextView
@@ -80,7 +80,7 @@
                     android:id="@+id/buttonSaveModel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Save Model" />
+                    android:text="@string/settings_save_model" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonTestConnection"
@@ -88,14 +88,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Test Connection" />
+                    android:text="@string/settings_test_connection" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/switchDarkMode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Dark Mode"
+                    android:text="@string/settings_dark_mode"
                     android:textAppearance="?attr/textAppearanceBodyLarge" />
 
             </LinearLayout>

@@ -31,6 +31,11 @@ class UserDashboardScreen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.textViewFactsCountLabel.text = getString(R.string.profile_facts_stat)
+        binding.textViewRoutinesCountLabel.text = getString(R.string.profile_routines_stat)
+        binding.textViewSmartHomeTitle.text = getString(R.string.profile_smart_home_title)
+        binding.buttonLogout.text = getString(R.string.profile_sign_out)
+
         userDashboardViewModel.sessionExpired.observe(viewLifecycleOwner) { expired ->
             if (expired == true) navigateToLogin()
         }
@@ -57,9 +62,9 @@ class UserDashboardScreen : Fragment() {
         userDashboardViewModel.smartHomeSummary.observe(viewLifecycleOwner) { summary ->
             summary?.let {
                 binding.textViewSmartHomeSummary.text = if (it.totalDevices == 0) {
-                    "Home Assistant not connected"
+                    getString(R.string.profile_ha_not_connected)
                 } else {
-                    "${it.activeDevices} on · ${it.offlineDevices} unavailable · ${it.totalDevices} total"
+                    getString(R.string.profile_smart_home_summary, it.activeDevices, it.offlineDevices, it.totalDevices)
                 }
             }
         }

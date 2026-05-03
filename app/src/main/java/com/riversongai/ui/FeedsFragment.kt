@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
+import com.riversongai.R
 import com.riversongai.databinding.FragmentFeedsBinding
 import com.riversongai.ui.adapter.NewsAdapter
 import com.riversongai.ui.adapter.StockAdapter
@@ -66,7 +67,11 @@ class FeedsFragment : Fragment() {
     }
 
     private fun setupTabs() {
-        listOf("News", "Weather", "Stocks").forEach { name ->
+        listOf(
+            getString(R.string.feeds_tab_news),
+            getString(R.string.feeds_tab_weather),
+            getString(R.string.feeds_tab_stocks)
+        ).forEach { name ->
             binding.tabLayoutFeeds.addTab(binding.tabLayoutFeeds.newTab().setText(name))
         }
 
@@ -94,6 +99,7 @@ class FeedsFragment : Fragment() {
             newsAdapter.submitList(articles)
             if (currentTab == 0) {
                 binding.textViewNewsEmpty.isVisible = articles.isEmpty()
+                binding.textViewNewsEmpty.text = getString(R.string.feeds_news_empty)
             }
         }
 
@@ -101,9 +107,10 @@ class FeedsFragment : Fragment() {
             stockAdapter.submitList(stocks)
             if (currentTab == 2) {
                 binding.textViewStocksEmpty.isVisible = stocks.isEmpty()
+                binding.textViewStocksEmpty.text = getString(R.string.feeds_stocks_empty)
             }
         }
-    ...
+
         feedsViewModel.weather.observe(viewLifecycleOwner) { weather ->
             if (weather != null) {
                 val c = weather.current
@@ -116,6 +123,7 @@ class FeedsFragment : Fragment() {
                 binding.textViewWeatherNotConfigured.isVisible = false
             } else {
                 binding.textViewWeatherNotConfigured.isVisible = true
+                binding.textViewWeatherNotConfigured.text = getString(R.string.feeds_weather_not_configured)
             }
         }
 

@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import com.riversongai.R
 import com.riversongai.data.model.ModelEntry
 import com.riversongai.databinding.FragmentSettingsBinding
 import com.riversongai.ui.viewmodel.SettingsViewModel
@@ -91,7 +92,7 @@ class SettingsFragment : Fragment() {
 
         binding.buttonSaveModel.setOnClickListener {
             if (selectedProvider.isBlank() || selectedModelId.isBlank()) {
-                Toast.makeText(context, "Select a provider and model", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.settings_select_model_error), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             settingsViewModel.saveModel(selectedProvider, selectedModelId)

@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
-import androidx.appcompat.widget.SwitchCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.button.MaterialButton
 import com.riversongai.R
 import com.riversongai.data.model.Device
 import com.riversongai.databinding.FragmentHomeBinding
@@ -57,12 +57,12 @@ class HomeFragment : Fragment() {
 
         homeViewModel.currentUser.observe(viewLifecycleOwner) { user ->
             user?.let {
-                val greeting = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
-                    in 0..11 -> "Good morning"
-                    in 12..16 -> "Good afternoon"
-                    else -> "Good evening"
+                val greetingRes = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+                    in 0..11 -> R.string.home_greeting_morning
+                    in 12..16 -> R.string.home_greeting_afternoon
+                    else -> R.string.home_greeting_evening
                 }
-                binding.textViewGreeting.text = "$greeting, ${it.firstName}!"
+                binding.textViewGreeting.text = getString(greetingRes) + ", ${it.firstName}!"
             }
         }
 
@@ -72,7 +72,7 @@ class HomeFragment : Fragment() {
                 binding.textViewWeatherStatus.text = weather.current.conditionText
             } else {
                 binding.textViewTemp.text = "--°"
-                binding.textViewWeatherStatus.text = "Weather unavailable"
+                binding.textViewWeatherStatus.text = getString(R.string.home_weather_unavailable)
             }
         }
 
@@ -108,20 +108,20 @@ class HomeFragment : Fragment() {
     private fun updateRecentDevices(devices: List<Device>) {
         binding.layoutRecentDevices.removeAllViews()
         binding.textViewNoDevices.isVisible = devices.isEmpty()
-
+        binding.textViewNoDevices.text = getString(R.string.home_no_devices)
+        
         val inflater = LayoutInflater.from(context)
         devices.forEach { device ->
             val itemView = inflater.inflate(R.layout.item_device, binding.layoutRecentDevices, false)
-            itemView.findViewById<TextView>(R.id.textViewDeviceName).text = "${device.icon} ${device.name}"
-            itemView.findViewById<TextView>(R.id.textViewDeviceStatus).text = device.stateDisplay
-
-            val toggle = itemView.findViewById<SwitchCompat>(R.id.switchDevice)
-            toggle.setOnCheckedChangeListener(null)
-            toggle.isChecked = device.isOn
-            toggle.setOnCheckedChangeListener { _, checked ->
-                homeViewModel.toggleDevice(device.entityId, checked)
+            itemView.findViewById<TextView>(R.id.textViewDeviceName).text = device.name
+            itemView.findViewById<TextView>(R.id.textViewDeviceState).text = device.stateDisplay
+            
+            val toggleButton = itemView.findViewById<MaterialButton>(R.id.buttonToggle)
+            toggleButton.setIconResource(if (device.isOn) R.drawable.ic_lightbulb else R.drawable.ic_lightbulb_outline)
+            toggleButton.setOnClickListener {
+                homeViewModel.toggleDevice(device.entityId, !device.isOn)
             }
-
+            
             binding.layoutRecentDevices.addView(itemView)
         }
     }

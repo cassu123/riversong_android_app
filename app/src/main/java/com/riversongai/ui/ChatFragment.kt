@@ -66,6 +66,7 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
                 }
             }
             binding.textViewEmpty.isVisible = messages.isEmpty()
+            binding.textViewEmpty.text = getString(R.string.chat_empty_hint)
         }
 
         chatViewModel.status.observe(viewLifecycleOwner) { status ->
@@ -151,7 +152,7 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
                 if (hasMicPermission()) {
                     chatViewModel.startVoiceInput()
                 } else {
-                    Toast.makeText(context, "Microphone permission required", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.chat_permission_mic_error), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -161,8 +162,8 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
 
     private fun updateTtsIcon() {
         binding.buttonTtsToggle.setIconResource(
-            if (isTtsEnabled) android.R.drawable.ic_lock_silent_mode_off 
-            else android.R.drawable.ic_lock_silent_mode
+            if (isTtsEnabled) R.drawable.ic_volume_up 
+            else R.drawable.ic_volume_off
         )
     }
 

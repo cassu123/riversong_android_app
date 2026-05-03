@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.riversongai.R
 import com.riversongai.databinding.FragmentMemoryBinding
 import com.riversongai.ui.adapter.FactAdapter
 import com.riversongai.ui.viewmodel.MemoryViewModel
@@ -34,10 +35,10 @@ class MemoryFragment : Fragment() {
 
         factAdapter = FactAdapter(onDelete = { fact ->
             AlertDialog.Builder(requireContext())
-                .setTitle("Delete fact")
-                .setMessage("Delete \"${fact.key}\"?")
-                .setPositiveButton("Delete") { _, _ -> memoryViewModel.deleteFact(fact.id) }
-                .setNegativeButton("Cancel", null)
+                .setTitle(R.string.memory_delete_confirm_title)
+                .setMessage(getString(R.string.memory_delete_confirm_message, fact.key))
+                .setPositiveButton(android.R.string.ok) { _, _ -> memoryViewModel.deleteFact(fact.id) }
+                .setNegativeButton(android.R.string.cancel, null)
                 .show()
         })
 
@@ -90,17 +91,17 @@ class MemoryFragment : Fragment() {
             orientation = android.widget.LinearLayout.VERTICAL
             setPadding(48, 32, 48, 0)
         }
-        val keyInput = EditText(context).apply { hint = "Key (e.g. favorite_color)" }
-        val valueInput = EditText(context).apply { hint = "Value (e.g. purple)" }
+        val keyInput = EditText(context).apply { hint = getString(R.string.memory_fact_key_hint) }
+        val valueInput = EditText(context).apply { hint = getString(R.string.memory_fact_value_hint) }
         layout.addView(keyInput)
         layout.addView(valueInput)
         AlertDialog.Builder(requireContext())
-            .setTitle("Add Memory Fact")
+            .setTitle(R.string.memory_add_fact_title)
             .setView(layout)
-            .setPositiveButton("Save") { _, _ ->
+            .setPositiveButton(R.string.memory_save) { _, _ ->
                 memoryViewModel.addFact(keyInput.text.toString(), valueInput.text.toString())
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.memory_cancel, null)
             .show()
     }
 
