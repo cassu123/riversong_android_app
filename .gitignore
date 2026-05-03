@@ -44,4 +44,4 @@
 
 # Native libraries (if you compile C/C++ code via NDK and place libraries here).
 /src/main/jniLibs/
-/src/main/libs/
+/src/main/libs/.claude/
