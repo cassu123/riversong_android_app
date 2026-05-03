@@ -1,0 +1,110 @@
+package com.riversongai.ui.viewmodel
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.riversongai.data.model.FeedPreferences
+import com.riversongai.data.model.NewsArticle
+import com.riversongai.data.model.StockQuote
+import com.riversongai.data.model.WeatherData
+import com.riversongai.data.repository.FeedsRepository
+import kotlinx.coroutines.launch
+
+class FeedsViewModel(private val feedsRepository: FeedsRepository) : ViewModel() {
+
+    private val _news = MutableLiveData<List<NewsArticle>>(emptyList())
+    val news: LiveData<List<NewsArticle>> = _news
+
+    private val _weather = MutableLiveData<WeatherData?>()
+    val weather: LiveData<WeatherData?> = _weather
+
+    private val _stocks = MutableLiveData<List<StockQuote>>(emptyList())
+    val stocks: LiveData<List<StockQuote>> = _stocks
+
+    private val _preferences = MutableLiveData<FeedPreferences?>()
+    val preferences: LiveData<FeedPreferences?> = _preferences
+
+    private val _isLoadingNews = MutableLiveData(false)
+    val isLoadingNews: LiveData<Boolean> = _isLoadingNews
+
+    private val _isLoadingWeather = MutableLiveData(false)
+    val isLoadingWeather: LiveData<Boolean> = _isLoadingWeather
+
+    private val _isLoadingStocks = MutableLiveData(false)
+    val isLoadingStocks: LiveData<Boolean> = _isLoadingStocks
+
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
+
+    private val _saveResult = MutableLiveData<String?>()
+    val saveResult: LiveData<String?> = _saveResult
+
+    init {
+        loadAll()
+    }
+
+    fun loadAll() {
+        loadNews()
+        loadWeather()
+        loadStocks()
+    }
+
+    fun loadNews() {
+        viewModelScope.launch {
+            _isLoadingNews.value = true
+            feedsRepository.getNews().fold(
+                onSuccess = { _news.value = it },
+                onFailure = { _error.value = it.message }
+            )
+            _isLoadingNews.value = false
+        }
+    }
+
+    fun loadWeather() {
+        viewModelScope.launch {
+            _isLoadingWeather.value = true
+            feedsRepository.getWeather().fold(
+                onSuccess = { _weather.value = it },
+                onFailure = { /* weather may just not be configured */ }
+            )
+            _isLoadingWeather.value = false
+        }
+    }
+
+    fun loadStocks() {
+        viewModelScope.launch {
+            _isLoadingStocks.value = true
+            feedsRepository.getStocks().fold(
+                onSuccess = { _stocks.value = it },
+                onFailure = { /* stocks may not be configured */ }
+            )
+            _isLoadingStocks.value = false
+        }
+    }
+
+    fun loadPreferences() {
+        viewModelScope.launch {
+            feedsRepository.getFeedPreferences().fold(
+                onSuccess = { _preferences.value = it },
+                onFailure = { _error.value = it.message }
+            )
+        }
+    }
+
+    fun savePreferences(prefs: FeedPreferences) {
+        viewModelScope.launch {
+            feedsRepository.saveFeedPreferences(prefs).fold(
+                onSuccess = {
+                    _preferences.value = prefs
+                    _saveResult.value = "Preferences saved"
+                    loadAll()
+                },
+                onFailure = { _error.value = it.message }
+            )
+        }
+    }
+
+    fun clearError() { _error.value = null }
+    fun clearSaveResult() { _saveResult.value = null }
+}

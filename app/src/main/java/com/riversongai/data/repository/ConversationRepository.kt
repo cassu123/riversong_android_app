@@ -79,6 +79,14 @@ class ConversationRepository(private val sessionManager: SessionManager) {
         webSocket?.send(payload.toString())
     }
 
+    fun sendAudio(base64Wav: String) {
+        val payload = JSONObject().apply {
+            put("type", "audio_data")
+            put("data", base64Wav)
+        }
+        webSocket?.send(payload.toString())
+    }
+
     fun resetHistory() {
         val payload = JSONObject().apply { put("type", "reset_history") }
         webSocket?.send(payload.toString())

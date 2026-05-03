@@ -17,8 +17,13 @@
         android:title="Devices" />
 
     <item
-        android:id="@+id/userDashboardScreen"
-        android:icon="@drawable/ic_profile"
-        android:title="Profile" />
+        android:id="@+id/feedsFragment"
+        android:icon="@drawable/ic_feeds"
+        android:title="Feeds" />
+
+    <item
+        android:id="@+id/moreFragment"
+        android:icon="@drawable/ic_more"
+        android:title="More" />
 
 </menu>

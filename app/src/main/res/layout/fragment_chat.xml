@@ -140,6 +140,15 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonMic"
+            style="@style/Widget.Material3.Button.IconButton.Tonal"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            app:icon="@drawable/ic_mic"
+            android:contentDescription="Voice input" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonSend"
             style="@style/Widget.Material3.Button.IconButton.Filled"
             android:layout_width="48dp"

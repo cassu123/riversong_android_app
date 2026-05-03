@@ -43,5 +43,31 @@
     <string name="chat_status_thinking">River Song is thinking…</string>
     <string name="chat_status_speaking">Speaking…</string>
     <string name="chat_empty_hint">Say hello to River Song!</string>
+    <string name="chat_listening">Listening…</string>
+    <string name="chat_processing_voice">Processing voice…</string>
 
+    <string name="memory_title">Memory</string>
+    <string name="memory_empty">No memory facts yet.\nTap + to add one.</string>
+    <string name="memory_add_fact">Add Fact</string>
+    <string name="memory_fact_key_hint">Key (e.g. favorite_color)</string>
+    <string name="memory_fact_value_hint">Value (e.g. purple)</string>
+
+    <string name="feeds_tab_news">News</string>
+    <string name="feeds_tab_weather">Weather</string>
+    <string name="feeds_tab_stocks">Stocks</string>
+    <string name="feeds_weather_not_configured">Weather not configured.\nGo to Feed Settings to set your location.</string>
+
+    <string name="routines_title">Routines</string>
+    <string name="routines_empty">No routines yet.\nTap + to create one.</string>
+    <string name="routines_create">Create Routine</string>
+    <string name="routines_name_hint">Routine name</string>
+    <string name="routines_prompt_hint">What should River Song do?</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_ai_model">AI Model</string>
+    <string name="settings_provider_hint">Provider</string>
+    <string name="settings_model_hint">Model</string>
+    <string name="settings_save_model">Save Model</string>
+
+    <string name="more_title">More Features</string>
 </resources>

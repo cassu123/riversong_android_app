@@ -1,10 +1,14 @@
 package com.riversongai.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -56,15 +60,25 @@ class ChatFragment : Fragment() {
                     binding.textViewStatus.isVisible = true
                     binding.textViewStatus.text = getString(R.string.chat_status_thinking)
                     binding.buttonSend.isEnabled = false
+                    binding.buttonMic.isEnabled = false
                 }
                 "speaking" -> {
                     binding.textViewStatus.isVisible = true
                     binding.textViewStatus.text = getString(R.string.chat_status_speaking)
                     binding.buttonSend.isEnabled = false
+                    binding.buttonMic.isEnabled = false
+                }
+                "listening" -> {
+                    binding.textViewStatus.isVisible = true
+                    binding.textViewStatus.text = getString(R.string.chat_listening)
+                    binding.buttonMic.setImageResource(R.drawable.ic_mic)
+                    binding.buttonSend.isEnabled = false
                 }
                 else -> {
                     binding.textViewStatus.isVisible = false
                     binding.buttonSend.isEnabled = true
+                    binding.buttonMic.isEnabled = true
+                    binding.buttonMic.setImageResource(R.drawable.ic_mic)
                 }
             }
         }
@@ -103,6 +117,18 @@ class ChatFragment : Fragment() {
         binding.buttonClearHistory.setOnClickListener {
             chatViewModel.clearHistory()
         }
+
+        binding.buttonMic.setOnClickListener {
+            if (chatViewModel.isRecording) {
+                chatViewModel.stopVoiceInput()
+            } else {
+                if (hasMicPermission()) {
+                    chatViewModel.startVoiceInput()
+                } else {
+                    Toast.makeText(context, "Microphone permission required", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun sendMessage() {
@@ -112,8 +138,12 @@ class ChatFragment : Fragment() {
         chatViewModel.sendMessage(text)
     }
 
+    private fun hasMicPermission(): Boolean =
+        ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+
     override fun onDestroyView() {
         super.onDestroyView()
+        chatViewModel.cancelVoiceIfActive()
         _binding = null
     }
 }

@@ -28,7 +28,8 @@ class MainActivity : AppCompatActivity() {
         R.id.homeFragment,
         R.id.chatFragment,
         R.id.smartHomeControlScreen,
-        R.id.userDashboardScreen
+        R.id.feedsFragment,
+        R.id.moreFragment
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

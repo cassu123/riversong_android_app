@@ -1,18 +1,21 @@
 package com.riversongai.ui.viewmodel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.riversongai.data.model.ChatMessage
 import com.riversongai.data.repository.ConversationRepository
+import com.riversongai.utils.AudioRecorder
 import com.riversongai.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ChatViewModel(
+    app: Application,
     private val conversationRepository: ConversationRepository
-) : ViewModel() {
+) : AndroidViewModel(app) {
 
     private val _messages = MutableLiveData<List<ChatMessage>>(emptyList())
     val messages: LiveData<List<ChatMessage>> = _messages
@@ -25,6 +28,9 @@ class ChatViewModel(
 
     private val _connectionError = MutableLiveData<String?>()
     val connectionError: LiveData<String?> = _connectionError
+
+    private val audioRecorder = AudioRecorder(app)
+    val isRecording: Boolean get() = audioRecorder.isActive
 
     init {
         connect()
@@ -57,15 +63,41 @@ class ChatViewModel(
 
     fun sendMessage(text: String) {
         if (text.isBlank()) return
-
-        val userMsg = ChatMessage("user", text.trim())
-        appendMessage(userMsg)
+        appendMessage(ChatMessage("user", text.trim()))
         _status.value = "thinking"
-
-        if (!conversationRepository.isConnected()) {
-            connect()
-        }
+        if (!conversationRepository.isConnected()) connect()
         conversationRepository.sendText(text.trim())
+    }
+
+    @androidx.annotation.RequiresPermission(android.Manifest.permission.RECORD_AUDIO)
+    fun startVoiceInput() {
+        audioRecorder.start()
+        _status.value = "listening"
+    }
+
+    fun stopVoiceInput() {
+        _status.value = "transcribing"
+        viewModelScope.launch(Dispatchers.IO) {
+            @Suppress("MissingPermission")
+            val base64Wav = audioRecorder.stopAndEncode()
+            viewModelScope.launch(Dispatchers.Main) {
+                if (base64Wav.isNotBlank()) {
+                    appendMessage(ChatMessage("user", "🎤 Voice message"))
+                    _status.value = "thinking"
+                    if (!conversationRepository.isConnected()) connect()
+                    conversationRepository.sendAudio(base64Wav)
+                } else {
+                    _status.value = "idle"
+                }
+            }
+        }
+    }
+
+    fun cancelVoiceIfActive() {
+        if (audioRecorder.isActive) {
+            audioRecorder.cancel()
+            _status.value = "idle"
+        }
     }
 
     fun clearHistory() {
@@ -109,9 +141,7 @@ class ChatViewModel(
                 "idle" -> _status.value = "idle"
                 "error" -> {
                     _status.value = "idle"
-                    if (!text.isNullOrBlank()) {
-                        appendMessage(ChatMessage("system", "⚠️ $text"))
-                    }
+                    if (!text.isNullOrBlank()) appendMessage(ChatMessage("system", "⚠️ $text"))
                 }
             }
         }
@@ -125,6 +155,7 @@ class ChatViewModel(
 
     override fun onCleared() {
         super.onCleared()
+        audioRecorder.cancel()
         conversationRepository.disconnect()
     }
 }

@@ -51,6 +51,55 @@
         tools:layout="@layout/fragment_smart_home_control" />
 
     <fragment
+        android:id="@+id/feedsFragment"
+        android:name="com.riversongai.ui.FeedsFragment"
+        android:label="Feeds"
+        tools:layout="@layout/fragment_feeds" />
+
+    <fragment
+        android:id="@+id/moreFragment"
+        android:name="com.riversongai.ui.MoreFragment"
+        android:label="More"
+        tools:layout="@layout/fragment_more">
+        <action
+            android:id="@+id/action_moreFragment_to_memoryFragment"
+            app:destination="@id/memoryFragment" />
+        <action
+            android:id="@+id/action_moreFragment_to_routinesFragment"
+            app:destination="@id/routinesFragment" />
+        <action
+            android:id="@+id/action_moreFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_moreFragment_to_feedSettingsFragment"
+            app:destination="@id/feedSettingsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/memoryFragment"
+        android:name="com.riversongai.ui.MemoryFragment"
+        android:label="Memory"
+        tools:layout="@layout/fragment_memory" />
+
+    <fragment
+        android:id="@+id/routinesFragment"
+        android:name="com.riversongai.ui.RoutinesFragment"
+        android:label="Routines"
+        tools:layout="@layout/fragment_routines" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.riversongai.ui.SettingsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/feedSettingsFragment"
+        android:name="com.riversongai.ui.FeedSettingsFragment"
+        android:label="Feed Settings"
+        tools:layout="@layout/fragment_feed_settings" />
+
+    <fragment
         android:id="@+id/userDashboardScreen"
         android:name="com.riversongai.ui.UserDashboardScreen"
         android:label="Profile"
