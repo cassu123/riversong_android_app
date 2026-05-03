@@ -26,9 +26,7 @@ android {
         }
         debug {
             minifyEnabled false
-            // Dev: talk directly to the backend on your home network.
-            // Use 10.0.2.2 for the Android emulator, or your machine's LAN IP for a real device.
-            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5000/\"")
+            buildConfigField("String", "BASE_URL", "\"https://riversongai.com/\"")
         }
     }
 
