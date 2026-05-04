@@ -10,63 +10,77 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center_horizontal">
+        android:padding="20dp">
 
-        <!-- Avatar Circle -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            app:cardCornerRadius="40dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="0dp"
-            android:backgroundTint="?attr/colorPrimary">
-
-            <TextView
-                android:id="@+id/textViewAvatarInitial"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="U"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="32sp"
-                android:textStyle="bold" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <TextView
-            android:id="@+id/textViewDisplayName"
-            android:layout_width="wrap_content"
+        <!-- Avatar + name + role -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="User Name"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
 
-        <TextView
-            android:id="@+id/textViewEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="user@example.com"
-            android:textSize="14sp"
-            android:textColor="?attr/colorOnSurfaceVariant" />
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                app:cardCornerRadius="32dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                android:backgroundTint="?attr/colorPrimaryContainer">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipRole"
-            style="@style/Widget.Material3.Chip.Suggestion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Admin"
-            app:chipMinHeight="32dp" />
+                <TextView
+                    android:id="@+id/textViewAvatarInitial"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="U"
+                    android:textColor="?attr/colorOnPrimaryContainer"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="16dp">
+
+                <TextView
+                    android:id="@+id/textViewDisplayName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User Name"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/textViewEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="user@example.com"
+                    android:textSize="13sp"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipRole"
+                    style="@style/Widget.Material3.Chip.Suggestion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="User"
+                    app:chipMinHeight="28dp" />
+
+            </LinearLayout>
+        </LinearLayout>
 
         <!-- Stats Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
@@ -75,30 +89,28 @@
                 android:layout_marginEnd="8dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
-                android:backgroundTint="?attr/colorSurfaceVariant">
-
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutlineVariant">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp"
                     android:gravity="center">
-
                     <TextView
                         android:id="@+id/textViewFactsCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
-                        android:textSize="20sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"
-                        android:textColor="?attr/colorOnSurfaceVariant" />
-
+                        android:textColor="?attr/colorPrimary" />
                     <TextView
                         android:id="@+id/textViewFactsCountLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_facts_stat"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textColor="?attr/colorOnSurfaceVariant" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -110,100 +122,109 @@
                 android:layout_marginStart="8dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
-                android:backgroundTint="?attr/colorSurfaceVariant">
-
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutlineVariant">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp"
                     android:gravity="center">
-
                     <TextView
                         android:id="@+id/textViewRoutinesCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
-                        android:textSize="20sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"
-                        android:textColor="?attr/colorOnSurfaceVariant" />
-
+                        android:textColor="?attr/colorPrimary" />
                     <TextView
                         android:id="@+id/textViewRoutinesCountLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_routines_stat"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textColor="?attr/colorOnSurfaceVariant" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 
-        <!-- Smart Home Summary -->
+        <!-- INTERFACE SKIN -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="INTERFACE SKIN"
+            android:textSize="12sp"
+            android:textAllCaps="true"
+            android:textColor="?attr/colorPrimary"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="8dp" />
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
-            android:backgroundTint="?attr/colorSurfaceVariant">
+            app:cardCornerRadius="12dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutlineVariant"
+            android:layout_marginBottom="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="12dp">
 
                 <TextView
-                    android:id="@+id/textViewSmartHomeTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/profile_smart_home_title"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textAllCaps="true"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
-
-                <TextView
-                    android:id="@+id/textViewSmartHomeSummary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/dashboard_loading_summary"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:text="Choose how River's interface looks. Matches your profile on web."
+                    android:textSize="12sp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:layout_marginBottom="12dp"
+                    android:lineSpacingMultiplier="1.4" />
+
+                <LinearLayout
+                    android:id="@+id/themeGrid"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Edit Profile Card -->
+        <!-- IDENTITY -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="IDENTITY"
+            android:textSize="12sp"
+            android:textAllCaps="true"
+            android:textColor="?attr/colorPrimary"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="8dp" />
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorOutlineVariant">
+            app:strokeColor="?attr/colorOutlineVariant"
+            android:layout_marginBottom="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Edit Profile"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/layoutFirstName"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
                     android:hint="First Name">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextFirstName"
@@ -251,18 +272,29 @@
                     android:layout_marginTop="4dp"
                     android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
                     android:visibility="gone" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Change Password Card -->
+        <!-- CHANGE PASSWORD -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CHANGE CIPHER"
+            android:textSize="12sp"
+            android:textAllCaps="true"
+            android:textColor="?attr/colorPrimary"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="8dp" />
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="16dp"
+            app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorOutlineVariant">
+            app:strokeColor="?attr/colorOutlineVariant"
+            android:layout_marginBottom="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -270,18 +302,11 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Change Password"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
-
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/layoutCurrentPassword"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
                     android:hint="Current Password"
                     app:passwordToggleEnabled="true">
                     <com.google.android.material.textfield.TextInputEditText
@@ -335,113 +360,50 @@
                     android:layout_marginTop="4dp"
                     android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
                     android:visibility="gone" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Theme Selection Card -->
+        <!-- Smart Home Summary -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="16dp"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
             app:strokeColor="?attr/colorOutlineVariant">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
-
                 <TextView
+                    android:id="@+id/textViewSmartHomeTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="App Theme"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
-
-                <GridLayout
+                    android:text="@string/profile_smart_home_title"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+                <TextView
+                    android:id="@+id/textViewSmartHomeSummary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:columnCount="2"
-                    android:rowCount="2">
-
-                    <!-- Default Blue -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardThemeDefault"
-                        android:layout_width="0dp"
-                        android:layout_height="60dp"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="0dp"
-                        app:strokeWidth="1dp"
-                        app:strokeColor="?attr/colorOutlineVariant">
-                        <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="#004A77" />
-                        <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="Blue" android:textColor="#FFFFFF" />
-                        <ImageView android:id="@+id/imageCheckDefault" android:layout_width="24dp" android:layout_height="24dp" android:layout_gravity="end|top" android:src="@drawable/ic_check" android:visibility="gone" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Halo -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardThemeHalo"
-                        android:layout_width="0dp"
-                        android:layout_height="60dp"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="0dp"
-                        app:strokeWidth="1dp"
-                        app:strokeColor="?attr/colorOutlineVariant">
-                        <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="#00e5ff" />
-                        <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="Halo" android:textColor="#000000" />
-                        <ImageView android:id="@+id/imageCheckHalo" android:layout_width="24dp" android:layout_height="24dp" android:layout_gravity="end|top" android:src="@drawable/ic_check" android:visibility="gone" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Cyberpunk -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardThemeCyberpunk"
-                        android:layout_width="0dp"
-                        android:layout_height="60dp"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="0dp"
-                        app:strokeWidth="1dp"
-                        app:strokeColor="?attr/colorOutlineVariant">
-                        <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="#e8ff00" />
-                        <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="Cyber" android:textColor="#000000" />
-                        <ImageView android:id="@+id/imageCheckCyberpunk" android:layout_width="24dp" android:layout_height="24dp" android:layout_gravity="end|top" android:src="@drawable/ic_check" android:visibility="gone" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Crimson -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardThemeCrimson"
-                        android:layout_width="0dp"
-                        android:layout_height="60dp"
-                        android:layout_columnWeight="1"
-                        android:layout_margin="4dp"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="0dp"
-                        app:strokeWidth="1dp"
-                        app:strokeColor="?attr/colorOutlineVariant">
-                        <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="#762011" />
-                        <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="Crimson" android:textColor="#FFFFFF" />
-                        <ImageView android:id="@+id/imageCheckCrimson" android:layout_width="24dp" android:layout_height="24dp" android:layout_gravity="end|top" android:src="@drawable/ic_check" android:visibility="gone" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                </GridLayout>
+                    android:layout_marginTop="4dp"
+                    android:text="@string/dashboard_loading_summary"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Logout Button -->
+        <!-- Sign Out -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonLogout"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
             android:text="@string/profile_sign_out"
             android:textColor="?attr/colorError"
             app:icon="@drawable/ic_logout"

@@ -160,6 +160,72 @@ interface RiverSongApiService {
     @POST("api/tts/preview")
     suspend fun testVoice(@Body body: Map<String, String>): Response<okhttp3.ResponseBody>
 
+    // ── Inventory ─────────────────────────────────────────────────────────────
+    @GET("api/inventory/homes")
+    suspend fun getInventoryHomes(): Response<List<com.riversongai.data.model.InventoryHome>>
+
+    @POST("api/inventory/homes")
+    suspend fun createInventoryHome(@Body body: com.riversongai.data.model.CreateInventoryHome): Response<com.riversongai.data.model.InventoryHome>
+
+    @DELETE("api/inventory/homes/{homeId}")
+    suspend fun deleteInventoryHome(@Path("homeId") homeId: String): Response<Void>
+
+    @GET("api/inventory/homes/{homeId}/items")
+    suspend fun getInventoryItems(@Path("homeId") homeId: String): Response<List<com.riversongai.data.model.InventoryItem>>
+
+    @POST("api/inventory/homes/{homeId}/items")
+    suspend fun createInventoryItem(@Path("homeId") homeId: String, @Body body: com.riversongai.data.model.CreateInventoryItem): Response<com.riversongai.data.model.InventoryItem>
+
+    @PATCH("api/inventory/items/{itemId}")
+    suspend fun updateInventoryItem(@Path("itemId") itemId: String, @Body body: com.riversongai.data.model.CreateInventoryItem): Response<com.riversongai.data.model.InventoryItem>
+
+    @DELETE("api/inventory/items/{itemId}")
+    suspend fun deleteInventoryItem(@Path("itemId") itemId: String): Response<Void>
+
+    // ── Vehicles / Maintenance ─────────────────────────────────────────────
+    @GET("api/vehicles/")
+    suspend fun getVehicles(): Response<List<com.riversongai.data.model.Vehicle>>
+
+    @POST("api/vehicles/")
+    suspend fun createVehicle(@Body body: com.riversongai.data.model.CreateVehicle): Response<com.riversongai.data.model.Vehicle>
+
+    @PATCH("api/vehicles/{vehicleId}")
+    suspend fun updateVehicle(@Path("vehicleId") vehicleId: String, @Body body: com.riversongai.data.model.CreateVehicle): Response<com.riversongai.data.model.Vehicle>
+
+    @DELETE("api/vehicles/{vehicleId}")
+    suspend fun deleteVehicle(@Path("vehicleId") vehicleId: String): Response<Void>
+
+    @GET("api/vehicles/{vehicleId}/specs/checkpoints")
+    suspend fun getServiceCheckpoints(@Path("vehicleId") vehicleId: String): Response<List<com.riversongai.data.model.ServiceCheckpoint>>
+
+    @GET("api/vehicles/{vehicleId}/logs")
+    suspend fun getServiceLogs(@Path("vehicleId") vehicleId: String): Response<List<com.riversongai.data.model.ServiceLog>>
+
+    @POST("api/vehicles/{vehicleId}/logs")
+    suspend fun createServiceLog(@Path("vehicleId") vehicleId: String, @Body body: com.riversongai.data.model.CreateServiceLog): Response<com.riversongai.data.model.ServiceLog>
+
+    // ── Commerce / Store ───────────────────────────────────────────────────
+    @GET("api/commerce/workspaces")
+    suspend fun getWorkspaces(): Response<List<com.riversongai.data.model.CommerceWorkspace>>
+
+    @POST("api/commerce/workspaces")
+    suspend fun createWorkspace(@Body body: com.riversongai.data.model.CreateWorkspace): Response<com.riversongai.data.model.CommerceWorkspace>
+
+    @GET("api/commerce/workspaces/{workspaceId}/products")
+    suspend fun getProducts(@Path("workspaceId") workspaceId: String): Response<List<com.riversongai.data.model.Product>>
+
+    @POST("api/commerce/workspaces/{workspaceId}/products")
+    suspend fun createProduct(@Path("workspaceId") workspaceId: String, @Body body: com.riversongai.data.model.CreateProduct): Response<com.riversongai.data.model.Product>
+
+    @PATCH("api/commerce/products/{productId}")
+    suspend fun updateProduct(@Path("productId") productId: String, @Body body: com.riversongai.data.model.CreateProduct): Response<com.riversongai.data.model.Product>
+
+    @DELETE("api/commerce/products/{productId}")
+    suspend fun deleteProduct(@Path("productId") productId: String): Response<Void>
+
+    @POST("api/commerce/products/{productId}/stock")
+    suspend fun adjustStock(@Path("productId") productId: String, @Body body: com.riversongai.data.model.StockAdjust): Response<com.riversongai.data.model.Product>
+
     // Dashboard
     @GET("api/dashboard")
     suspend fun getDashboard(): Response<DashboardStats>

@@ -1,24 +1,28 @@
 package com.riversongai.ui
 
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.AttrRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import com.riversongai.R
+import com.riversongai.data.model.MemoryTtlSettings
 import com.riversongai.data.model.ModelEntry
+import com.riversongai.data.model.VoiceOption
 import com.riversongai.databinding.FragmentSettingsBinding
 import com.riversongai.ui.viewmodel.SettingsViewModel
-import com.riversongai.utils.ThemeManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
-import android.media.MediaPlayer
-import com.riversongai.data.model.MemoryTtlSettings
-import com.riversongai.data.model.VoiceOption
 import java.io.File
 import java.io.FileOutputStream
 
@@ -26,7 +30,6 @@ class SettingsFragment : Fragment() {
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
-
     private val settingsViewModel: SettingsViewModel by viewModel()
 
     private var allModels: List<ModelEntry> = emptyList()
@@ -35,29 +38,28 @@ class SettingsFragment : Fragment() {
     private var selectedProvider: String = ""
     private var selectedModelId: String = ""
 
-    private var allVoices: List<VoiceOption> = emptyList()
-    private val ttsProviderList = mutableListOf<String>()
-    private val voiceListForProvider = mutableListOf<VoiceOption>()
-    private var selectedTtsProvider: String = ""
-    private var selectedVoice: VoiceOption? = null
-
+    private var previewingVoiceId: String? = null
     private var mediaPlayer: MediaPlayer? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupLlmSection()
         setupVoiceSection()
         setupMemoryTtlSection()
-        
         settingsViewModel.loadVoices()
         settingsViewModel.loadMemoryTtl()
     }
+
+    // ── AI MODEL ─────────────────────────────────────────────────────────────
 
     private fun setupLlmSection() {
         settingsViewModel.modelCatalog.observe(viewLifecycleOwner) { catalog ->
@@ -65,12 +67,11 @@ class SettingsFragment : Fragment() {
             allModels = catalog.local + catalog.cloud
             providerList.clear()
             providerList.addAll(allModels.map { it.provider }.distinct())
-
-            val providerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, providerList)
-            binding.spinnerProvider.setAdapter(providerAdapter)
-
-            binding.spinnerProvider.setOnItemClickListener { _, _, position, _ ->
-                selectedProvider = providerList[position]
+            binding.spinnerProvider.setAdapter(
+                ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, providerList)
+            )
+            binding.spinnerProvider.setOnItemClickListener { _, _, pos, _ ->
+                selectedProvider = providerList[pos]
                 updateModelsForProvider(selectedProvider)
             }
         }
@@ -84,22 +85,16 @@ class SettingsFragment : Fragment() {
             updateModelsForProvider(settings.provider, preselectModel = settings.model)
         }
 
-        settingsViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
-            binding.progressBarSettings.isVisible = loading
-        }
+        settingsViewModel.isLoading.observe(viewLifecycleOwner) { binding.progressBarSettings.isVisible = it }
 
         settingsViewModel.saveResult.observe(viewLifecycleOwner) { result ->
-            result?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                settingsViewModel.clearSaveResult()
-            }
+            result?.let { Toast.makeText(context, it, Toast.LENGTH_SHORT).show(); settingsViewModel.clearSaveResult() }
         }
 
         settingsViewModel.connectionTestResult.observe(viewLifecycleOwner) { result ->
             result?.let {
                 Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG)
-                    .setBackgroundTint(requireContext().getColor(android.R.color.holo_green_dark))
-                    .show()
+                    .setBackgroundTint(requireContext().getColor(android.R.color.holo_green_dark)).show()
                 settingsViewModel.clearConnectionTestResult()
             }
         }
@@ -107,8 +102,7 @@ class SettingsFragment : Fragment() {
         settingsViewModel.error.observe(viewLifecycleOwner) { error ->
             error?.let {
                 Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG)
-                    .setBackgroundTint(requireContext().getColor(android.R.color.holo_red_dark))
-                    .show()
+                    .setBackgroundTint(requireContext().getColor(android.R.color.holo_red_dark)).show()
                 settingsViewModel.clearError()
             }
         }
@@ -121,152 +115,218 @@ class SettingsFragment : Fragment() {
             settingsViewModel.saveModel(selectedProvider, selectedModelId)
         }
 
-        binding.buttonTestConnection.setOnClickListener {
-            settingsViewModel.testConnection()
-        }
-
-        setupThemeSelector()
+        binding.buttonTestConnection.setOnClickListener { settingsViewModel.testConnection() }
     }
 
-    private fun setupThemeSelector() {
-        val themes = listOf(
-            ThemeManager.THEME_DEFAULT to "River Song Blue (Dark)",
-            ThemeManager.THEME_HALO to "Halo (Cyan)",
-            ThemeManager.THEME_CRIMSON to "Crimson (Red)",
-            ThemeManager.THEME_COMBAT to "Combat (Green)",
-            ThemeManager.THEME_VIOLET to "Violet (Plum)",
-            ThemeManager.THEME_PEACH to "Peach Dream (Light)",
-            ThemeManager.THEME_ARCTIC to "Arctic (Light)",
-            ThemeManager.THEME_CYBERPUNK to "Cyberpunk (Neon)",
-            ThemeManager.THEME_DUNE to "Dune (Gold)"
+    private fun updateModelsForProvider(provider: String, preselectModel: String? = null) {
+        modelListForProvider.clear()
+        modelListForProvider.addAll(allModels.filter { it.provider == provider }.map { it.modelId })
+        binding.spinnerModel.setAdapter(
+            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, modelListForProvider)
         )
-
-        val names = themes.map { it.second }
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, names)
-        binding.spinnerTheme.setAdapter(adapter)
-
-        val currentTheme = ThemeManager.getSelectedTheme(requireContext())
-        val currentName = themes.find { it.first == currentTheme }?.second ?: names[0]
-        binding.spinnerTheme.setText(currentName, false)
-
-        binding.spinnerTheme.setOnItemClickListener { _, _, position, _ ->
-            val themeKey = themes[position].first
-            ThemeManager.setTheme(requireContext(), themeKey)
-            requireActivity().recreate()
+        if (preselectModel != null && modelListForProvider.contains(preselectModel)) {
+            binding.spinnerModel.setText(preselectModel, false)
+            selectedModelId = preselectModel
+        }
+        binding.spinnerModel.setOnItemClickListener { _, _, pos, _ ->
+            selectedModelId = modelListForProvider[pos]
         }
     }
+
+    // ── VOICE — card list with ▶ Preview button ───────────────────────────────
 
     private fun setupVoiceSection() {
         settingsViewModel.voices.observe(viewLifecycleOwner) { voices ->
-            allVoices = voices
-            ttsProviderList.clear()
-            ttsProviderList.addAll(voices.map { it.provider }.distinct())
-            
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, ttsProviderList)
-            binding.spinnerTtsProvider.setAdapter(adapter)
-            
-            binding.spinnerTtsProvider.setOnItemClickListener { _, _, position, _ ->
-                selectedTtsProvider = ttsProviderList[position]
-                updateVoicesForProvider(selectedTtsProvider)
-            }
+            rebuildVoiceCards(voices, settingsViewModel.selectedVoice.value)
+        }
+
+        settingsViewModel.selectedVoice.observe(viewLifecycleOwner) { selected ->
+            rebuildVoiceCards(settingsViewModel.voices.value ?: emptyList(), selected)
         }
 
         settingsViewModel.voicePreviewData.observe(viewLifecycleOwner) { data ->
-            data?.let {
-                playPreview(it)
-                settingsViewModel.clearVoicePreviewData()
+            data?.let { playPreview(it); settingsViewModel.clearVoicePreviewData() }
+        }
+    }
+
+    private fun rebuildVoiceCards(voices: List<VoiceOption>, activeVoice: VoiceOption?) {
+        val container = binding.voiceContainer
+        container.removeAllViews()
+
+        if (voices.isEmpty()) {
+            container.addView(TextView(requireContext()).apply {
+                text = "No voices available"
+                setTextColor(resolveThemeColor(com.google.android.material.R.attr.colorOnSurfaceVariant))
+                textSize = 13f
+            })
+            return
+        }
+
+        val primary          = resolveThemeColor(com.google.android.material.R.attr.colorPrimary)
+        val onSurface        = resolveThemeColor(com.google.android.material.R.attr.colorOnSurface)
+        val onSurfaceVariant = resolveThemeColor(com.google.android.material.R.attr.colorOnSurfaceVariant)
+        val outlineVariant   = resolveThemeColor(com.google.android.material.R.attr.colorOutlineVariant)
+        val surfaceVariant   = resolveThemeColor(com.google.android.material.R.attr.colorSurfaceVariant)
+
+        voices.groupBy { it.provider }.forEach { (provider, provVoices) ->
+
+            // Provider group header
+            container.addView(TextView(requireContext()).apply {
+                text = provider.uppercase()
+                setTextColor(primary)
+                textSize = 10f
+                letterSpacing = 0.10f
+                val lp = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                lp.topMargin = 8.dp; lp.bottomMargin = 4.dp
+                layoutParams = lp
+            })
+
+            provVoices.forEach { voice ->
+                val isActive = activeVoice?.id == voice.id
+
+                val card = MaterialCardView(requireContext()).apply {
+                    radius = 8f * resources.displayMetrics.density
+                    setCardBackgroundColor(surfaceVariant)
+                    strokeWidth = if (isActive) 2.dp else 0
+                    strokeColor = primary
+                    cardElevation = 0f
+                    val lp = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    lp.bottomMargin = 8.dp
+                    layoutParams = lp
+                    isClickable = true
+                    isFocusable = true
+                    setOnClickListener { settingsViewModel.selectVoice(voice) }
+                }
+
+                val row = LinearLayout(requireContext()).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = android.view.Gravity.CENTER_VERTICAL
+                    setPadding(12.dp, 12.dp, 12.dp, 12.dp)
+                }
+
+                // Name + provider label
+                val nameCol = LinearLayout(requireContext()).apply {
+                    orientation = LinearLayout.VERTICAL
+                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                }
+                nameCol.addView(TextView(requireContext()).apply {
+                    text = voice.name
+                    setTextColor(if (isActive) primary else onSurface)
+                    textSize = 14f
+                    if (isActive) setTypeface(null, android.graphics.Typeface.BOLD)
+                })
+                nameCol.addView(TextView(requireContext()).apply {
+                    text = voice.provider
+                    setTextColor(onSurfaceVariant)
+                    textSize = 11f
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).also { it.topMargin = 2.dp }
+                })
+                row.addView(nameCol)
+
+                // Preview button
+                val previewBtn = MaterialButton(requireContext(),
+                    null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
+                    text = if (previewingVoiceId == voice.id) "◉ Playing" else "▶ Preview"
+                    textSize = 11f
+                    isEnabled = previewingVoiceId == null || previewingVoiceId == voice.id
+                    setPadding(10.dp, 0, 10.dp, 0)
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).also { it.marginStart = 8.dp }
+                    setOnClickListener {
+                        if (previewingVoiceId == null) {
+                            previewingVoiceId = voice.id
+                            rebuildVoiceCards(
+                                settingsViewModel.voices.value ?: emptyList(),
+                                settingsViewModel.selectedVoice.value
+                            )
+                            settingsViewModel.testVoice(voice.id)
+                        }
+                    }
+                }
+                row.addView(previewBtn)
+                card.addView(row)
+                container.addView(card)
             }
         }
-
-        binding.buttonTestVoice.setOnClickListener {
-            selectedVoice?.let {
-                settingsViewModel.testVoice(it.id)
-            } ?: Toast.makeText(context, "Select a voice first", Toast.LENGTH_SHORT).show()
-        }
     }
 
-    private fun updateVoicesForProvider(provider: String) {
-        voiceListForProvider.clear()
-        voiceListForProvider.addAll(allVoices.filter { it.provider == provider })
-        
-        val names = voiceListForProvider.map { it.name }
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, names)
-        binding.spinnerVoice.setAdapter(adapter)
-        binding.spinnerVoice.setText("", false)
-        selectedVoice = null
-        
-        binding.spinnerVoice.setOnItemClickListener { _, _, position, _ ->
-            selectedVoice = voiceListForProvider[position]
-        }
+    private val Int.dp: Int
+        get() = (this * resources.displayMetrics.density + 0.5f).toInt()
+
+    private fun resolveThemeColor(@AttrRes attr: Int): Int {
+        val tv = TypedValue()
+        requireContext().theme.resolveAttribute(attr, tv, true)
+        return tv.data
     }
+
+    // ── MEMORY TTL ────────────────────────────────────────────────────────────
 
     private fun setupMemoryTtlSection() {
         settingsViewModel.memoryTtl.observe(viewLifecycleOwner) { ttl ->
             ttl?.let {
                 when (it.ttl) {
-                    "7d" -> binding.radioTtl7d.isChecked = true
-                    "30d" -> binding.radioTtl30d.isChecked = true
-                    "90d" -> binding.radioTtl90d.isChecked = true
-                    "365d" -> binding.radioTtl1y.isChecked = true
+                    "7d"      -> binding.radioTtl7d.isChecked = true
+                    "30d"     -> binding.radioTtl30d.isChecked = true
+                    "90d"     -> binding.radioTtl90d.isChecked = true
+                    "365d"    -> binding.radioTtl1y.isChecked = true
                     "forever" -> binding.radioTtlForever.isChecked = true
                 }
                 binding.switchAutoExtend.isChecked = it.autoExtend
             }
         }
-
         binding.buttonSaveMemoryTtl.setOnClickListener {
             val ttl = when (binding.radioGroupMemoryTtl.checkedRadioButtonId) {
-                binding.radioTtl7d.id -> "7d"
-                binding.radioTtl30d.id -> "30d"
-                binding.radioTtl90d.id -> "90d"
-                binding.radioTtl1y.id -> "365d"
-                else -> "forever"
+                binding.radioTtl7d.id      -> "7d"
+                binding.radioTtl30d.id     -> "30d"
+                binding.radioTtl90d.id     -> "90d"
+                binding.radioTtl1y.id      -> "365d"
+                else                       -> "forever"
             }
-            val autoExtend = binding.switchAutoExtend.isChecked
-            settingsViewModel.saveMemoryTtl(MemoryTtlSettings(ttl, autoExtend))
+            settingsViewModel.saveMemoryTtl(MemoryTtlSettings(ttl, binding.switchAutoExtend.isChecked))
         }
     }
+
+    // ── Audio playback ─────────────────────────────────────────────────────────
 
     private fun playPreview(data: ByteArray) {
         try {
-            val tempFile = File.createTempFile("voice_preview", "mp3", requireContext().cacheDir)
-            FileOutputStream(tempFile).use { it.write(data) }
-            
+            val tmp = File.createTempFile("voice_preview", "mp3", requireContext().cacheDir)
+            FileOutputStream(tmp).use { it.write(data) }
             mediaPlayer?.release()
             mediaPlayer = MediaPlayer().apply {
-                setDataSource(tempFile.absolutePath)
+                setDataSource(tmp.absolutePath)
                 prepare()
                 start()
                 setOnCompletionListener {
-                    tempFile.delete()
+                    tmp.delete()
+                    previewingVoiceId = null
+                    rebuildVoiceCards(
+                        settingsViewModel.voices.value ?: emptyList(),
+                        settingsViewModel.selectedVoice.value
+                    )
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            previewingVoiceId = null
             Toast.makeText(context, "Error playing preview", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun updateModelsForProvider(provider: String, preselectModel: String? = null) {
-        modelListForProvider.clear()
-        modelListForProvider.addAll(
-            allModels.filter { it.provider == provider }.map { it.modelId }
-        )
-        val modelAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, modelListForProvider)
-        binding.spinnerModel.setAdapter(modelAdapter)
-
-        if (preselectModel != null && modelListForProvider.contains(preselectModel)) {
-            binding.spinnerModel.setText(preselectModel, false)
-            selectedModelId = preselectModel
-        }
-
-        binding.spinnerModel.setOnItemClickListener { _, _, position, _ ->
-            selectedModelId = modelListForProvider[position]
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        mediaPlayer?.release()
+        mediaPlayer = null
         _binding = null
     }
 }

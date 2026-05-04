@@ -1,34 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Drawer menu — mirrors the RiverSongAI web sidebar (minus items in bottom nav).
+     Bottom nav: Chat · Speak · Feed
+     Drawer: everything else. -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
+
         <item
-            android:id="@+id/speakFragment"
-            android:icon="@drawable/ic_mic"
-            android:title="Speak" />
-        <item
-            android:id="@+id/chatFragment"
-            android:icon="@drawable/ic_chat"
-            android:title="Chat" />
+            android:id="@+id/homeFragment"
+            android:icon="@drawable/ic_home"
+            android:title="Home" />
+
         <item
             android:id="@+id/memoryFragment"
             android:icon="@drawable/ic_memory"
             android:title="Memory" />
+
         <item
-            android:id="@+id/smartHomeControlScreen"
-            android:icon="@drawable/ic_devices"
-            android:title="Devices" />
+            android:id="@+id/inventoryFragment"
+            android:icon="@drawable/ic_inventory"
+            android:title="Inventory" />
+
+        <item
+            android:id="@+id/maintenanceFragment"
+            android:icon="@drawable/ic_maintenance"
+            android:title="Maintenance" />
+
+        <item
+            android:id="@+id/storeFragment"
+            android:icon="@drawable/ic_store"
+            android:title="Store" />
+
         <item
             android:id="@+id/routinesFragment"
             android:icon="@drawable/ic_routines"
             android:title="Routines" />
+
         <item
-            android:id="@+id/feedsFragment"
-            android:icon="@drawable/ic_feeds"
-            android:title="Feeds" />
+            android:id="@+id/homeNodeFragment"
+            android:icon="@drawable/ic_home"
+            android:title="Home Node" />
+
+        <item
+            android:id="@+id/analyticsFragment"
+            android:icon="@drawable/ic_analytics"
+            android:title="Analytics" />
+
+        <item
+            android:id="@+id/linksFragment"
+            android:icon="@drawable/ic_links"
+            android:title="Links" />
+
+        <item
+            android:id="@+id/googleFragment"
+            android:icon="@drawable/ic_more"
+            android:title="Google" />
+
+        <item
+            android:id="@+id/readingFragment"
+            android:icon="@drawable/ic_reading"
+            android:title="Reading" />
+
     </group>
 
-    <item android:title="System">
+    <item android:title="Account">
         <menu>
             <item
                 android:id="@+id/settingsFragment"

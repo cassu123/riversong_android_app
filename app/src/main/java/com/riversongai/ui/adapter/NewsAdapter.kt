@@ -3,10 +3,13 @@ package com.riversongai.ui.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.request.CachePolicy
 import com.riversongai.R
 import com.riversongai.data.model.NewsArticle
 
@@ -24,15 +27,29 @@ class NewsAdapter(
     }
 
     class NewsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val tvTitle: TextView = view.findViewById(R.id.textViewNewsTitle)
+        private val ivThumb: ImageView = view.findViewById(R.id.imageViewNewsThumbnail)
+        private val tvTitle: TextView  = view.findViewById(R.id.textViewNewsTitle)
         private val tvSource: TextView = view.findViewById(R.id.textViewNewsSource)
         private val tvSummary: TextView = view.findViewById(R.id.textViewNewsSummary)
 
         fun bind(article: NewsArticle, onClick: (NewsArticle) -> Unit) {
-            tvTitle.text = article.title
+            tvTitle.text  = article.title
             tvSource.text = article.source.ifBlank { "Unknown source" }
             tvSummary.text = article.summary ?: ""
             tvSummary.visibility = if (article.summary.isNullOrBlank()) View.GONE else View.VISIBLE
+
+            if (!article.imageUrl.isNullOrBlank()) {
+                ivThumb.visibility = View.VISIBLE
+                ivThumb.load(article.imageUrl) {
+                    crossfade(true)
+                    diskCachePolicy(CachePolicy.ENABLED)
+                    error(android.R.drawable.ic_menu_report_image)
+                }
+            } else {
+                ivThumb.visibility = View.GONE
+                ivThumb.setImageDrawable(null)
+            }
+
             itemView.setOnClickListener { onClick(article) }
         }
     }

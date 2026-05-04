@@ -12,6 +12,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- ── AI MODEL ───────────────────────────────────────────────────── -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,9 +26,11 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardElevation="1dp"
+            app:cardElevation="0dp"
             app:cardCornerRadius="12dp"
-            android:layout_marginBottom="16dp">
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutlineVariant"
+            android:layout_marginBottom="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -51,13 +54,11 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/settings_provider_hint"
                     android:layout_marginBottom="8dp">
-
                     <AutoCompleteTextView
                         android:id="@+id/spinnerProvider"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="none" />
-
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -67,13 +68,11 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/settings_model_hint"
                     android:layout_marginBottom="16dp">
-
                     <AutoCompleteTextView
                         android:id="@+id/spinnerModel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="none" />
-
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -90,34 +89,10 @@
                     android:layout_marginTop="8dp"
                     android:text="@string/settings_test_connection" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="App Theme"
-                    android:layout_marginTop="16dp">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/spinnerTheme"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="none" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <TextView
-                    android:id="@+id/textViewThemeDesc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Select UI visual style"
-                    android:textSize="12sp"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
-
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Voice Settings Card -->
+        <!-- ── VOICE ──────────────────────────────────────────────────────── -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -131,9 +106,11 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardElevation="1dp"
+            app:cardElevation="0dp"
             app:cardCornerRadius="12dp"
-            android:layout_marginBottom="16dp">
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutlineVariant"
+            android:layout_marginBottom="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -141,43 +118,26 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="TTS Provider"
-                    android:layout_marginBottom="8dp">
-                    <AutoCompleteTextView
-                        android:id="@+id/spinnerTtsProvider"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="none" />
-                </com.google.android.material.textfield.TextInputLayout>
+                    android:text="Select a voice for River Song. Tap ▶ to preview."
+                    android:textSize="12sp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:layout_marginBottom="12dp"
+                    android:lineSpacingMultiplier="1.4" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                <!-- Voice cards are populated programmatically -->
+                <LinearLayout
+                    android:id="@+id/voiceContainer"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Voice"
-                    android:layout_marginBottom="12dp">
-                    <AutoCompleteTextView
-                        android:id="@+id/spinnerVoice"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="none" />
-                </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="wrap_content" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonTestVoice"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Test Voice"
-                    app:icon="@drawable/ic_volume_up" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Memory TTL Card -->
+        <!-- ── MEMORY RETENTION ───────────────────────────────────────────── -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -191,8 +151,10 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardElevation="1dp"
+            app:cardElevation="0dp"
             app:cardCornerRadius="12dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutlineVariant"
             android:layout_marginBottom="16dp">
 
             <LinearLayout
@@ -206,10 +168,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-                    <RadioButton android:id="@+id/radioTtl7d" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="7 days" />
-                    <RadioButton android:id="@+id/radioTtl30d" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="30 days" />
-                    <RadioButton android:id="@+id/radioTtl90d" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="90 days" />
-                    <RadioButton android:id="@+id/radioTtl1y" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1 year" />
+                    <RadioButton android:id="@+id/radioTtl7d"     android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="7 days" />
+                    <RadioButton android:id="@+id/radioTtl30d"    android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="30 days" />
+                    <RadioButton android:id="@+id/radioTtl90d"    android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="90 days" />
+                    <RadioButton android:id="@+id/radioTtl1y"     android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1 year" />
                     <RadioButton android:id="@+id/radioTtlForever" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Forever" />
                 </RadioGroup>
 
@@ -227,6 +189,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="Save TTL" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

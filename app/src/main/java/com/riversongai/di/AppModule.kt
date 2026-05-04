@@ -1,17 +1,23 @@
 package com.riversongai.di
 
 import com.riversongai.data.remote.RiverSongApiService
+import com.riversongai.data.repository.CommerceRepository
 import com.riversongai.data.repository.ConversationRepository
 import com.riversongai.data.repository.FeedsRepository
+import com.riversongai.data.repository.InventoryRepository
+import com.riversongai.data.repository.MaintenanceRepository
 import com.riversongai.data.repository.MemoryRepository
 import com.riversongai.data.repository.RoutinesRepository
 import com.riversongai.data.repository.SettingsRepository
 import com.riversongai.data.repository.SmartHomeRepository
 import com.riversongai.data.repository.UserRepository
 import com.riversongai.ui.viewmodel.ChatViewModel
+import com.riversongai.ui.viewmodel.CommerceViewModel
 import com.riversongai.ui.viewmodel.FeedsViewModel
 import com.riversongai.ui.viewmodel.HomeViewModel
+import com.riversongai.ui.viewmodel.InventoryViewModel
 import com.riversongai.ui.viewmodel.LoginViewModel
+import com.riversongai.ui.viewmodel.MaintenanceViewModel
 import com.riversongai.ui.viewmodel.MemoryViewModel
 import com.riversongai.ui.viewmodel.RegisterViewModel
 import com.riversongai.ui.viewmodel.RoutinesViewModel
@@ -38,6 +44,9 @@ val appModule = module {
     single { RoutinesRepository(get()) }
     single { SettingsRepository(get()) }
     single { com.riversongai.data.repository.SportsRepository(get()) }
+    single { InventoryRepository(get()) }
+    single { MaintenanceRepository(get()) }
+    single { CommerceRepository(get()) }
 
     viewModel { LoginViewModel(get(), get()) }
     viewModel { RegisterViewModel(get()) }
@@ -50,4 +59,7 @@ val appModule = module {
     viewModel { com.riversongai.ui.viewmodel.SportsViewModel(get()) }
     viewModel { RoutinesViewModel(androidApplication(), get()) }
     viewModel { SettingsViewModel(get()) }
+    viewModel { InventoryViewModel(get()) }
+    viewModel { MaintenanceViewModel(get()) }
+    viewModel { CommerceViewModel(get()) }
 }
