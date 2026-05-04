@@ -3,15 +3,14 @@
 app/build/
 **/build/
 
-# Gradle
+# Gradle cache (but NOT gradle/wrapper/ - needed for portability)
 .gradle/
 **/.gradle/
-gradle/wrapper/gradle-wrapper.jar
 
-# Local configuration
+# Local configuration (machine-specific SDK path)
 local.properties
 
-# IDE - IntelliJ / Android Studio
+# IDE
 .idea/
 *.iml
 *.ipr
@@ -20,7 +19,10 @@ local.properties
 # Claude Code
 .claude/
 
-# Android
+# Kotlin sessions
+.kotlin/
+
+# Android artifacts
 *.apk
 *.aar
 *.ap_
@@ -30,7 +32,7 @@ local.properties
 .externalNativeBuild/
 .cxx/
 
-# Keystore
+# Keystore (never commit these)
 *.jks
 *.keystore
 
