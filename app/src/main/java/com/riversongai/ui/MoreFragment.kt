@@ -1,5 +1,6 @@
 package com.riversongai.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,14 +19,10 @@ class MoreFragment : Fragment() {
     private var _binding: FragmentMoreBinding? = null
     private val binding get() = _binding!!
 
-    data class MoreItem(
-        val title: String,
-        val subtitle: String,
-        val iconRes: Int,
-        val navAction: Int
-    )
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentMoreBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -33,18 +30,39 @@ class MoreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val items = listOf(
-            MoreItem("Memory", "Facts River Song knows about you", R.drawable.ic_memory, R.id.action_moreFragment_to_memoryFragment),
-            MoreItem("Routines", "Scheduled tasks & automations", R.drawable.ic_routines, R.id.action_moreFragment_to_routinesFragment),
-            MoreItem("Settings", "AI model & preferences", R.drawable.ic_settings_nav, R.id.action_moreFragment_to_settingsFragment),
-            MoreItem("Feed Settings", "Configure news, weather & stocks", R.drawable.ic_feeds, R.id.action_moreFragment_to_feedSettingsFragment)
+        val isAdmin = requireContext()
+            .getSharedPreferences("rs_prefs", Context.MODE_PRIVATE)
+            .getBoolean("is_admin", false)
+
+        val items = mutableListOf(
+            MoreItem("Memory", "Facts River Song knows about you", R.drawable.ic_memory, R.id.memoryFragment),
+            MoreItem("Analytics", "Platform growth & metrics", R.drawable.ic_analytics, R.id.analyticsFragment),
+            MoreItem("Culinary", "Recipes & meal planning", R.drawable.ic_memory, R.id.culinaryFragment),
+            MoreItem("Reading", "Your digital bookshelf", R.drawable.ic_reading, R.id.readingFragment),
+            MoreItem("Google", "Calendar & Gmail integration", R.drawable.ic_feeds, R.id.googleFragment),
+            MoreItem("Smart Home", "Control devices & automations", R.drawable.ic_home, R.id.smartHomeControlScreen),
+            MoreItem("Settings", "AI model & preferences", R.drawable.ic_settings_nav, R.id.settingsFragment)
         )
+
+        if (isAdmin) {
+            items.add(MoreItem("Routines", "Scheduled tasks & automations", R.drawable.ic_routines, R.id.routinesFragment))
+            items.add(MoreItem("Home Node", "Advanced HA control", R.drawable.ic_devices, R.id.homeNodeFragment))
+            items.add(MoreItem("Users", "Manage team access", R.drawable.ic_profile, R.id.usersFragment))
+        }
 
         binding.recyclerViewMore.layoutManager = GridLayoutManager(context, 2)
         binding.recyclerViewMore.adapter = MoreGridAdapter(items) { item ->
-            findNavController().navigate(item.navAction)
+            findNavController().navigate(item.actionId)
         }
     }
+
+    private data class MoreItem(
+        val title: String,
+        val subtitle: String,
+        val iconRes: Int,
+        val actionId: Int
+    )
+
 
     override fun onDestroyView() {
         super.onDestroyView()

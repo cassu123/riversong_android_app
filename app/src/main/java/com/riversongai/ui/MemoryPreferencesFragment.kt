@@ -21,7 +21,14 @@ class MemoryPreferencesFragment : Fragment(R.layout.fragment_memory_preferences)
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMemoryPreferencesBinding.bind(view)
 
-        preferenceAdapter = PreferenceAdapter()
+        preferenceAdapter = PreferenceAdapter { pref ->
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Delete this preference?")
+                .setMessage("Are you sure you want to delete this preference?")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Delete") { _, _ -> viewModel.deletePreference(pref.id) }
+                .show()
+        }
         binding.recyclerViewPreferences.apply {
             adapter = preferenceAdapter
             layoutManager = LinearLayoutManager(requireContext())

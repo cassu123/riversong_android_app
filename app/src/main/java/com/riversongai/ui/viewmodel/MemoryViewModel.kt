@@ -142,6 +142,30 @@ class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewMode
         }
     }
 
+    fun deletePreference(id: String) {
+        viewModelScope.launch {
+            memoryRepository.deletePreference(id).fold(
+                onSuccess = {
+                    _actionResult.value = "Preference deleted"
+                    loadPreferences()
+                },
+                onFailure = { _error.value = it.message }
+            )
+        }
+    }
+
+    fun deleteSummary(id: String) {
+        viewModelScope.launch {
+            memoryRepository.deleteSummary(id).fold(
+                onSuccess = {
+                    _actionResult.value = "Summary deleted"
+                    loadSummaries()
+                },
+                onFailure = { _error.value = it.message }
+            )
+        }
+    }
+
     fun clearActionResult() {
         _actionResult.value = null
     }

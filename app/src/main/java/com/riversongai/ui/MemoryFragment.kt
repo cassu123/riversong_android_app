@@ -1,43 +1,33 @@
 package com.riversongai.ui
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.tabs.TabLayoutMediator
 import com.riversongai.R
 import com.riversongai.databinding.FragmentMemoryBinding
-import com.riversongai.ui.adapter.FactAdapter
+import com.riversongai.ui.adapter.MemoryPagerAdapter
 import com.riversongai.ui.viewmodel.MemoryViewModel
+import com.riversongai.utils.UIStyleManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-import com.google.android.material.tabs.TabLayoutMediator
-import com.riversongai.ui.adapter.MemoryPagerAdapter
-
-class MemoryFragment : Fragment() {
+class MemoryFragment : Fragment(R.layout.fragment_memory) {
 
     private var _binding: FragmentMemoryBinding? = null
     private val binding get() = _binding!!
-
-    private val memoryViewModel: MemoryViewModel by viewModel()
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentMemoryBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    private val viewModel: MemoryViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentMemoryBinding.bind(view)
 
         setupViewPager()
-        setupRefresh()
+        setupListeners()
+        applyUIStyle()
         observeViewModel()
+        
+        viewModel.loadStats()
     }
 
     private fun setupViewPager() {
@@ -46,65 +36,40 @@ class MemoryFragment : Fragment() {
             tab.text = when (position) {
                 0 -> "Facts"
                 1 -> "Preferences"
-                2 -> "Summaries"
-                else -> ""
+                else -> "Summaries"
             }
         }.attach()
     }
 
-    private fun setupRefresh() {
+    private fun setupListeners() {
         binding.swipeRefreshMemory.setOnRefreshListener {
-            when (binding.tabLayoutMemory.selectedTabPosition) {
-                0 -> memoryViewModel.loadFacts()
-                1 -> memoryViewModel.loadPreferences()
-                2 -> memoryViewModel.loadSummaries()
-            }
+            viewModel.loadStats()
+            // Also need to refresh the current fragment in viewpager? 
+            // The sub-fragments observe the same VM, so just reloading stats might not be enough for their lists.
+            // But usually they load on their own onViewCreated.
         }
+    }
+
+    private fun applyUIStyle() {
+        val ctx = requireContext()
+        binding.cardStatFacts.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 1))
+        binding.cardStatPrefs.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 1))
+        binding.cardStatSessions.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 1))
     }
 
     private fun observeViewModel() {
-        memoryViewModel.memoryStats.observe(viewLifecycleOwner) { stats ->
-            binding.textStatFacts.text = "${stats.factsCount} Facts"
-            binding.textStatPrefs.text = "${stats.prefsCount} Preferences"
-            binding.textStatSessions.text = "${stats.sessionsCount} Summaries"
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            binding.progressBarMemory.visibility = if (it) View.VISIBLE else View.GONE
+            binding.swipeRefreshMemory.isRefreshing = it
         }
 
-        memoryViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
-            binding.swipeRefreshMemory.isRefreshing = loading
-        }
-
-        memoryViewModel.error.observe(viewLifecycleOwner) { error ->
-            error?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                memoryViewModel.clearError()
+        viewModel.stats.observe(viewLifecycleOwner) { stats ->
+            stats?.let {
+                binding.textStatFacts.text = "${it.facts} Facts"
+                binding.textStatPrefs.text = "${it.preferences} Preferences"
+                binding.textStatSessions.text = "${it.summaries} Summaries"
             }
         }
-
-        memoryViewModel.actionResult.observe(viewLifecycleOwner) { result ->
-            result?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                memoryViewModel.clearActionResult()
-            }
-        }
-    }
-
-    fun showAddFactDialog() {
-        val layout = android.widget.LinearLayout(context).apply {
-            orientation = android.widget.LinearLayout.VERTICAL
-            setPadding(48, 32, 48, 0)
-        }
-        val keyInput = EditText(context).apply { hint = "Fact key (e.g. Favorite Color)" }
-        val valueInput = EditText(context).apply { hint = "Fact value (e.g. Blue)" }
-        layout.addView(keyInput)
-        layout.addView(valueInput)
-        AlertDialog.Builder(requireContext())
-            .setTitle("Add Memory Fact")
-            .setView(layout)
-            .setPositiveButton("Save") { _, _ ->
-                memoryViewModel.addFact(keyInput.text.toString(), valueInput.text.toString())
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
     }
 
     override fun onDestroyView() {

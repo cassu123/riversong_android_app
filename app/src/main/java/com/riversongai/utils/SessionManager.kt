@@ -33,6 +33,7 @@ class SessionManager(context: Context) {
     fun getUserRole(): String? = prefs.getString(Constants.PREF_USER_ROLE, null)
 
     fun isAdmin(): Boolean = getUserRole() == "admin"
+    fun getRole(): String = getUserRole() ?: "user"
 
     fun isLoggedIn(): Boolean = !getAuthToken().isNullOrBlank()
 

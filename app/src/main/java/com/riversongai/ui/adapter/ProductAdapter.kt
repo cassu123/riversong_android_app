@@ -13,6 +13,7 @@ import com.riversongai.R
 import com.riversongai.data.model.Product
 
 class ProductAdapter(
+    private val onEdit: (Product) -> Unit,
     private val onDelete: (Product) -> Unit,
 ) : ListAdapter<Product, ProductAdapter.VH>(DIFF) {
 
@@ -28,6 +29,7 @@ class ProductAdapter(
         private val tvPrice: TextView  = view.findViewById(R.id.tvProductPrice)
         private val tvStock: TextView  = view.findViewById(R.id.tvProductStock)
         private val dot: View          = view.findViewById(R.id.viewStockDot)
+        private val btnEdit: ImageView = view.findViewById(R.id.btnEditProduct)
         private val btnDel: ImageView  = view.findViewById(R.id.btnDeleteProduct)
 
         fun bind(p: Product) {
@@ -42,6 +44,7 @@ class ProductAdapter(
             }
             tvStock.text = stockLabel
             dot.background.setTint(dotColor)
+            btnEdit.setOnClickListener { onEdit(p) }
             btnDel.setOnClickListener { onDelete(p) }
         }
     }

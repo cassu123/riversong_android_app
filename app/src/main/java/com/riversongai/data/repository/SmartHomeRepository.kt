@@ -9,6 +9,19 @@ class SmartHomeRepository(private val apiService: RiverSongApiService) {
 
     private val tag = "SmartHomeRepository"
 
+    suspend fun getHomeStatus(): Result<com.riversongai.data.model.HomeStatus> {
+        return try {
+            val response = apiService.getHomeStatus()
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("Failed to fetch home status"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun getAllDevices(): Result<List<Device>> {
         return try {
             val response = apiService.getDevices()

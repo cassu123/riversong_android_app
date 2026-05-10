@@ -3,6 +3,8 @@ package com.riversongai.utils
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import com.riversongai.R
+import com.riversongai.data.model.UserProfileUpdate
+import com.riversongai.data.remote.RiverSongApiService
 
 object ThemeManager {
     private const val PREFS_NAME = "river_song_prefs"
@@ -31,6 +33,32 @@ object ThemeManager {
     fun getSelectedTheme(context: Context): String {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return prefs.getString(KEY_THEME, THEME_DEFAULT) ?: THEME_DEFAULT
+    }
+
+    // Called after login to pull server theme into local prefs
+    suspend fun syncThemeFromServer(context: Context, apiService: RiverSongApiService) {
+        try {
+            val response = apiService.getUserProfile()
+            if (response.isSuccessful) {
+                val serverTheme = response.body()?.theme
+                if (!serverTheme.isNullOrBlank()) {
+                    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                        .edit().putString(KEY_THEME, serverTheme).apply()
+                    applyTheme(context)
+                }
+            }
+        } catch (e: Exception) {
+            // Silently fall back to local theme — server sync is best-effort
+        }
+    }
+
+    // Called when user selects a theme in UserDashboardScreen
+    suspend fun saveThemeToServer(context: Context, apiService: RiverSongApiService, themeKey: String) {
+        try {
+            apiService.updateUserProfile(UserProfileUpdate(theme = themeKey))
+        } catch (e: Exception) {
+            // Silently fail — local theme is already applied
+        }
     }
 
     fun applyTheme(context: Context) {

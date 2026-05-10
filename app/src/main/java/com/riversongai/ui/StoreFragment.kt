@@ -25,14 +25,16 @@ class StoreFragment : Fragment(R.layout.fragment_store) {
     private val vm: CommerceViewModel by viewModel()
     private lateinit var adapter: ProductAdapter
     private var allProducts: List<Product> = emptyList()
+    private var editingProduct: Product? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _b = FragmentStoreBinding.bind(view)
 
-        adapter = ProductAdapter(onDelete = { p ->
-            vm.deleteProduct(p.id)
-        })
+        adapter = ProductAdapter(
+            onEdit = { p -> showEditProduct(p) },
+            onDelete = { p -> vm.deleteProduct(p.id) }
+        )
 
         b.rvProducts.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -104,6 +106,17 @@ class StoreFragment : Fragment(R.layout.fragment_store) {
         adapter.submitList(filtered)
     }
 
+    private fun showEditProduct(p: Product) {
+        editingProduct = p
+        b.cardAddProduct.isVisible = true
+        b.tvAddProductTitle.text = "Edit Product"
+        b.etProductName.setText(p.name)
+        b.etProductSku.setText(p.sku)
+        b.etProductStock.setText(p.stockQty.toString())
+        b.etProductPrice.setText(p.unitPrice.toString())
+        b.btnSaveProduct.text = "Update Product"
+    }
+
     private fun saveProduct() {
         val name = b.etProductName.text?.toString()?.trim() ?: ""
         val sku  = b.etProductSku.text?.toString()?.trim() ?: ""
@@ -111,7 +124,13 @@ class StoreFragment : Fragment(R.layout.fragment_store) {
         if (sku.isBlank())  { b.etProductSku.error  = "Required"; return }
         val stock = b.etProductStock.text?.toString()?.toIntOrNull() ?: 0
         val price = b.etProductPrice.text?.toString()?.toDoubleOrNull() ?: 0.0
-        vm.createProduct(CreateProduct(sku = sku, name = name, stockQty = stock, unitPrice = price))
+        
+        val body = CreateProduct(sku = sku, name = name, stockQty = stock, unitPrice = price)
+        if (editingProduct == null) {
+            vm.createProduct(body)
+        } else {
+            vm.updateProduct(editingProduct!!.id, body)
+        }
         b.cardAddProduct.isVisible = false
         clearProductForm()
     }
@@ -123,6 +142,9 @@ class StoreFragment : Fragment(R.layout.fragment_store) {
     }
 
     private fun clearProductForm() {
+        editingProduct = null
+        b.tvAddProductTitle.text = "Add Product"
+        b.btnSaveProduct.text = "Save Product"
         b.etProductName.text?.clear()
         b.etProductSku.text?.clear()
         b.etProductStock.text?.clear()

@@ -11,6 +11,11 @@ import androidx.navigation.fragment.findNavController
 import com.riversongai.R
 import com.riversongai.databinding.FragmentLoginBinding
 import com.riversongai.ui.viewmodel.LoginViewModel
+import com.riversongai.data.remote.RiverSongApiService
+import com.riversongai.utils.ThemeManager
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginScreen : Fragment() {
@@ -19,6 +24,7 @@ class LoginScreen : Fragment() {
     private val binding get() = _binding!!
 
     private val loginViewModel: LoginViewModel by viewModel()
+    private val apiService: RiverSongApiService by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,7 +44,10 @@ class LoginScreen : Fragment() {
 
         loginViewModel.loginResult.observe(viewLifecycleOwner) { result ->
             result.onSuccess {
-                findNavController().navigate(R.id.action_loginScreen_to_homeFragment)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    ThemeManager.syncThemeFromServer(requireContext(), apiService)
+                    findNavController().navigate(R.id.action_loginScreen_to_homeFragment)
+                }
             }.onFailure { exception ->
                 Toast.makeText(context, exception.message ?: "Sign in failed", Toast.LENGTH_LONG).show()
             }

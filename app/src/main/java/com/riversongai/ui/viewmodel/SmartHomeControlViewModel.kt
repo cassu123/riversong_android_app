@@ -18,6 +18,9 @@ class SmartHomeControlViewModel(
     private val _devices = MutableLiveData<List<Device>>()
     val devices: LiveData<List<Device>> = _devices
 
+    private val _status = MutableLiveData<com.riversongai.data.model.HomeStatus?>()
+    val status: LiveData<com.riversongai.data.model.HomeStatus?> = _status
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -26,6 +29,13 @@ class SmartHomeControlViewModel(
 
     private val _sessionExpired = MutableLiveData<Boolean>()
     val sessionExpired: LiveData<Boolean> = _sessionExpired
+
+    fun fetchStatus() {
+        viewModelScope.launch {
+            smartHomeRepository.getHomeStatus()
+                .onSuccess { _status.value = it }
+        }
+    }
 
     fun fetchDevices() {
         if (!sessionManager.isLoggedIn()) {

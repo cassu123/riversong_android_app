@@ -31,8 +31,8 @@
                 android:id="@+id/textViewMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/river_song_on_surface"
-                android:textSize="15sp"
+                android:textColor="?attr/colorOnSurface"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                 android:maxWidth="260dp" />
 
             <!-- Blinking cursor for streaming -->
@@ -41,7 +41,7 @@
                 android:layout_width="2dp"
                 android:layout_height="18dp"
                 android:layout_marginStart="2dp"
-                android:background="@color/river_song_primary"
+                android:background="?attr/colorPrimary"
                 android:visibility="gone" />
 
         </LinearLayout>
@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:layout_marginStart="4dp"
-        android:textSize="10sp"
+        android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
         android:textColor="?attr/colorOnSurfaceVariant"
         android:text="12:00" />
 

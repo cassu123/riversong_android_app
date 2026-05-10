@@ -81,7 +81,15 @@ class MaintenanceFragment : Fragment(R.layout.fragment_maintenance) {
                 isCheckable = true
                 isChecked = vm.selectedVehicle.value?.id == v.id
                 setOnClickListener { vm.selectVehicle(v) }
-                setOnLongClickListener { vm.deleteVehicle(v.id); true }
+                setOnLongClickListener { 
+                    com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Delete Vehicle?")
+                        .setMessage("This will permanently delete $label and all its service logs.")
+                        .setNegativeButton("Cancel", null)
+                        .setPositiveButton("Delete") { _, _ -> vm.deleteVehicle(v.id) }
+                        .show()
+                    true 
+                }
             }
             b.layoutVehicleChips.addView(chip)
         }

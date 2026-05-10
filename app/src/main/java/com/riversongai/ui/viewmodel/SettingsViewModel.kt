@@ -47,6 +47,8 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
         loadSettings()
     }
 
+    fun getApiService() = apiService
+
     fun loadVoices() {
         viewModelScope.launch {
             settingsRepository.getVoices().onSuccess { _voices.value = it }

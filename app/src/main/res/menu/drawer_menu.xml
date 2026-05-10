@@ -37,9 +37,9 @@
             android:title="Routines" />
 
         <item
-            android:id="@+id/homeNodeFragment"
-            android:icon="@drawable/ic_home"
-            android:title="Home Node" />
+            android:id="@+id/smartHomeControlScreen"
+            android:icon="@drawable/ic_devices"
+            android:title="Smart Home" />
 
         <item
             android:id="@+id/analyticsFragment"
@@ -47,14 +47,9 @@
             android:title="Analytics" />
 
         <item
-            android:id="@+id/linksFragment"
-            android:icon="@drawable/ic_links"
-            android:title="Links" />
-
-        <item
-            android:id="@+id/googleFragment"
-            android:icon="@drawable/ic_more"
-            android:title="Google" />
+            android:id="@+id/culinaryFragment"
+            android:icon="@drawable/ic_memory"
+            android:title="Culinary" />
 
         <item
             android:id="@+id/readingFragment"

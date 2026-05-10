@@ -19,14 +19,14 @@
             app:singleLine="true"
             app:singleSelection="true"
             app:selectionRequired="true">
-            <com.google.android.material.chip.Chip android:id="@+id/chipAll" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="All" android:checked="true" />
-            <com.google.android.material.chip.Chip android:id="@+id/chipWorld" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="World" />
-            <com.google.android.material.chip.Chip android:id="@+id/chipUS" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="US" />
-            <com.google.android.material.chip.Chip android:id="@+id/chipTech" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tech" />
-            <com.google.android.material.chip.Chip android:id="@+id/chipBusiness" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Business" />
-            <com.google.android.material.chip.Chip android:id="@+id/chipScience" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Science" />
-            <com.google.android.material.chip.Chip android:id="@+id/chipHealth" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Health" />
-            <com.google.android.material.chip.Chip android:id="@+id/chipSportsNews" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sports" />
+            <com.google.android.material.chip.Chip android:id="@+id/chipAll" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="All" android:checked="true" app:chipMinHeight="32dp" />
+            <com.google.android.material.chip.Chip android:id="@+id/chipWorld" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="World" app:chipMinHeight="32dp" />
+            <com.google.android.material.chip.Chip android:id="@+id/chipUS" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="US" app:chipMinHeight="32dp" />
+            <com.google.android.material.chip.Chip android:id="@+id/chipTech" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tech" app:chipMinHeight="32dp" />
+            <com.google.android.material.chip.Chip android:id="@+id/chipBusiness" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Business" app:chipMinHeight="32dp" />
+            <com.google.android.material.chip.Chip android:id="@+id/chipScience" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Science" app:chipMinHeight="32dp" />
+            <com.google.android.material.chip.Chip android:id="@+id/chipHealth" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Health" app:chipMinHeight="32dp" />
+            <com.google.android.material.chip.Chip android:id="@+id/chipSportsNews" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sports" app:chipMinHeight="32dp" />
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 

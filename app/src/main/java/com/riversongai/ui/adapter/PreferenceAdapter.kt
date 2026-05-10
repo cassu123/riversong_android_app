@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.riversongai.data.model.MemoryPreference
 import com.riversongai.databinding.ItemMemoryPreferenceBinding
 
-class PreferenceAdapter : ListAdapter<MemoryPreference, PreferenceAdapter.ViewHolder>(DiffCallback) {
+class PreferenceAdapter(
+    private val onDelete: (MemoryPreference) -> Unit
+) : ListAdapter<MemoryPreference, PreferenceAdapter.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemMemoryPreferenceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -26,12 +28,16 @@ class PreferenceAdapter : ListAdapter<MemoryPreference, PreferenceAdapter.ViewHo
             val confPct = (pref.confidence * 100).toInt()
             binding.progressConfidence.progress = confPct
             binding.textViewConfidence.text = "Confidence: $confPct%"
+            
+            binding.buttonDeletePreference.setOnClickListener {
+                onDelete(pref)
+            }
         }
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<MemoryPreference>() {
         override fun areItemsTheSame(oldItem: MemoryPreference, newItem: MemoryPreference) = 
-            oldItem.category == newItem.category && oldItem.value == newItem.value
+            oldItem.id == newItem.id
         override fun areContentsTheSame(oldItem: MemoryPreference, newItem: MemoryPreference) = oldItem == newItem
     }
 }

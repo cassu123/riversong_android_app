@@ -50,7 +50,7 @@ val appModule = module {
 
     viewModel { LoginViewModel(get(), get()) }
     viewModel { RegisterViewModel(get()) }
-    viewModel { HomeViewModel(get(), get(), get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { UserDashboardViewModel(get(), get(), get(), get(), get()) }
     viewModel { SmartHomeControlViewModel(get(), get()) }
     viewModel { ChatViewModel(androidApplication(), get()) }
@@ -62,4 +62,9 @@ val appModule = module {
     viewModel { InventoryViewModel(get()) }
     viewModel { MaintenanceViewModel(get()) }
     viewModel { CommerceViewModel(get()) }
+    viewModel { com.riversongai.ui.viewmodel.AnalyticsViewModel(get()) }
+    viewModel { com.riversongai.ui.viewmodel.CulinaryViewModel(get()) }
+    viewModel { com.riversongai.ui.viewmodel.ReadingViewModel(get()) }
+    viewModel { com.riversongai.ui.viewmodel.GoogleViewModel(get()) }
+    viewModel { com.riversongai.ui.viewmodel.UsersViewModel(get()) }
 }

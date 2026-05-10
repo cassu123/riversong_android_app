@@ -105,13 +105,13 @@
                 android:layout_height="wrap_content"
                 app:singleLine="true"
                 app:selectionRequired="false">
-                <com.google.android.material.chip.Chip android:id="@+id/chipMon" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mon" />
-                <com.google.android.material.chip.Chip android:id="@+id/chipTue" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tue" />
-                <com.google.android.material.chip.Chip android:id="@+id/chipWed" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Wed" />
-                <com.google.android.material.chip.Chip android:id="@+id/chipThu" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thu" />
-                <com.google.android.material.chip.Chip android:id="@+id/chipFri" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fri" />
-                <com.google.android.material.chip.Chip android:id="@+id/chipSat" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sat" />
-                <com.google.android.material.chip.Chip android:id="@+id/chipSun" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sun" />
+                <com.google.android.material.chip.Chip android:id="@+id/chipMon" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mon" app:chipMinHeight="32dp" />
+                <com.google.android.material.chip.Chip android:id="@+id/chipTue" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tue" app:chipMinHeight="32dp" />
+                <com.google.android.material.chip.Chip android:id="@+id/chipWed" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Wed" app:chipMinHeight="32dp" />
+                <com.google.android.material.chip.Chip android:id="@+id/chipThu" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thu" app:chipMinHeight="32dp" />
+                <com.google.android.material.chip.Chip android:id="@+id/chipFri" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fri" app:chipMinHeight="32dp" />
+                <com.google.android.material.chip.Chip android:id="@+id/chipSat" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sat" app:chipMinHeight="32dp" />
+                <com.google.android.material.chip.Chip android:id="@+id/chipSun" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sun" app:chipMinHeight="32dp" />
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
     </LinearLayout>

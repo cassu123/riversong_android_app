@@ -123,6 +123,8 @@ class ConversationRepository(
         webSocket = null
     }
 
+    fun apiService() = apiService
+
     suspend fun getModels() = apiService.getChatModels()
     suspend fun getHistory() = apiService.getChatHistory()
     suspend fun getSessionDetail(sessionId: String) = apiService.getChatSessionDetail(sessionId)

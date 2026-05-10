@@ -1,5 +1,6 @@
 package com.riversongai.ui
 
+import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.TypedValue
@@ -13,9 +14,11 @@ import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.riversongai.R
 import com.riversongai.data.model.MemoryTtlSettings
 import com.riversongai.data.model.ModelEntry
@@ -25,6 +28,7 @@ import com.riversongai.ui.viewmodel.SettingsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
+import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment() {
 
@@ -55,8 +59,80 @@ class SettingsFragment : Fragment() {
         setupLlmSection()
         setupVoiceSection()
         setupMemoryTtlSection()
+        setupAdminControls()
         settingsViewModel.loadVoices()
         settingsViewModel.loadMemoryTtl()
+    }
+
+    private fun setupAdminControls() {
+        val isAdmin = requireContext()
+            .getSharedPreferences("rs_prefs", Context.MODE_PRIVATE)
+            .getBoolean("is_admin", false)
+
+        if (!isAdmin) return
+        
+        binding.cardAdminControls.isVisible = true
+        
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val resp = settingsViewModel.getApiService().getFeatureVisibility()
+                if (resp.isSuccessful) {
+                    populateVisibilityToggles(resp.body().orEmpty())
+                }
+            } catch (e: Exception) { /* non-fatal */ }
+        }
+    }
+
+    private fun populateVisibilityToggles(visibilityMap: Map<String, Boolean>) {
+        binding.layoutFeatureVisibility.removeAllViews()
+        val sortedFeatures = visibilityMap.keys.sorted()
+        
+        sortedFeatures.forEach { feature ->
+            val row = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                setPadding(0, 8.dp, 0, 8.dp)
+            }
+            
+            val label = TextView(requireContext()).apply {
+                val params = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                layoutParams = params
+                text = feature.replaceFirstChar { it.uppercase() }
+                textAppearance = com.google.android.material.R.style.TextAppearance_Material3_BodyMedium
+            }
+            
+            val switch = MaterialSwitch(requireContext()).apply {
+                isChecked = visibilityMap[feature] == true
+                setOnCheckedChangeListener { _, isChecked ->
+                    updateFeatureVisibility(feature, isChecked)
+                }
+            }
+            
+            row.addView(label)
+            row.addView(switch)
+            binding.layoutFeatureVisibility.addView(row)
+        }
+    }
+
+    private fun updateFeatureVisibility(feature: String, isVisible: Boolean) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val current = mutableMapOf<String, Boolean>()
+                for (i in 0 until binding.layoutFeatureVisibility.childCount) {
+                    val row = binding.layoutFeatureVisibility.getChildAt(i) as LinearLayout
+                    val label = row.getChildAt(0) as TextView
+                    val sw = row.getChildAt(1) as MaterialSwitch
+                    current[label.text.toString().lowercase()] = sw.isChecked
+                }
+                
+                val resp = settingsViewModel.getApiService().setFeatureVisibility(current)
+                if (resp.isSuccessful) {
+                    Snackbar.make(binding.root, "Feature visibility updated", Snackbar.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Snackbar.make(binding.root, "Error updating visibility", Snackbar.LENGTH_SHORT).show()
+            }
+        }
     }
 
     // ── AI MODEL ─────────────────────────────────────────────────────────────

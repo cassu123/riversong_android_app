@@ -101,7 +101,7 @@ class RoutineCreateEditBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun saveRoutine() {
-        val name = binding.editTextRoutineName.text.toString()
+        val name = binding.editTextRoutineName.text.toString().trim()
         val prompt = binding.editTextRoutinePrompt.text.toString()
         val trigger = when (binding.radioGroupTrigger.checkedRadioButtonId) {
             binding.radioDaily.id -> "daily"
@@ -109,7 +109,26 @@ class RoutineCreateEditBottomSheet : BottomSheetDialogFragment() {
             binding.radioStartup.id -> "startup"
             else -> "manual"
         }
-        val time = binding.editTextRoutineTime.text.toString().takeIf { it.isNotBlank() }
+        val time = binding.editTextRoutineTime.text.toString().trim().takeIf { it.isNotBlank() }
+        
+        // a) Validation: Routine name
+        if (name.isBlank()) {
+            binding.layoutRoutineName.error = "Name is required"
+            return
+        } else {
+            binding.layoutRoutineName.error = null
+        }
+
+        // b & c) Validation for recurring triggers
+        if (trigger == "daily" || trigger == "weekly") {
+            if (time == null) {
+                binding.layoutRoutineTime.error = "Time is required"
+                return
+            } else {
+                binding.layoutRoutineTime.error = null
+            }
+        }
+
         val days = if (trigger == "weekly") {
             val list = mutableListOf<String>()
             if (binding.chipMon.isChecked) list.add("Mon")
@@ -119,6 +138,12 @@ class RoutineCreateEditBottomSheet : BottomSheetDialogFragment() {
             if (binding.chipFri.isChecked) list.add("Fri")
             if (binding.chipSat.isChecked) list.add("Sat")
             if (binding.chipSun.isChecked) list.add("Sun")
+            
+            // b) Validation: Weekly trigger days
+            if (list.isEmpty()) {
+                com.google.android.material.snackbar.Snackbar.make(binding.root, "Please select at least one day", com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show()
+                return
+            }
             list
         } else null
 

@@ -2,9 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/river_song_background">
+    android:background="?attr/colorSurface">
 
     <!-- Model Selection Bar (Prototype Style) -->
     <com.google.android.material.card.MaterialCardView
@@ -32,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:text="Connected"
                 android:textSize="10sp"
-                app:chipMinHeight="24dp"
+                app:chipMinHeight="32dp"
                 android:layout_marginStart="8dp" />
 
             <LinearLayout
@@ -91,55 +92,27 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Hidden for now, can be triggered by cardModelSelector click -->
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipGroupModels"
+    <!-- Model Selector -->
+    <HorizontalScrollView
+        android:id="@+id/scrollViewModels"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/cardModelSelector"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Chat messages -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewChat"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/cardModelSelector"
+        android:scrollbars="none"
+        android:background="?attr/colorSurfaceContainer"
         app:layout_constraintBottom_toTopOf="@id/layoutStatus"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Empty state -->
-    <TextView
-        android:id="@+id/textViewEmpty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Say hello to River Song!"
-        android:textSize="16sp"
-        android:textColor="@color/river_song_on_surface_variant"
-        android:visibility="visible"
-        app:layout_constraintTop_toBottomOf="@id/cardModelSelector"
-        app:layout_constraintBottom_toTopOf="@id/layoutStatus"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Reconnect button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonReconnect"
-        style="@style/Widget.Material3.Button.TonalButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="Reconnect"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/layoutStatus"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupModels"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="10dp"
+            app:singleLine="true"
+            app:singleSelection="true"
+            app:selectionRequired="true" />
+    </HorizontalScrollView>
 
     <!-- AI status indicator -->
     <TextView
@@ -149,11 +122,35 @@
         android:layout_marginBottom="4dp"
         android:paddingHorizontal="16dp"
         android:textSize="13sp"
-        android:textColor="@color/river_song_on_surface_variant"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:fontStyle="italic"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/layoutInput"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewChat"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/cardModelSelector"
+        app:layout_constraintBottom_toTopOf="@id/scrollViewModels"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_chat_ai" />
+
+    <!-- Empty state -->
+    <TextView
+        android:id="@+id/textViewEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Say hello to River Song!"
+        android:textSize="16sp"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/cardModelSelector"
+        app:layout_constraintBottom_toTopOf="@id/scrollViewModels"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Status row (typing dots placeholder) -->
     <LinearLayout
@@ -174,7 +171,7 @@
         android:gravity="center_vertical"
         android:paddingHorizontal="12dp"
         android:paddingVertical="8dp"
-        android:background="@color/river_song_surface"
+        android:background="?attr/colorSurfaceContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -233,7 +230,7 @@
             android:layout_width="300dp"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:background="@color/river_song_surface"
+            android:background="?attr/colorSurfaceContainerHighest"
             android:orientation="vertical"
             android:elevation="8dp"
             android:clickable="true"

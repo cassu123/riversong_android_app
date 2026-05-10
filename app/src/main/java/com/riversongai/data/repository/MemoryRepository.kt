@@ -72,4 +72,20 @@ class MemoryRepository(private val apiService: RiverSongApiService) {
     } catch (e: Exception) {
         Result.failure(e)
     }
+
+    suspend fun deletePreference(id: String) = try {
+        val response = apiService.deletePreference(id)
+        if (response.isSuccessful) Result.success(Unit)
+        else Result.failure(Exception("Error: ${response.code()}"))
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    suspend fun deleteSummary(id: String) = try {
+        val response = apiService.deleteSummary(id)
+        if (response.isSuccessful) Result.success(Unit)
+        else Result.failure(Exception("Error: ${response.code()}"))
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 }

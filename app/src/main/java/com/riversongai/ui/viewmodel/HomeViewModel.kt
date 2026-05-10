@@ -4,10 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.riversongai.data.model.DashboardStats
 import com.riversongai.data.model.Device
+import com.riversongai.data.model.Routine
 import com.riversongai.data.model.User
 import com.riversongai.data.model.WeatherData
+import com.riversongai.data.remote.RiverSongApiService
 import com.riversongai.data.repository.FeedsRepository
+import com.riversongai.data.repository.RoutinesRepository
 import com.riversongai.data.repository.SmartHomeRepository
 import com.riversongai.data.repository.UserRepository
 import com.riversongai.utils.ErrorHandler
@@ -18,7 +22,9 @@ class HomeViewModel(
     private val userRepository: UserRepository,
     private val smartHomeRepository: SmartHomeRepository,
     private val feedsRepository: FeedsRepository,
-    private val sessionManager: SessionManager
+    private val routinesRepository: RoutinesRepository,
+    private val sessionManager: SessionManager,
+    private val apiService: RiverSongApiService
 ) : ViewModel() {
 
     private val _currentUser = MutableLiveData<User?>()
@@ -30,6 +36,12 @@ class HomeViewModel(
     private val _weather = MutableLiveData<WeatherData?>()
     val weather: LiveData<WeatherData?> = _weather
 
+    private val _dashboard = MutableLiveData<DashboardStats?>()
+    val dashboard: LiveData<DashboardStats?> = _dashboard
+
+    private val _routines = MutableLiveData<List<Routine>>()
+    val routines: LiveData<List<Routine>> = _routines
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -39,7 +51,7 @@ class HomeViewModel(
     private val _sessionExpired = MutableLiveData<Boolean>()
     val sessionExpired: LiveData<Boolean> = _sessionExpired
 
-    fun loadUserDataAndDevices() {
+    fun loadAllData() {
         if (!sessionManager.isLoggedIn()) {
             _sessionExpired.value = true
             return
@@ -47,29 +59,36 @@ class HomeViewModel(
         _isLoading.value = true
         viewModelScope.launch {
             try {
+                // User Data
                 userRepository.getCurrentUser()
                     .onSuccess { _currentUser.value = it }
                     .onFailure { handleError(it) }
 
-                smartHomeRepository.getAllDevices()
-                    .onSuccess { _devices.value = it }
-                    .onFailure { /* non-fatal — HA may not be configured */ }
+                // Dashboard Stats
+                try {
+                    val resp = apiService.getDashboard()
+                    if (resp.isSuccessful) _dashboard.value = resp.body()
+                } catch (e: Exception) { /* non-fatal */ }
 
+                // Weather
                 feedsRepository.getWeather()
                     .onSuccess { _weather.value = it }
                     .onFailure { _weather.value = null }
+
+                // Routines
+                routinesRepository.getRoutines()
+                    .onSuccess { _routines.value = it.filter { r -> r.isEnabled } }
+
+                // Smart Home
+                smartHomeRepository.getAllDevices()
+                    .onSuccess { _devices.value = it }
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    fun toggleDevice(entityId: String, on: Boolean) {
-        viewModelScope.launch {
-            smartHomeRepository.controlDevice(entityId, if (on) "turn_on" else "turn_off")
-                .onSuccess { loadUserDataAndDevices() }
-        }
-    }
+    fun loadUserDataAndDevices() = loadAllData()
 
     fun clearError() { _errorMessage.value = null }
 

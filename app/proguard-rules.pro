@@ -51,6 +51,8 @@
 # AndroidX Navigation
 -keep class androidx.navigation.** { *; }
 
+-keep class com.riversongai.utils.WavEncoder { *; }
+
 # Security Crypto
 -keep class androidx.security.crypto.** { *; }
 -dontwarn androidx.security.crypto.**

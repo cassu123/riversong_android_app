@@ -1,5 +1,6 @@
 package com.riversongai.ui
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -45,7 +46,6 @@ class MainActivity : AppCompatActivity() {
         R.id.storeFragment,
         R.id.homeNodeFragment,
         R.id.analyticsFragment,
-        R.id.linksFragment,
         R.id.googleFragment,
         R.id.readingFragment,
     )
@@ -86,7 +86,21 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.action_loginScreen_to_homeFragment)
         }
 
+        configureNavForRole()
         requestRuntimePermissions()
+    }
+
+    private fun configureNavForRole() {
+        val isAdmin = sessionManager.isAdmin()
+        val drawerMenu = binding.navigationView.menu
+        
+        // These items only visible to admins
+        drawerMenu.findItem(R.id.routinesFragment)?.isVisible = isAdmin
+        drawerMenu.findItem(R.id.homeNodeFragment)?.isVisible = isAdmin
+        
+        // Store isAdmin in rs_prefs for fragments to read
+        getSharedPreferences("rs_prefs", Context.MODE_PRIVATE)
+            .edit().putBoolean("is_admin", isAdmin).apply()
     }
 
     private fun setupBottomNav() {

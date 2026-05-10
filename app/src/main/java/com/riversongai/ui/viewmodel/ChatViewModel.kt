@@ -1,6 +1,7 @@
 package com.riversongai.ui.viewmodel
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -52,10 +53,11 @@ class ChatViewModel(
     private val audioRecorder = AudioRecorder(app)
     val isRecording: Boolean get() = audioRecorder.isActive
 
+    private val prefs = app.getSharedPreferences("chat_prefs", Context.MODE_PRIVATE)
+
     init {
         _messages.value = ChatHistoryManager.load(app)
         loadModels()
-        connect()
     }
 
     private fun connect() {
@@ -79,6 +81,7 @@ class ChatViewModel(
                     _isConnected.value = false
                     _connectionError.value = error
                     _status.value = "idle"
+                    appendMessage(ChatMessage("system", "⚠️ Connection Error: $error"))
                 }
             }
         )
@@ -87,9 +90,28 @@ class ChatViewModel(
     fun loadModels() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = conversationRepository.getModels()
-                if (response.isSuccessful) {
-                    _availableModels.postValue(response.body() ?: emptyList())
+                // Use the correct API endpoint per prompt (GET /api/models returns ModelCatalog)
+                val response = conversationRepository.apiService().getModels()
+                if (response.isSuccessful && response.body() != null) {
+                    val catalog = response.body()!!
+                    val local = catalog.local.map { ChatModel(it.modelId, it.displayName, it.provider, true) }
+                    val cloud = catalog.cloud.map { ChatModel(it.modelId, it.displayName, it.provider, false) }
+                    val combined = local + cloud
+                    _availableModels.postValue(combined)
+                    
+                    // Default selection logic
+                    val savedId = prefs.getString("selected_model_id", null)
+                    val savedProvider = prefs.getString("selected_model_provider", null)
+                    
+                    val default = combined.find { it.id == savedId && it.provider == savedProvider }
+                        ?: local.firstOrNull()
+                        ?: cloud.firstOrNull()
+                    
+                    if (default != null) {
+                        viewModelScope.launch(Dispatchers.Main) {
+                            selectModel(default)
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -99,6 +121,11 @@ class ChatViewModel(
 
     fun selectModel(model: ChatModel) {
         _selectedModel.value = model
+        prefs.edit().apply {
+            putString("selected_model_id", model.id)
+            putString("selected_model_provider", model.provider)
+            apply()
+        }
         reconnect()
     }
 
@@ -235,7 +262,7 @@ class ChatViewModel(
                 "idle" -> _status.value = "idle"
                 "error" -> {
                     _status.value = "idle"
-                    if (!text.isNullOrBlank()) appendMessage(ChatMessage("system", "⚠️ $text"))
+                    if (!text.isNullOrBlank()) appendMessage(ChatMessage("assistant", "⚠️ Error: $text"))
                 }
             }
         }
@@ -256,4 +283,7 @@ class ChatViewModel(
         audioRecorder.cancel()
         conversationRepository.disconnect()
     }
+
+    // Helper to expose apiService if needed by Fragment (though bad practice, restricted by Prompt)
+    fun apiService() = conversationRepository.apiService()
 }

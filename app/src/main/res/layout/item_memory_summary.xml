@@ -42,7 +42,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:text="30d"
-            app:chipMinHeight="24dp"
+            app:chipMinHeight="32dp"
             android:textSize="11sp" />
 
     </RelativeLayout>

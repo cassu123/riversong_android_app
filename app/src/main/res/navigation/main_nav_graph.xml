@@ -66,7 +66,17 @@
         android:id="@+id/homeFragment"
         android:name="com.riversongai.ui.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_smartHomeControlScreen"
+            app:destination="@id/smartHomeControlScreen" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/smartHomeControlScreen"
+        android:name="com.riversongai.ui.SmartHomeControlScreen"
+        android:label="Smart Home"
+        tools:layout="@layout/fragment_smart_home_control" />
 
     <fragment
         android:id="@+id/memoryFragment"
@@ -102,28 +112,39 @@
 
     <fragment
         android:id="@+id/homeNodeFragment"
-        android:name="com.riversongai.ui.PlaceholderFragment"
-        android:label="Home Node" />
+        android:name="com.riversongai.ui.HomeNodeFragment"
+        android:label="Home Node"
+        tools:layout="@layout/fragment_home_node" />
 
     <fragment
         android:id="@+id/analyticsFragment"
-        android:name="com.riversongai.ui.PlaceholderFragment"
-        android:label="Analytics" />
-
-    <fragment
-        android:id="@+id/linksFragment"
-        android:name="com.riversongai.ui.PlaceholderFragment"
-        android:label="Links" />
+        android:name="com.riversongai.ui.AnalyticsFragment"
+        android:label="Analytics"
+        tools:layout="@layout/fragment_analytics" />
 
     <fragment
         android:id="@+id/googleFragment"
-        android:name="com.riversongai.ui.PlaceholderFragment"
-        android:label="Google" />
+        android:name="com.riversongai.ui.GoogleFragment"
+        android:label="Google"
+        tools:layout="@layout/fragment_google" />
 
     <fragment
         android:id="@+id/readingFragment"
-        android:name="com.riversongai.ui.PlaceholderFragment"
-        android:label="Reading" />
+        android:name="com.riversongai.ui.ReadingFragment"
+        android:label="Reading"
+        tools:layout="@layout/fragment_reading" />
+
+    <fragment
+        android:id="@+id/culinaryFragment"
+        android:name="com.riversongai.ui.CulinaryFragment"
+        android:label="Culinary"
+        tools:layout="@layout/fragment_culinary" />
+
+    <fragment
+        android:id="@+id/usersFragment"
+        android:name="com.riversongai.ui.UsersFragment"
+        android:label="Users"
+        tools:layout="@layout/fragment_users" />
 
     <!-- ── Account / settings ────────────────────────────────────────────── -->
 
@@ -164,6 +185,18 @@
         <action
             android:id="@+id/action_moreFragment_to_feedSettingsFragment"
             app:destination="@id/feedSettingsFragment" />
+        <action
+            android:id="@+id/action_moreFragment_to_culinaryFragment"
+            app:destination="@id/culinaryFragment" />
+        <action
+            android:id="@+id/action_moreFragment_to_analyticsFragment"
+            app:destination="@id/analyticsFragment" />
+        <action
+            android:id="@+id/action_moreFragment_to_smartHomeControlScreen"
+            app:destination="@id/smartHomeControlScreen" />
+        <action
+            android:id="@+id/action_moreFragment_to_usersFragment"
+            app:destination="@id/usersFragment" />
     </fragment>
 
 

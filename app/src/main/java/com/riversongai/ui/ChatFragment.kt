@@ -2,8 +2,10 @@ package com.riversongai.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +29,12 @@ import com.google.android.material.chip.Chip
 import com.riversongai.data.model.ChatModel
 import com.riversongai.ui.adapter.ChatHistoryAdapter
 
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
+import android.media.AudioManager
+import android.content.Context
+import android.os.Build
+
 class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
 
     private var _binding: FragmentChatBinding? = null
@@ -39,6 +47,9 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var isTtsEnabled = true
 
+    private var audioManager: AudioManager? = null
+    private var audioFocusRequest: AudioFocusRequest? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,6 +61,7 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        audioManager = requireContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
         tts = TextToSpeech(requireContext(), this)
 
         setupChatList()
@@ -61,7 +73,7 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
         arguments?.getString("message")?.let {
             if (it.isNotBlank()) {
                 chatViewModel.sendMessage(it)
-                arguments?.remove("message") // Only send once
+                arguments?.remove("message")
             }
         }
     }
@@ -79,6 +91,7 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
     private fun setupHistoryList() {
         historyAdapter = ChatHistoryAdapter { session ->
             chatViewModel.loadHistoryDetail(session.id)
+            toggleHistory(false)
         }
         binding.recyclerViewHistory.apply {
             adapter = historyAdapter
@@ -107,7 +120,7 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
                 if (hasMicPermission()) {
                     chatViewModel.startVoiceInput()
                 } else {
-                    Toast.makeText(context, "Microphone permission required", Toast.LENGTH_SHORT).show()
+                    requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 100)
                 }
             }
         }
@@ -143,6 +156,10 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
 
         binding.containerHistory.setOnClickListener {
             toggleHistory(false)
+        }
+        
+        binding.cardModelSelector.setOnClickListener {
+            binding.scrollViewModels.isVisible = !binding.scrollViewModels.isVisible
         }
     }
 
@@ -193,7 +210,7 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
                 "listening" -> {
                     binding.textViewStatus.isVisible = true
                     binding.textViewStatus.text = "Listening…"
-                    binding.buttonMic.setIconResource(R.drawable.ic_mic)
+                    binding.buttonMic.setIconResource(R.drawable.ic_close)
                     binding.buttonSend.isEnabled = false
                 }
                 else -> {
@@ -214,7 +231,6 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
             if (isReplay) {
                 binding.buttonReconnect.isVisible = true
                 binding.buttonReconnect.setIconResource(R.drawable.ic_close)
-                Toast.makeText(context, "Viewing history (Replay Mode)", Toast.LENGTH_SHORT).show()
             } else {
                 binding.buttonReconnect.setIconResource(R.drawable.ic_refresh)
             }
@@ -226,42 +242,63 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
                 chatViewModel.clearResponseCompleteEvent()
             }
         }
+
+        chatViewModel.availableModels.observe(viewLifecycleOwner) { models ->
+            populateModelChips(models)
+        }
+
+        chatViewModel.selectedModel.observe(viewLifecycleOwner) { model ->
+            model?.let {
+                binding.textViewModelName.text = it.name
+                binding.textViewModelSub.text = "${if (it.isLocal) "Local" else "Cloud"} · ${it.provider}"
+            }
+        }
     }
 
     private fun updateStatusChip(connected: Boolean, isReplay: Boolean) {
         binding.chipConnectionStatus.apply {
             if (isReplay) {
                 text = "REPLAY"
-                setChipBackgroundColorResource(R.color.river_song_secondary_container)
+                setChipBackgroundColorResource(android.R.color.darker_gray)
             } else {
                 text = if (connected) "Connected" else "Connecting…"
-                setChipBackgroundColorResource(
-                    if (connected) R.color.river_song_success_container else R.color.river_song_error_container
-                )
+                val color = if (connected) android.R.color.holo_green_dark else android.R.color.holo_red_dark
+                chipBackgroundColor = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), color))
             }
         }
     }
 
     private fun populateModelChips(models: List<ChatModel>) {
         binding.chipGroupModels.removeAllViews()
+        val primaryContainer = getThemeColor(com.google.android.material.R.attr.colorPrimaryContainer)
+        val surfaceVariant = getThemeColor(com.google.android.material.R.attr.colorSurfaceVariant)
+        val onPrimaryContainer = getThemeColor(com.google.android.material.R.attr.colorOnPrimaryContainer)
+        val onSurfaceVariant = getThemeColor(com.google.android.material.R.attr.colorOnSurfaceVariant)
+
         models.forEach { model ->
             val chip = Chip(requireContext()).apply {
                 text = model.name
                 isCheckable = true
-                isCheckedIconVisible = true
-                id = View.generateViewId()
+                isCheckedIconVisible = false
+                
+                val isSelected = chatViewModel.selectedModel.value?.id == model.id
+                isChecked = isSelected
+                
+                chipBackgroundColor = ColorStateList.valueOf(if (isSelected) primaryContainer else surfaceVariant)
+                setTextColor(if (isSelected) onPrimaryContainer else onSurfaceVariant)
+
                 setOnClickListener {
                     chatViewModel.selectModel(model)
                 }
             }
             binding.chipGroupModels.addView(chip)
-            if (chatViewModel.selectedModel.value == null && models.indexOf(model) == 0) {
-                chip.isChecked = true
-                chatViewModel.selectModel(model)
-            } else if (chatViewModel.selectedModel.value?.id == model.id) {
-                chip.isChecked = true
-            }
         }
+    }
+
+    private fun getThemeColor(attr: Int): Int {
+        val typedValue = TypedValue()
+        requireContext().theme.resolveAttribute(attr, typedValue, true)
+        return typedValue.data
     }
 
     private fun sendMessage() {
@@ -278,7 +315,36 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
         )
     }
 
+    private fun requestAudioFocus(): Boolean {
+        val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+                .setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ASSISTANT)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build()
+                )
+                .build()
+            audioFocusRequest = focusRequest
+            audioManager?.requestAudioFocus(focusRequest)
+        } else {
+            @Suppress("DEPRECATION")
+            audioManager?.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+        }
+        return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+    }
+
+    private fun abandonAudioFocus() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            audioFocusRequest?.let { audioManager?.abandonAudioFocusRequest(it) }
+        } else {
+            @Suppress("DEPRECATION")
+            audioManager?.abandonAudioFocus(null)
+        }
+    }
+
     private fun speak(text: String) {
+        requestAudioFocus()
         tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "response_id")
     }
 
@@ -296,6 +362,7 @@ class ChatFragment : Fragment(), TextToSpeech.OnInitListener {
         chatViewModel.cancelVoiceIfActive()
         tts?.stop()
         tts?.shutdown()
+        abandonAudioFocus()
         _binding = null
     }
 }

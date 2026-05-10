@@ -51,7 +51,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="User Name"
-                    android:textSize="18sp"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnSurface" />
 
@@ -60,7 +60,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="user@example.com"
-                    android:textSize="13sp"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                     android:textColor="?attr/colorOnSurfaceVariant" />
 
                 <com.google.android.material.chip.Chip
@@ -70,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="User"
-                    app:chipMinHeight="28dp" />
+                    app:chipMinHeight="32dp" />
 
             </LinearLayout>
         </LinearLayout>
@@ -102,7 +102,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
-                        android:textSize="22sp"
+                        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
                         android:textStyle="bold"
                         android:textColor="?attr/colorPrimary" />
                     <TextView
@@ -110,7 +110,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_facts_stat"
-                        android:textSize="11sp"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
                         android:textColor="?attr/colorOnSurfaceVariant" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -135,7 +135,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
-                        android:textSize="22sp"
+                        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
                         android:textStyle="bold"
                         android:textColor="?attr/colorPrimary" />
                     <TextView
@@ -143,7 +143,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/profile_routines_stat"
-                        android:textSize="11sp"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
                         android:textColor="?attr/colorOnSurfaceVariant" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -155,7 +155,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="INTERFACE SKIN"
-            android:textSize="12sp"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
             android:textAllCaps="true"
             android:textColor="?attr/colorPrimary"
             android:letterSpacing="0.1"
@@ -165,7 +165,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardElevation="0dp"
-            app:cardCornerRadius="12dp"
+            app:cardCornerRadius="16dp"
             app:strokeWidth="1dp"
             app:strokeColor="?attr/colorOutlineVariant"
             android:layout_marginBottom="24dp">
@@ -180,7 +180,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Choose how River's interface looks. Matches your profile on web."
-                    android:textSize="12sp"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginBottom="12dp"
                     android:lineSpacingMultiplier="1.4" />
@@ -194,12 +194,53 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- MONUMENT VALLEY UI TOGGLE -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutlineVariant">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:gravity="center_vertical">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Monument Valley UI"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                        android:textColor="?attr/colorOnSurface" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Layered depth surfaces &amp; architectural feel"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+                </LinearLayout>
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchMVMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- IDENTITY -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="IDENTITY"
-            android:textSize="12sp"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
             android:textAllCaps="true"
             android:textColor="?attr/colorPrimary"
             android:letterSpacing="0.1"
@@ -208,7 +249,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
+            app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
             app:strokeColor="?attr/colorOutlineVariant"
@@ -281,7 +322,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="CHANGE CIPHER"
-            android:textSize="12sp"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
             android:textAllCaps="true"
             android:textColor="?attr/colorPrimary"
             android:letterSpacing="0.1"
@@ -290,7 +331,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
+            app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
             app:strokeColor="?attr/colorOutlineVariant"

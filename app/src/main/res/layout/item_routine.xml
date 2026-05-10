@@ -33,7 +33,7 @@
             android:text="Daily 08:00"
             app:chipIcon="@drawable/ic_schedule"
             app:chipIconSize="16dp"
-            app:chipMinHeight="28dp"
+            app:chipMinHeight="32dp"
             android:textSize="12sp" />
 
         <TextView

@@ -50,6 +50,9 @@ interface RiverSongApiService {
     @POST("api/user/change-password")
     suspend fun changePassword(@Body request: com.riversongai.data.model.ChangePasswordRequest): Response<Void>
 
+    @GET("api/home/status")
+    suspend fun getHomeStatus(): Response<com.riversongai.data.model.HomeStatus>
+
     @GET("api/home/devices")
     suspend fun getDevices(): Response<List<Device>>
 
@@ -160,6 +163,12 @@ interface RiverSongApiService {
     @POST("api/tts/preview")
     suspend fun testVoice(@Body body: Map<String, String>): Response<okhttp3.ResponseBody>
 
+    @DELETE("api/memory/preferences/{id}")
+    suspend fun deletePreference(@Path("id") id: String): Response<Unit>
+
+    @DELETE("api/memory/summaries/{id}")
+    suspend fun deleteSummary(@Path("id") id: String): Response<Unit>
+
     // ── Inventory ─────────────────────────────────────────────────────────────
     @GET("api/inventory/homes")
     suspend fun getInventoryHomes(): Response<List<com.riversongai.data.model.InventoryHome>>
@@ -229,6 +238,124 @@ interface RiverSongApiService {
     // Dashboard
     @GET("api/dashboard")
     suspend fun getDashboard(): Response<DashboardStats>
+
+    // Analytics
+    @GET("api/analytics/snapshots")
+    suspend fun getAnalyticsSnapshots(@retrofit2.http.Query("days") days: Int): Response<List<com.riversongai.data.model.AnalyticsSnapshot>>
+
+    @GET("api/analytics/platforms")
+    suspend fun getAnalyticsPlatforms(): Response<List<String>>
+
+    @POST("api/analytics/snapshots")
+    suspend fun addSnapshot(@Body body: com.riversongai.data.model.SnapshotCreate): Response<com.riversongai.data.model.AnalyticsSnapshot>
+
+    @DELETE("api/analytics/snapshots/{id}")
+    suspend fun deleteSnapshot(@Path("id") id: String): Response<Unit>
+
+    @GET("api/analytics/{platform}/summary")
+    suspend fun getPlatformSummary(@Path("platform") platform: String): Response<com.riversongai.data.model.PlatformSummary>
+
+    // Culinary
+    @GET("api/culinary/recipes")
+    suspend fun getRecipes(): Response<List<com.riversongai.data.model.Recipe>>
+
+    @POST("api/culinary/recipes")
+    suspend fun createRecipe(@Body recipe: com.riversongai.data.model.RecipeCreate): Response<com.riversongai.data.model.Recipe>
+
+    @GET("api/culinary/household")
+    suspend fun getCulinaryHousehold(): Response<com.riversongai.data.model.CulinaryHousehold>
+
+    @POST("api/culinary/household/equipment")
+    suspend fun updateEquipment(@Body body: com.riversongai.data.model.EquipmentUpdate): Response<com.riversongai.data.model.CulinaryHousehold>
+
+    @GET("api/culinary/household/banned")
+    suspend fun getBannedItems(): Response<List<com.riversongai.data.model.BannedItem>>
+
+    @POST("api/culinary/household/banned")
+    suspend fun addBannedItem(@Body body: com.riversongai.data.model.BannedItemCreate): Response<com.riversongai.data.model.BannedItem>
+
+    @DELETE("api/culinary/household/banned/{id}")
+    suspend fun deleteBannedItem(@Path("id") id: String): Response<Unit>
+
+    @GET("api/culinary/household")
+    suspend fun getHouseholdProfile(): Response<com.riversongai.data.model.HouseholdProfile>
+
+    // Reading
+    @GET("api/reading/shelf")
+    suspend fun getReadingShelf(@retrofit2.http.Query("status") status: String? = null): Response<List<com.riversongai.data.model.Book>>
+
+    @POST("api/reading/shelf")
+    suspend fun addBook(@Body book: com.riversongai.data.model.BookCreate): Response<com.riversongai.data.model.Book>
+
+    @PATCH("api/reading/shelf/{bookId}")
+    suspend fun updateBook(@Path("bookId") bookId: String, @Body update: com.riversongai.data.model.BookUpdate): Response<com.riversongai.data.model.Book>
+
+    @DELETE("api/reading/shelf/{bookId}")
+    suspend fun deleteBook(@Path("bookId") bookId: String): Response<Unit>
+
+    @GET("api/reading/stats")
+    suspend fun getReadingStats(): Response<com.riversongai.data.model.ReadingStats>
+
+    @GET("api/reading/connections")
+    suspend fun getReadingConnections(): Response<com.riversongai.data.model.ReadingConnections>
+
+    @GET("api/reading/libby/loans")
+    suspend fun getLibbyLoans(): Response<List<com.riversongai.data.model.LibbyLoan>>
+
+    @GET("api/reading/libby/holds")
+    suspend fun getLibbyHolds(): Response<List<com.riversongai.data.model.LibbyHold>>
+
+    // Google Integration
+    @GET("api/google/status")
+    suspend fun getGoogleStatus(): Response<com.riversongai.data.model.GoogleStatus>
+
+    @GET("api/google/auth/url")
+    suspend fun getGoogleAuthUrl(@retrofit2.http.Query("redirect_uri") redirectUri: String): Response<com.riversongai.data.model.GoogleAuthUrl>
+
+    @GET("api/google/calendar/upcoming")
+    suspend fun getCalendarEvents(
+        @retrofit2.http.Query("days") days: Int = 7,
+        @retrofit2.http.Query("max_results") maxResults: Int = 10
+    ): Response<com.riversongai.data.model.CalendarResponse>
+
+    @GET("api/google/gmail/unread")
+    suspend fun getGmailUnread(
+        @retrofit2.http.Query("max_results") maxResults: Int = 5
+    ): Response<com.riversongai.data.model.GmailResponse>
+
+    // Admin
+    @GET("api/admin/users")
+    suspend fun getUsers(): Response<List<com.riversongai.data.model.AppUser>>
+
+    @PATCH("api/admin/users/{userId}/role")
+    suspend fun updateUserRole(
+        @Path("userId") userId: String,
+        @Body body: com.riversongai.data.model.RoleUpdateBody
+    ): Response<com.riversongai.data.model.AppUser>
+
+    @POST("api/admin/users/{userId}/approve")
+    suspend fun approveUser(@Path("userId") userId: String): Response<com.riversongai.data.model.AppUser>
+
+    @GET("api/killswitch/status")
+    suspend fun getKillSwitchStatus(): Response<com.riversongai.data.model.KillSwitchStatus>
+
+    @POST("api/killswitch/activate")
+    suspend fun activateKillSwitch(): Response<com.riversongai.data.model.KillSwitchStatus>
+
+    @POST("api/killswitch/reset")
+    suspend fun resetKillSwitch(@Body body: com.riversongai.data.model.KillSwitchResetBody): Response<com.riversongai.data.model.KillSwitchStatus>
+
+    @GET("api/admin/feature-visibility")
+    suspend fun getFeatureVisibility(): Response<Map<String, Boolean>>
+
+    @POST("api/admin/feature-visibility")
+    suspend fun setFeatureVisibility(@Body body: Map<String, Boolean>): Response<Map<String, Boolean>>
+
+    @GET("api/user/profile")
+    suspend fun getUserProfile(): Response<com.riversongai.data.model.UserProfile>
+
+    @PATCH("api/user/profile")
+    suspend fun updateUserProfile(@Body body: com.riversongai.data.model.UserProfileUpdate): Response<com.riversongai.data.model.UserProfile>
 
     // Transcribe (voice)
     @POST("api/conversation/transcribe")

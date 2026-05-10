@@ -21,7 +21,14 @@ class MemorySummariesFragment : Fragment(R.layout.fragment_memory_summaries) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMemorySummariesBinding.bind(view)
 
-        summaryAdapter = SummaryAdapter()
+        summaryAdapter = SummaryAdapter { summary ->
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Delete this summary?")
+                .setMessage("Are you sure you want to delete this session summary?")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Delete") { _, _ -> viewModel.deleteSummary(summary.id) }
+                .show()
+        }
         binding.recyclerViewSummaries.apply {
             adapter = summaryAdapter
             layoutManager = LinearLayoutManager(requireContext())

@@ -11,7 +11,9 @@ import com.riversongai.data.model.MemorySummary
 import com.riversongai.databinding.ItemMemorySummaryBinding
 import java.util.Date
 
-class SummaryAdapter : ListAdapter<MemorySummary, SummaryAdapter.ViewHolder>(DiffCallback) {
+class SummaryAdapter(
+    private val onDelete: (MemorySummary) -> Unit
+) : ListAdapter<MemorySummary, SummaryAdapter.ViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemMemorySummaryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -38,6 +40,10 @@ class SummaryAdapter : ListAdapter<MemorySummary, SummaryAdapter.ViewHolder>(Dif
                 else -> R.color.river_song_error_container
             }
             binding.chipTtl.setChipBackgroundColorResource(colorRes)
+
+            binding.buttonDeleteSummary.setOnClickListener {
+                onDelete(summary)
+            }
         }
     }
 

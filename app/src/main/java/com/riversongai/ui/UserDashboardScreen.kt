@@ -20,6 +20,11 @@ import com.riversongai.R
 import com.riversongai.databinding.FragmentUserDashboardBinding
 import com.riversongai.ui.viewmodel.UserDashboardViewModel
 import com.riversongai.utils.ThemeManager
+import com.riversongai.utils.UIStyleManager
+import com.riversongai.data.remote.RiverSongApiService
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class UserDashboardScreen : Fragment() {
@@ -27,6 +32,7 @@ class UserDashboardScreen : Fragment() {
     private var _binding: FragmentUserDashboardBinding? = null
     private val binding get() = _binding!!
     private val userDashboardViewModel: UserDashboardViewModel by viewModel()
+    private val apiService: RiverSongApiService by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +44,13 @@ class UserDashboardScreen : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.switchMVMode.isChecked = UIStyleManager.isMVModeEnabled(requireContext())
+        binding.switchMVMode.setOnCheckedChangeListener { _, isChecked ->
+            UIStyleManager.setMVMode(requireContext(), isChecked)
+            requireActivity().recreate()
+        }
+
         setupThemeGrid()
         setupListeners()
         observeViewModel()
@@ -87,6 +100,9 @@ class UserDashboardScreen : Fragment() {
             isFocusable = true
             setOnClickListener {
                 ThemeManager.setTheme(ctx, theme.key)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    ThemeManager.saveThemeToServer(ctx, apiService, theme.key)
+                }
                 requireActivity().recreate()
             }
         }
