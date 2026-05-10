@@ -4,114 +4,155 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.riversongai.R
+import com.riversongai.data.model.Routine
 import com.riversongai.databinding.FragmentRoutinesBinding
-import com.riversongai.ui.adapter.RoutineAdapter
+import com.riversongai.databinding.ItemRoutineBinding
 import com.riversongai.ui.viewmodel.RoutinesViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class RoutinesFragment : Fragment() {
+class RoutinesFragment : Fragment(R.layout.fragment_routines) {
 
     private var _binding: FragmentRoutinesBinding? = null
     private val binding get() = _binding!!
-
-    private val routinesViewModel: RoutinesViewModel by viewModel()
-    private lateinit var routineAdapter: RoutineAdapter
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentRoutinesBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    private val viewModel: RoutinesViewModel by viewModel()
+    private lateinit var adapter: RoutineAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentRoutinesBinding.bind(view)
 
-        routineAdapter = RoutineAdapter(
-            onToggle = { routine, enabled -> routinesViewModel.toggleRoutine(routine.id, enabled) },
-            onRun = { routine ->
-                Toast.makeText(context, "Running ${routine.name}…", Toast.LENGTH_SHORT).show()
-                routinesViewModel.runRoutine(routine.id)
-            },
-            onEdit = { routine ->
-                routinesViewModel.setEditingRoutine(routine)
-                RoutineCreateEditBottomSheet().show(childFragmentManager, RoutineCreateEditBottomSheet.TAG)
-            },
-            onDelete = { routine ->
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Delete Routine")
-                    .setMessage("Are you sure you want to delete ${routine.name}?")
-                    .setPositiveButton(android.R.string.ok) { _, _ -> routinesViewModel.deleteRoutine(routine.id) }
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show()
-            }
+        adapter = RoutineAdapter(
+            onRun = { viewModel.runRoutine(it) },
+            onToggle = { viewModel.toggleRoutine(it) },
+            onEdit = { showEditRoutine(it) },
+            onDelete = { showDeleteConfirm(it) }
         )
 
         binding.recyclerViewRoutines.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = routineAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@RoutinesFragment.adapter
         }
 
-        binding.swipeRefreshRoutines.apply {
-            val typedValue = android.util.TypedValue()
-            context.theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
-            setColorSchemeColors(typedValue.data)
-            setOnRefreshListener { routinesViewModel.loadRoutines() }
+        binding.swipeRefreshRoutines.setOnRefreshListener {
+            viewModel.loadRoutines()
+            viewModel.loadN8nStatus()
         }
 
-        routinesViewModel.routines.observe(viewLifecycleOwner) { routines ->
-            routineAdapter.submitList(routines)
+        binding.fabAddRoutine.setOnClickListener { showAddRoutine() }
+
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            binding.swipeRefreshRoutines.isRefreshing = it
+        }
+
+        viewModel.routines.observe(viewLifecycleOwner) { routines ->
+            adapter.submitList(routines)
             binding.textViewRoutinesEmpty.isVisible = routines.isEmpty()
         }
 
-        routinesViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
-            binding.swipeRefreshRoutines.isRefreshing = loading
-            binding.progressBarRoutines.isVisible = loading && !binding.swipeRefreshRoutines.isRefreshing
+        viewModel.n8nStatus.observe(viewLifecycleOwner) { status ->
+            val online = status["n8n_available"] == true
+            binding.chipN8nStatus.text = if (online) "ONLINE" else "OFFLINE"
+            binding.textViewN8nStatus.text = if (online) 
+                "n8n is online and ready for complex multi-step automations." 
+                else "n8n instance not detected. Advanced routines are unavailable."
         }
 
-        routinesViewModel.error.observe(viewLifecycleOwner) { error ->
-            error?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                routinesViewModel.clearError()
+        viewModel.routineOutput.observe(viewLifecycleOwner) { output ->
+            output?.let { (name, text) ->
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("$name Output")
+                    .setMessage(text)
+                    .setPositiveButton("Close") { _, _ -> viewModel.clearOutput() }
+                    .setOnDismissListener { viewModel.clearOutput() }
+                    .show()
             }
         }
 
-        routinesViewModel.actionResult.observe(viewLifecycleOwner) { result ->
-            result?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                routinesViewModel.clearActionResult()
-            }
-        }
-
-        routinesViewModel.routineRunOutput.observe(viewLifecycleOwner) { output ->
-            output?.let {
-                showRunOutputDialog(it)
-                routinesViewModel.clearRoutineRunOutput()
-            }
-        }
-
-        binding.fabAddRoutine.setOnClickListener { 
-            routinesViewModel.setEditingRoutine(null)
-            RoutineCreateEditBottomSheet().show(childFragmentManager, RoutineCreateEditBottomSheet.TAG)
+        viewModel.error.observe(viewLifecycleOwner) { err ->
+            err?.let { Toast.makeText(context, it, Toast.LENGTH_LONG).show(); viewModel.clearError() }
         }
     }
 
-    private fun showRunOutputDialog(output: String) {
+    private fun showAddRoutine() {
+        val sheet = RoutineCreateEditBottomSheet()
+        sheet.show(childFragmentManager, "add_routine")
+    }
+
+    private fun showEditRoutine(routine: Routine) {
+        val sheet = RoutineCreateEditBottomSheet.newInstance(routine)
+        sheet.show(childFragmentManager, "edit_routine")
+    }
+
+    private fun showDeleteConfirm(routine: Routine) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Routine Output")
-            .setMessage(output)
-            .setPositiveButton(android.R.string.ok, null)
+            .setTitle("Delete Routine?")
+            .setMessage("Are you sure you want to delete \"${routine.name}\"?")
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Delete") { _, _ -> viewModel.deleteRoutine(routine.id) }
             .show()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private inner class RoutineAdapter(
+        private val onRun: (Routine) -> Unit,
+        private val onToggle: (Routine) -> Unit,
+        private val onEdit: (Routine) -> Unit,
+        private val onDelete: (Routine) -> Unit
+    ) : ListAdapter<Routine, RoutineAdapter.VH>(DIFF) {
+
+        inner class VH(val b: ItemRoutineBinding) : RecyclerView.ViewHolder(b.root)
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            VH(ItemRoutineBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+
+        override fun onBindViewHolder(holder: VH, position: Int) {
+            val r = getItem(position)
+            holder.b.textViewRoutineName.text = r.name
+            holder.b.chipRoutineSchedule.text = formatSchedule(r)
+            holder.b.textViewPromptPreview.text = r.prompt
+            holder.b.textViewLastRun.text = if (r.lastRun != null) "Last run: ${r.lastRun}" else "Never run"
+            
+            holder.b.switchRoutineEnabled.isChecked = r.isEnabled
+            holder.b.switchRoutineEnabled.setOnCheckedChangeListener { _, _ -> onToggle(r) }
+            
+            holder.b.buttonRunRoutine.setOnClickListener { onRun(r) }
+            holder.b.buttonEditRoutine.setOnClickListener { onEdit(r) }
+            holder.b.buttonDeleteRoutine.setOnClickListener { onDelete(r) }
+            
+            holder.b.root.alpha = if (r.isEnabled) 1.0f else 0.6f
+        }
+
+        private fun formatSchedule(r: Routine): String {
+            return when (r.trigger) {
+                "daily" -> "Daily at ${r.time ?: "--:--"}"
+                "weekly" -> "Weekly: ${r.days.joinToString("/")}"
+                "startup" -> "On Startup"
+                else -> "Manual"
+            }
+        }
+    }
+
+    companion object {
+        private val DIFF = object : DiffUtil.ItemCallback<Routine>() {
+            override fun areItemsTheSame(a: Routine, b: Routine) = a.id == b.id
+            override fun areContentsTheSame(a: Routine, b: Routine) = a == b
+        }
     }
 }

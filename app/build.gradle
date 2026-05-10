@@ -95,6 +95,9 @@ dependencies {
     // Pull-to-refresh
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
+    // GridLayout
+    implementation("androidx.gridlayout:gridlayout:1.0.0")
+
     // Image loading (for news article thumbnails)
     implementation("io.coil-kt:coil:2.6.0")
 

@@ -1,131 +1,50 @@
 package com.riversongai.data.repository
 
-import android.util.Log
-import com.riversongai.data.model.ChatModel
-import com.riversongai.data.model.ChatSession
-import com.riversongai.data.model.ChatSessionDetail
+import com.riversongai.data.model.ChatRequest
+import com.riversongai.data.model.ChatResponse
 import com.riversongai.data.remote.RiverSongApiService
-import com.riversongai.utils.SessionManager
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
-import org.json.JSONObject
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import okhttp3.ResponseBody
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
-class ConversationRepository(
-    private val apiService: RiverSongApiService,
-    private val sessionManager: SessionManager
-) {
+class ConversationRepository(private val api: RiverSongApiService) {
 
-    private val tag = "ConversationRepository"
+    suspend fun sendMessage(request: ChatRequest): Result<ChatResponse> = runCatching {
+        val r = api.sendMessage(request)
+        if (r.isSuccessful) r.body()!! else error(r.code().toString())
+    }
 
-    private val client = OkHttpClient.Builder()
-        .readTimeout(0, TimeUnit.MILLISECONDS)
-        .pingInterval(30, TimeUnit.SECONDS)
-        .build()
-
-    private var webSocket: WebSocket? = null
-
-    fun connect(
-        baseUrl: String,
-        modelId: String? = null,
-        onMessage: (type: String, text: String?) -> Unit,
-        onConnected: () -> Unit,
-        onDisconnected: () -> Unit,
-        onError: (String) -> Unit
-    ) {
-        val token = sessionManager.getAuthToken() ?: run {
-            onError("Not authenticated")
-            return
-        }
-        var wsUrl = baseUrl
-            .replace("https://", "wss://")
-            .replace("http://", "ws://")
-            .trimEnd('/') + "/ws/conversation?token=$token"
-
-        if (modelId != null) {
-            wsUrl += "&model=$modelId"
+    fun streamChat(request: ChatRequest): Flow<String> = flow {
+        val response = api.chatHttp(request)
+        if (!response.isSuccessful) {
+            emit("[ERROR] HTTP ${response.code()}")
+            return@flow
         }
 
-        Log.d(tag, "Connecting to $wsUrl")
-        val request = Request.Builder().url(wsUrl).build()
-
-        webSocket = client.newWebSocket(request, object : WebSocketListener() {
-            override fun onOpen(ws: WebSocket, response: Response) {
-                Log.d(tag, "WebSocket connected")
-                // If model selection is needed as a separate message, we could do it here
-                // but adding it to query params is common.
-                // The prompt said: "When selectedModel is non-null, include "model": model.id in the WebSocket connect message"
-                // If "connect message" means the first message sent:
-                if (modelId != null) {
-                    val connectMsg = JSONObject().apply {
-                        put("type", "connect")
-                        put("model", modelId)
-                    }
-                    ws.send(connectMsg.toString())
+        val body = response.body() ?: return@flow
+        val reader = BufferedReader(InputStreamReader(body.byteStream()))
+        
+        try {
+            var line: String? = reader.readLine()
+            while (line != null) {
+                if (line.startsWith("data: ")) {
+                    val content = line.substring(6)
+                    emit(content)
+                    if (content == "[DONE]") break
                 }
-                onConnected()
+                line = reader.readLine()
             }
-// ... rest of methods unchanged
-
-            override fun onMessage(ws: WebSocket, text: String) {
-                try {
-                    val json = JSONObject(text)
-                    val type = json.optString("type", "unknown")
-                    val msgText = json.optString("text", null)
-                        ?: json.optString("message", null)
-                    onMessage(type, msgText)
-                } catch (e: Exception) {
-                    Log.e(tag, "Failed to parse WS message: $text", e)
-                }
-            }
-
-            override fun onClosing(ws: WebSocket, code: Int, reason: String) {
-                ws.close(1000, null)
-                onDisconnected()
-            }
-
-            override fun onFailure(ws: WebSocket, t: Throwable, response: Response?) {
-                Log.e(tag, "WebSocket failure", t)
-                onError(t.message ?: "Connection failed")
-                onDisconnected()
-            }
-        })
-    }
-
-    fun sendText(text: String) {
-        val payload = JSONObject().apply {
-            put("type", "text_input")
-            put("text", text)
+        } catch (e: Exception) {
+            emit("[ERROR] ${e.message}")
+        } finally {
+            reader.close()
         }
-        webSocket?.send(payload.toString())
     }
 
-    fun sendAudio(base64Wav: String) {
-        val payload = JSONObject().apply {
-            put("type", "audio_data")
-            put("data", base64Wav)
-        }
-        webSocket?.send(payload.toString())
+    suspend fun getChatHistory() = runCatching {
+        val r = api.getChatHistory()
+        if (r.isSuccessful) r.body()!! else error(r.code().toString())
     }
-
-    fun resetHistory() {
-        val payload = JSONObject().apply { put("type", "reset_history") }
-        webSocket?.send(payload.toString())
-    }
-
-    fun isConnected(): Boolean = webSocket != null
-
-    fun disconnect() {
-        webSocket?.close(1000, "User disconnected")
-        webSocket = null
-    }
-
-    fun apiService() = apiService
-
-    suspend fun getModels() = apiService.getChatModels()
-    suspend fun getHistory() = apiService.getChatHistory()
-    suspend fun getSessionDetail(sessionId: String) = apiService.getChatSessionDetail(sessionId)
 }

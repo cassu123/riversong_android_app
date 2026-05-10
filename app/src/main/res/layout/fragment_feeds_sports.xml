@@ -54,15 +54,16 @@
             <com.google.android.material.chip.Chip android:id="@+id/chipAllTeams" style="@style/Widget.Material3.Chip.Filter" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="All" android:checked="true" app:chipMinHeight="32dp" />
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayoutSports"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:tabMode="fixed">
-        <com.google.android.material.tabs.TabItem android:text="Results" />
-        <com.google.android.material.tabs.TabItem android:text="Fixtures" />
-    </com.google.android.material.tabs.TabLayout>
+<com.google.android.material.tabs.TabLayout
+    android:id="@+id/tabLayoutSports"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    app:tabMode="fixed">
+    <com.google.android.material.tabs.TabItem android:text="Results" />
+    <com.google.android.material.tabs.TabItem android:text="Fixtures" />
+    <com.google.android.material.tabs.TabItem android:text="Standings" />
+</com.google.android.material.tabs.TabLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewSports"

@@ -1,15 +1,17 @@
 package com.riversongai.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.riversongai.R
 import com.riversongai.databinding.FragmentHomeBinding
@@ -18,12 +20,15 @@ import com.riversongai.utils.UIStyleManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.sin
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val homeViewModel: HomeViewModel by viewModel()
+
+    private var isArrangeMode = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,13 +45,19 @@ class HomeFragment : Fragment() {
         applyUIStyle()
         observeViewModel()
         
+        homeViewModel.loadWidgetVisibility(requireContext())
         homeViewModel.loadAllData()
     }
 
     private fun setupUI() {
         val isAdmin = requireContext()
-            .getSharedPreferences("rs_prefs", android.content.Context.MODE_PRIVATE)
+            .getSharedPreferences("rs_prefs", Context.MODE_PRIVATE)
             .getBoolean("is_admin", false)
+
+        binding.btnQuickListen.setOnClickListener { findNavController().navigate(R.id.speakFragment) }
+        binding.btnQuickRoutine.setOnClickListener { findNavController().navigate(R.id.routinesFragment) }
+        binding.btnQuickHomeScene.setOnClickListener { findNavController().navigate(R.id.smartHomeControlScreen) }
+        binding.btnQuickLogEvent.setOnClickListener { findNavController().navigate(R.id.memoryFragment) }
 
         binding.textViewDate.text = SimpleDateFormat("EEEE, MMMM d", Locale.getDefault()).format(Date())
 
@@ -54,47 +65,25 @@ class HomeFragment : Fragment() {
             homeViewModel.loadAllData()
         }
 
-        binding.cardActionSpeak.setOnClickListener {
-            findNavController().navigate(R.id.speakFragment)
-        }
-        binding.cardActionChat.setOnClickListener {
-            findNavController().navigate(R.id.chatFragment)
-        }
-        
-        binding.cardActionHome.isVisible = isAdmin
-        binding.cardActionHome.setOnClickListener {
-            findNavController().navigate(R.id.smartHomeControlScreen)
-        }
-        binding.cardActionMemory.setOnClickListener {
-            findNavController().navigate(R.id.memoryFragment)
-        }
-        
-        binding.buttonViewAllRoutines.isVisible = isAdmin
         binding.buttonViewAllRoutines.setOnClickListener {
             findNavController().navigate(R.id.routinesFragment)
+        }
+
+        binding.btnArrange.setOnClickListener {
+            isArrangeMode = !isArrangeMode
+            binding.btnArrange.text = if (isArrangeMode) "DONE" else "ARRANGE"
+            binding.chipGroupWidgets.isVisible = isArrangeMode
+            if (!isArrangeMode) homeViewModel.loadAllData()
         }
     }
 
     private fun applyUIStyle() {
         val ctx = requireContext()
-        // depth 1 = mid cards
-        binding.cardGreeting.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 1))
+        binding.cardSystemStatus.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 1))
+        binding.cardMemoryActivity.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 1))
+        binding.cardRecentSessions.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 1))
         binding.cardRoutines.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 1))
-        
-        binding.cardStatsMemory.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 1))
-        binding.cardStatsSummaries.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 1))
-        binding.cardStatsUptime.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 1))
-        binding.cardStatsLatency.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 1))
-
-        // depth 2 = top cards (featured/prominent)
         binding.cardWeather.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 2))
-        
-        listOf(
-            binding.cardActionSpeak, binding.cardActionChat,
-            binding.cardActionHome, binding.cardActionMemory
-        ).forEach {
-            it.setCardBackgroundColor(UIStyleManager.resolveCardColor(ctx, 2))
-        }
     }
 
     private fun observeViewModel() {
@@ -103,60 +92,57 @@ class HomeFragment : Fragment() {
             binding.swipeRefresh.isRefreshing = loading
         }
 
+        homeViewModel.widgetVisibility.observe(viewLifecycleOwner) { visibility ->
+            updateWidgetVisibility(visibility)
+            if (isArrangeMode) populateArrangeChips(visibility)
+        }
+
         homeViewModel.currentUser.observe(viewLifecycleOwner) { user ->
             user?.let {
-                val calendar = Calendar.getInstance()
-                val greeting = when (calendar.get(Calendar.HOUR_OF_DAY)) {
-                    in 0..11 -> "Good morning"
-                    in 12..16 -> "Good afternoon"
-                    else -> "Good evening"
-                }
-                binding.textViewGreeting.text = "$greeting, ${it.firstName}"
+                val h = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+                val greet = when { h < 12 -> "Good morning"; h < 18 -> "Good afternoon"; else -> "Good evening" }
+                binding.textViewGreeting.text = "$greet, ${it.firstName}"
             }
         }
 
         homeViewModel.dashboard.observe(viewLifecycleOwner) { stats ->
             stats?.let {
-                binding.textViewMemoryFacts.text = it.factsCount.toString()
-                binding.textViewSummaries.text = it.summariesCount.toString()
-                binding.textViewUptime.text = formatUptime(it.uptimeSeconds)
-                binding.textViewLatency.text = "${it.avgLatencyMs.toInt()}ms"
+                binding.textViewLatency.text = "${it.latencyMs}ms"
+                binding.textViewUptime.text = it.uptime
+                binding.textViewMemoryFacts.text = it.memory.facts.toString()
+                binding.textViewMemorySummaries.text = it.memory.summaries.toString()
                 
-                // Status dot (mocking "operational" as green)
-                binding.viewStatusDot.setBackgroundResource(R.drawable.ic_check)
-                val typedValue = android.util.TypedValue()
-                requireContext().theme.resolveAttribute(com.google.android.material.R.attr.colorTertiary, typedValue, true)
-                binding.viewStatusDot.backgroundTintList = android.content.res.ColorStateList.valueOf(typedValue.data)
-                binding.textViewStatus.text = "River Song is online"
+                binding.textViewStatus.text = "RIVER IS ${it.status.uppercase()}"
+                val color = if (it.status == "operational") com.google.android.material.R.attr.colorTertiary else com.google.android.material.R.attr.colorError
+                binding.viewStatusDot.backgroundTintList = android.content.res.ColorStateList.valueOf(UIStyleManager.resolveAttrColor(requireContext(), color))
+                
+                drawMemoryBars(it.memory.facts + it.memory.summaries)
             }
         }
 
         homeViewModel.weather.observe(viewLifecycleOwner) { weather ->
             weather?.let {
-                binding.textViewWeatherTemp.text = "%.0f°C".format(it.current.tempC)
-                binding.textViewWeatherCondition.text = it.current.conditionText
-                binding.textViewWeatherIcon.text = conditionToEmoji(it.current.conditionText)
+                val unit = it.current.unit.ifBlank { "°" }
+                binding.textViewWeatherTemp.text = "%.0f%s".format(it.current.temperature, unit)
+                binding.textViewWeatherCondition.text = it.current.condition
+                binding.textViewWeatherIcon.text = conditionToEmoji(it.current.condition)
             }
         }
 
         homeViewModel.routines.observe(viewLifecycleOwner) { routines ->
-            binding.cardRoutines.isVisible = routines.isNotEmpty()
             binding.layoutRoutinesList.removeAllViews()
-            routines.take(3).forEach { routine ->
+            routines.take(3).forEach { r ->
                 val tv = TextView(requireContext()).apply {
-                    text = "${routine.name} • ${routine.scheduleTime ?: "Manual"}"
-                    setPadding(0, 8, 0, 8)
-                    textAppearance = com.google.android.material.R.style.TextAppearance_Material3_BodyMedium
+                    text = "${r.name} • ${if (r.isEnabled) "ON" else "OFF"}"
+                    setPadding(0, 4, 0, 4)
+                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodySmall)
                 }
                 binding.layoutRoutinesList.addView(tv)
             }
         }
 
-        homeViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            message?.let {
-                Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
-                homeViewModel.clearError()
-            }
+        homeViewModel.errorMessage.observe(viewLifecycleOwner) { msg ->
+            msg?.let { Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show(); homeViewModel.clearError() }
         }
         
         homeViewModel.sessionExpired.observe(viewLifecycleOwner) { expired ->
@@ -167,10 +153,45 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun formatUptime(seconds: Long): String {
-        val days = seconds / (24 * 3600)
-        val hours = (seconds % (24 * 3600)) / 3600
-        return "${days}d ${hours}h"
+    private fun updateWidgetVisibility(visibility: Map<String, Boolean>) {
+        binding.cardSystemStatus.isVisible = visibility["system_status"] ?: true
+        binding.layoutQuickActions.isVisible = visibility["quick_actions"] ?: true
+        binding.cardMemoryActivity.isVisible = visibility["memory_activity"] ?: true
+        binding.cardWeather.isVisible = visibility["weather"] ?: true
+        binding.cardRecentSessions.isVisible = visibility["recent_sessions"] ?: true
+        binding.cardRoutines.isVisible = visibility["active_routines"] ?: true
+    }
+
+    private fun populateArrangeChips(visibility: Map<String, Boolean>) {
+        binding.chipGroupWidgets.removeAllViews()
+        visibility.forEach { (key, isVisible) ->
+            val chip = Chip(requireContext()).apply {
+                text = key.replace("_", " ").uppercase()
+                isCheckable = true
+                isChecked = isVisible
+                setOnClickListener { homeViewModel.toggleWidget(requireContext(), key) }
+            }
+            binding.chipGroupWidgets.addView(chip)
+        }
+    }
+
+    private fun drawMemoryBars(total: Int) {
+        binding.layoutMemoryBars.removeAllViews()
+        val bars = 30
+        for (i in 0 until bars) {
+            val bar = View(requireContext()).apply {
+                val height = if (total > 0) {
+                    (8 + (total.toFloat() / bars) * (0.5 + sin(i * 1.3 + 1) * 0.5)).coerceIn(6.0, 48.0).toInt()
+                } else (8 + sin(i * 0.7) * 4).toInt()
+                
+                layoutParams = LinearLayout.LayoutParams(0, (height * resources.displayMetrics.density).toInt(), 1f).apply {
+                    marginEnd = (2 * resources.displayMetrics.density).toInt()
+                }
+                setBackgroundColor(UIStyleManager.resolveAttrColor(requireContext(), com.google.android.material.R.attr.colorPrimary))
+                alpha = if (i % 2 == 0) 0.8f else 0.4f
+            }
+            binding.layoutMemoryBars.addView(bar)
+        }
     }
 
     private fun conditionToEmoji(condition: String): String {

@@ -4,49 +4,29 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.riversongai.data.model.ActivitySummary
-import com.riversongai.data.model.SmartHomeSummary
-import com.riversongai.data.model.User
-import com.riversongai.data.repository.MemoryRepository
-import com.riversongai.data.repository.RoutinesRepository
-import com.riversongai.data.repository.SmartHomeRepository
-import com.riversongai.data.repository.UserRepository
-import com.riversongai.utils.ErrorHandler
-import com.riversongai.utils.SessionManager
-import kotlinx.coroutines.async
+import com.riversongai.data.model.*
+import com.riversongai.data.remote.RiverSongApiService
 import kotlinx.coroutines.launch
 
 class UserDashboardViewModel(
-    private val userRepository: UserRepository,
-    private val smartHomeRepository: SmartHomeRepository,
-    private val memoryRepository: MemoryRepository,
-    private val routinesRepository: RoutinesRepository,
-    private val sessionManager: SessionManager
+    private val apiService: RiverSongApiService,
+    private val sessionManager: com.riversongai.utils.SessionManager
 ) : ViewModel() {
 
-    private val _currentUser = MutableLiveData<User?>()
-    val currentUser: LiveData<User?> = _currentUser
+    private val _currentUser = MutableLiveData<UserProfile?>()
+    val currentUser: LiveData<UserProfile?> = _currentUser
 
-    private val _factsCount = MutableLiveData<Int>(0)
+    private val _integrations = MutableLiveData<Integrations?>()
+    val integrations: LiveData<Integrations?> = _integrations
+
+    private val _factsCount = MutableLiveData<Int>()
     val factsCount: LiveData<Int> = _factsCount
 
-    private val _routinesCount = MutableLiveData<Int>(0)
+    private val _routinesCount = MutableLiveData<Int>()
     val routinesCount: LiveData<Int> = _routinesCount
 
-    private val _smartHomeSummary = MutableLiveData<SmartHomeSummary?>()
-    val smartHomeSummary: LiveData<SmartHomeSummary?> = _smartHomeSummary
-
-    private val _activitySummary = MutableLiveData<ActivitySummary?>()
-    val activitySummary: LiveData<ActivitySummary?> = _activitySummary
-
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
-
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> = _errorMessage
-
-    private val _sessionExpired = MutableLiveData<Boolean>()
-    val sessionExpired: LiveData<Boolean> = _sessionExpired
+    private val _smartHomeSummary = MutableLiveData<SmartHomeSummary>()
+    val smartHomeSummary: LiveData<SmartHomeSummary> = _smartHomeSummary
 
     private val _profileUpdateResult = MutableLiveData<String?>()
     val profileUpdateResult: LiveData<String?> = _profileUpdateResult
@@ -54,86 +34,87 @@ class UserDashboardViewModel(
     private val _passwordChangeResult = MutableLiveData<String?>()
     val passwordChangeResult: LiveData<String?> = _passwordChangeResult
 
+    private val _errorMessage = MutableLiveData<String?>()
+    val errorMessage: LiveData<String?> = _errorMessage
+
+    private val _sessionExpired = MutableLiveData<Boolean>()
+    val sessionExpired: LiveData<Boolean> = _sessionExpired
+
     fun loadDashboardData() {
-        if (!sessionManager.isLoggedIn()) {
-            _sessionExpired.value = true
-            return
-        }
-        _isLoading.value = true
         viewModelScope.launch {
             try {
-                val userJob = async {
-                    userRepository.getCurrentUser()
-                        .onSuccess { _currentUser.value = it }
-                        .onFailure { handleError(it) }
+                val profileResp = apiService.getCurrentUser()
+                if (profileResp.isSuccessful) _currentUser.value = profileResp.body()
+
+                val dashResp = apiService.getDashboard()
+                if (dashResp.isSuccessful) {
+                    val stats = dashResp.body()
+                    _factsCount.value = stats?.memory?.facts ?: 0
                 }
 
-                val devicesJob = async {
-                    smartHomeRepository.getAllDevices()
-                        .onSuccess { devices ->
-                            val active = devices.count { it.isOn }
-                            val offline = devices.count { it.state == "unavailable" }
-                            _smartHomeSummary.value = SmartHomeSummary(
-                                totalDevices = devices.size,
-                                activeDevices = active,
-                                offlineDevices = offline
-                            )
-                        }
-                        .onFailure {
-                            _smartHomeSummary.value = SmartHomeSummary(0, 0, 0)
-                        }
-                }
-
-                val memoryJob = async {
-                    memoryRepository.getFacts()
-                        .onSuccess { _factsCount.value = it.size }
-                }
-
-                val routinesJob = async {
-                    routinesRepository.getRoutines()
-                        .onSuccess { _routinesCount.value = it.size }
-                }
-
-                userJob.await()
-                devicesJob.await()
-                memoryJob.await()
-                routinesJob.await()
+                val routinesResp = apiService.getOrchestrationSettings() // Mocking routines count or loading properly if endpoint exists
                 
-                _activitySummary.value = ActivitySummary()
-            } finally {
-                _isLoading.value = false
+                loadIntegrations()
+            } catch (e: Exception) {
+                _errorMessage.value = e.message
             }
         }
     }
 
-    fun updateProfile(firstName: String, lastName: String, callsign: String?) {
+    fun loadIntegrations() {
         viewModelScope.launch {
-            _isLoading.value = true
-            userRepository.updateProfile(firstName, lastName, callsign).fold(
-                onSuccess = {
-                    _currentUser.value = it
-                    _profileUpdateResult.value = "Profile updated successfully"
-                },
-                onFailure = { 
-                    _profileUpdateResult.value = "Error: ${it.message}"
-                }
-            )
-            _isLoading.value = false
+            try {
+                val resp = apiService.getIntegrations()
+                if (resp.isSuccessful) _integrations.value = resp.body()
+            } catch (e: Exception) {}
         }
     }
 
-    fun changePassword(current: String, newPass: String) {
+    fun updateProfile(first: String, last: String, username: String?, birthday: String?) {
         viewModelScope.launch {
-            _isLoading.value = true
-            userRepository.changePassword(current, newPass).fold(
-                onSuccess = {
-                    _passwordChangeResult.value = "Password updated successfully"
-                },
-                onFailure = {
-                    _passwordChangeResult.value = "Error: ${it.message}"
+            try {
+                val body = UserProfileUpdate(
+                    displayName = "$first $last".trim(),
+                    username = username,
+                    birthday = birthday
+                )
+                val resp = apiService.updateUserProfile(body)
+                if (resp.isSuccessful) {
+                    _currentUser.value = resp.body()
+                    _profileUpdateResult.value = "Profile updated successfully"
+                } else {
+                    _errorMessage.value = "Update failed: ${resp.code()}"
                 }
-            )
-            _isLoading.value = false
+            } catch (e: Exception) {
+                _errorMessage.value = e.message
+            }
+        }
+    }
+
+    fun saveIntegrations(integrations: Integrations) {
+        viewModelScope.launch {
+            try {
+                val resp = apiService.saveIntegrations(integrations)
+                if (resp.isSuccessful) {
+                    _integrations.value = integrations
+                    _profileUpdateResult.value = "Integrations saved"
+                }
+            } catch (e: Exception) { _errorMessage.value = e.message }
+        }
+    }
+
+    fun changePassword(current: String, next: String) {
+        viewModelScope.launch {
+            try {
+                val resp = apiService.changePassword(mapOf("current_password" to current, "new_password" to next))
+                if (resp.isSuccessful) {
+                    _passwordChangeResult.value = "Password updated successfully"
+                } else {
+                    _errorMessage.value = "Failed to update password"
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = e.message
+            }
         }
     }
 
@@ -143,13 +124,10 @@ class UserDashboardViewModel(
     }
 
     fun clearError() { _errorMessage.value = null }
-
-    private fun handleError(e: Throwable) {
-        if (e is retrofit2.HttpException && e.code() == 401) {
-            sessionManager.clearSession()
-            _sessionExpired.value = true
-        } else {
-            _errorMessage.value = ErrorHandler.getFriendlyMessage(e)
-        }
-    }
 }
+
+data class SmartHomeSummary(
+    val activeDevices: Int = 0,
+    val offlineDevices: Int = 0,
+    val totalDevices: Int = 0
+)

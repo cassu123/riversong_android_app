@@ -2,26 +2,34 @@ package com.riversongai.data.model
 
 import com.google.gson.annotations.SerializedName
 
+data class AnalyticsPlatform(
+    val key: String,
+    val label: String,
+    val color: String,
+    val metrics: List<String> = emptyList()
+)
+
 data class AnalyticsSnapshot(
-    val id: String,
+    val id: String = "",
     val platform: String,
     val date: String,
-    val metrics: AnalyticsMetrics
+    val metrics: Map<String, Float> = emptyMap()
 )
 
-data class AnalyticsMetrics(
-    val followers: Int? = null,
-    val views: Int? = null,
-    val revenue: Double? = null,
-    val orders: Int? = null
+data class PlatformConfig(
+    val enabled: Boolean = true,
+    @SerializedName("api_key") val apiKey: String = "",
+    @SerializedName("api_secret") val apiSecret: String = "",
+    val notes: String = ""
 )
 
-data class PlatformSummary(
-    val summary: String
+data class SystemAnalytics(
+    val report: String? = null,
+    val generatedAt: String? = null
 )
 
-data class SnapshotCreate(
+data class PlatformInsight(
     val platform: String,
-    val date: String, // YYYY-MM-DD
-    val metrics: Map<String, Double>
+    val insights: String,
+    @SerializedName("generated_at") val generatedAt: String
 )

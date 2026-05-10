@@ -9,7 +9,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -17,10 +16,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.chip.Chip
 import com.google.android.material.tabs.TabLayoutMediator
 import com.riversongai.R
-import com.riversongai.data.model.CreateServiceLog
-import com.riversongai.data.model.CreateVehicle
-import com.riversongai.data.model.ServiceLog
-import com.riversongai.data.model.Vehicle
+import com.riversongai.data.model.*
 import com.riversongai.databinding.FragmentMaintenanceBinding
 import com.riversongai.ui.viewmodel.MaintenanceViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -38,10 +34,15 @@ class MaintenanceFragment : Fragment(R.layout.fragment_maintenance) {
         super.onViewCreated(view, savedInstanceState)
         _b = FragmentMaintenanceBinding.bind(view)
 
-        // ViewPager tabs: History | + Log Service
         b.pagerMaintenance.adapter = MaintenancePagerAdapter(this)
         TabLayoutMediator(b.tabsMaintenance, b.pagerMaintenance) { tab, pos ->
-            tab.text = if (pos == 0) "Service History" else "Log Service"
+            tab.text = when (pos) {
+                0 -> "History"
+                1 -> "Log Service"
+                2 -> "Specs"
+                3 -> "Schedule"
+                else -> "People"
+            }
         }.attach()
 
         b.btnCancelVehicle.setOnClickListener {
@@ -117,20 +118,22 @@ class MaintenanceFragment : Fragment(R.layout.fragment_maintenance) {
 
     override fun onDestroyView() { super.onDestroyView(); _b = null }
 
-    // ── Pager adapter ───────────────────────────────────────────────────────
     inner class MaintenancePagerAdapter(frag: Fragment) : FragmentStateAdapter(frag) {
-        override fun getItemCount() = 2
-        override fun createFragment(position: Int) =
-            if (position == 0) ServiceHistoryFragment(vm) else LogServiceFragment(vm)
+        override fun getItemCount() = 5
+        override fun createFragment(position: Int) = when (position) {
+            0 -> ServiceHistoryFragment(vm)
+            1 -> LogServiceFragment(vm)
+            2 -> VehicleSpecsFragment(vm)
+            3 -> VehicleScheduleFragment(vm)
+            else -> VehiclePeopleFragment(vm)
+        }
     }
 }
 
 // ── Service History tab ─────────────────────────────────────────────────────
 
 class ServiceHistoryFragment(private val vm: MaintenanceViewModel) : Fragment() {
-
     private lateinit var adapter: ServiceLogAdapter
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val rv = RecyclerView(requireContext()).apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -141,44 +144,35 @@ class ServiceHistoryFragment(private val vm: MaintenanceViewModel) : Fragment() 
         rv.adapter = adapter
         return rv
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.serviceLogs.observe(viewLifecycleOwner) { adapter.submitList(it) }
     }
-
     private val Int.dp get() = (this * resources.displayMetrics.density + 0.5f).toInt()
 }
 
 // ── Log Service tab ─────────────────────────────────────────────────────────
 
 class LogServiceFragment(private val vm: MaintenanceViewModel) : Fragment() {
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val ctx = requireContext()
         val dm  = ctx.resources.displayMetrics
         fun Int.dp() = (this * dm.density + 0.5f).toInt()
-
         val layout = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(16.dp(), 16.dp(), 16.dp(), 80.dp())
         }
-
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
-
         val etDate = com.google.android.material.textfield.TextInputEditText(ctx).apply { setText(today) }
         val etOdo  = com.google.android.material.textfield.TextInputEditText(ctx).apply { inputType = android.text.InputType.TYPE_CLASS_NUMBER }
         val etType = com.google.android.material.textfield.TextInputEditText(ctx).apply { setText("General Service") }
-
         val wrapDate = com.google.android.material.textfield.TextInputLayout(ctx, null, com.google.android.material.R.attr.textInputOutlinedStyle).apply { hint = "Service Date (YYYY-MM-DD)"; addView(etDate) }
         val wrapOdo  = com.google.android.material.textfield.TextInputLayout(ctx, null, com.google.android.material.R.attr.textInputOutlinedStyle).apply { hint = "Odometer (miles)"; addView(etOdo) }
         val wrapType = com.google.android.material.textfield.TextInputLayout(ctx, null, com.google.android.material.R.attr.textInputOutlinedStyle).apply { hint = "Service Type"; addView(etType) }
-
         listOf(wrapDate, wrapOdo, wrapType).forEach { wrap ->
             wrap.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).also { it.bottomMargin = 8.dp() }
             layout.addView(wrap)
         }
-
         val btnLog = com.google.android.material.button.MaterialButton(ctx).apply {
             text = ">> Commit Log Entry"
             setOnClickListener {
@@ -191,13 +185,108 @@ class LogServiceFragment(private val vm: MaintenanceViewModel) : Fragment() {
         layout.addView(btnLog)
         return layout
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.selectedVehicle.observe(viewLifecycleOwner) {
-            view.alpha = if (it != null) 1f else 0.5f
+        vm.selectedVehicle.observe(viewLifecycleOwner) { view.alpha = if (it != null) 1f else 0.5f }
+    }
+}
+
+// ── Specs tab ─────────────────────────────────────────────────────────────
+
+class VehicleSpecsFragment(private val vm: MaintenanceViewModel) : Fragment() {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return RecyclerView(requireContext()).apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            setPadding(16.dp, 16.dp, 16.dp, 80.dp)
+            clipToPadding = false
         }
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vm.selectedVehicle.observe(viewLifecycleOwner) { v ->
+            val rv = view as RecyclerView
+            rv.adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                val items = mutableListOf<Any>().apply {
+                    if (v != null) {
+                        addAll(v.fluidSpecs)
+                        addAll(v.torqueSpecs)
+                    }
+                }
+                override fun getItemCount() = items.size
+                override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+                    return object : RecyclerView.ViewHolder(TextView(parent.context).apply { setPadding(16,16,16,16) }) {}
+                }
+                override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+                    val item = items[position]
+                    (holder.itemView as TextView).text = when (item) {
+                        is FluidSpec -> "Fluid: ${item.name} - ${item.spec} (${item.volume})"
+                        is TorqueSpec -> "Torque: ${item.name} - ${item.ftLb} ft-lb / ${item.nm} Nm"
+                        else -> ""
+                    }
+                }
+            }
+        }
+    }
+    private val Int.dp get() = (this * resources.displayMetrics.density + 0.5f).toInt()
+}
+
+// ── Schedule tab ─────────────────────────────────────────────────────────────
+
+class VehicleScheduleFragment(private val vm: MaintenanceViewModel) : Fragment() {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return RecyclerView(requireContext()).apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            setPadding(16.dp, 16.dp, 16.dp, 80.dp)
+            clipToPadding = false
+        }
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vm.selectedVehicle.observe(viewLifecycleOwner) { v ->
+            val rv = view as RecyclerView
+            rv.adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                val items = v?.checkPoints ?: emptyList()
+                override fun getItemCount() = items.size
+                override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+                    return object : RecyclerView.ViewHolder(TextView(parent.context).apply { setPadding(16,16,16,16) }) {}
+                }
+                override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+                    val cp = items[position]
+                    (holder.itemView as TextView).text = "${cp.description}: Due at ${cp.dueAtMiles ?: "???"} miles"
+                }
+            }
+        }
+    }
+    private val Int.dp get() = (this * resources.displayMetrics.density + 0.5f).toInt()
+}
+
+// ── People tab ─────────────────────────────────────────────────────────────
+
+class VehiclePeopleFragment(private val vm: MaintenanceViewModel) : Fragment() {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return RecyclerView(requireContext()).apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            setPadding(16.dp, 16.dp, 16.dp, 80.dp)
+            clipToPadding = false
+        }
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vm.assignments.observe(viewLifecycleOwner) { list ->
+            val rv = view as RecyclerView
+            rv.adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                override fun getItemCount() = list.size
+                override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+                    return object : RecyclerView.ViewHolder(TextView(parent.context).apply { setPadding(16,16,16,16) }) {}
+                }
+                override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+                    val a = list[position]
+                    (holder.itemView as TextView).text = "Assigned: ${a.personDisplayName ?: a.personEmail}"
+                }
+            }
+        }
+    }
+    private val Int.dp get() = (this * resources.displayMetrics.density + 0.5f).toInt()
 }
 
 // ── Service Log RecyclerView adapter ───────────────────────────────────────

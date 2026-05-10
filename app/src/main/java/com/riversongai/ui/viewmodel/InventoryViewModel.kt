@@ -4,11 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.riversongai.data.model.CreateInventoryItem
-import com.riversongai.data.model.InventoryHome
-import com.riversongai.data.model.InventoryItem
+import com.riversongai.data.model.*
 import com.riversongai.data.repository.InventoryRepository
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 
 class InventoryViewModel(private val repo: InventoryRepository) : ViewModel() {
 
@@ -20,6 +22,12 @@ class InventoryViewModel(private val repo: InventoryRepository) : ViewModel() {
 
     private val _selectedHome = MutableLiveData<InventoryHome?>()
     val selectedHome: LiveData<InventoryHome?> = _selectedHome
+
+    private val _activeAudit = MutableLiveData<InventoryAudit?>()
+    val activeAudit: LiveData<InventoryAudit?> = _activeAudit
+
+    private val _attachments = MutableLiveData<Map<String, List<ItemAttachment>>>(emptyMap())
+    val attachments: LiveData<Map<String, List<ItemAttachment>>> = _attachments
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -43,6 +51,7 @@ class InventoryViewModel(private val repo: InventoryRepository) : ViewModel() {
     fun selectHome(home: InventoryHome) {
         _selectedHome.value = home
         loadItems(home.id)
+        loadActiveAudit(home.id)
     }
 
     fun loadItems(homeId: String) {
@@ -51,6 +60,21 @@ class InventoryViewModel(private val repo: InventoryRepository) : ViewModel() {
             repo.getItems(homeId)
                 .onSuccess { _items.value = it }
                 .onFailure { _error.value = it.message }
+            _isLoading.value = false
+        }
+    }
+
+    fun loadActiveAudit(homeId: String) {
+        viewModelScope.launch {
+            repo.getActiveAudit(homeId).onSuccess { _activeAudit.value = it }
+        }
+    }
+
+    fun startAudit() {
+        val homeId = _selectedHome.value?.id ?: return
+        viewModelScope.launch {
+            _isLoading.value = true
+            repo.startAudit(homeId).onSuccess { _activeAudit.value = it }
             _isLoading.value = false
         }
     }
@@ -83,10 +107,10 @@ class InventoryViewModel(private val repo: InventoryRepository) : ViewModel() {
         }
     }
 
-    fun updateItem(itemId: String, body: CreateInventoryItem) {
+    fun updateItem(itemId: String, fields: Map<String, Any?>) {
         viewModelScope.launch {
             _isLoading.value = true
-            repo.updateItem(itemId, body)
+            repo.updateItem(itemId, fields)
                 .onSuccess { updated ->
                     _items.value = _items.value?.map { if (it.id == itemId) updated else it }
                     _toast.value = "Updated"
@@ -104,6 +128,54 @@ class InventoryViewModel(private val repo: InventoryRepository) : ViewModel() {
                     _toast.value = "Item removed"
                 }
                 .onFailure { _error.value = it.message }
+        }
+    }
+
+    fun loadAttachments(itemId: String) {
+        viewModelScope.launch {
+            repo.getAttachments(itemId).onSuccess { list ->
+                val current = _attachments.value.orEmpty().toMutableMap()
+                current[itemId] = list
+                _attachments.value = current
+            }
+        }
+    }
+
+    fun uploadAttachment(itemId: String, file: File) {
+        viewModelScope.launch {
+            val requestFile = file.asRequestBody("application/octet-stream".toMediaTypeOrNull())
+            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+            repo.uploadAttachment(itemId, body).onSuccess { loadAttachments(itemId) }
+        }
+    }
+
+    fun issueItem(itemId: String, email: String) {
+        viewModelScope.launch {
+            repo.issueItem(itemId, email).onSuccess { updated ->
+                _items.value = _items.value?.map { if (it.id == itemId) updated else it }
+                _toast.value = "Issued to $email"
+            }
+        }
+    }
+
+    fun returnItem(itemId: String) {
+        viewModelScope.launch {
+            repo.returnItem(itemId).onSuccess { updated ->
+                _items.value = _items.value?.map { if (it.id == itemId) updated else it }
+                _toast.value = "Returned"
+            }
+        }
+    }
+
+    fun analyzePhoto(file: File, onResult: (String, String, String) -> Unit) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+            val part = MultipartBody.Part.createFormData("file", file.name, requestFile)
+            repo.analyzePhoto(part).onSuccess { data ->
+                onResult(data["name"] ?: "", data["category"] ?: "Other", data["description"] ?: "")
+            }
+            _isLoading.value = false
         }
     }
 

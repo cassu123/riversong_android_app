@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,9 +18,7 @@ import coil.load
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.riversongai.R
-import com.riversongai.data.model.Book
-import com.riversongai.data.model.BookCreate
-import com.riversongai.data.model.BookUpdate
+import com.riversongai.data.model.*
 import com.riversongai.databinding.BottomSheetAddBookBinding
 import com.riversongai.databinding.FragmentReadingBinding
 import com.riversongai.databinding.ItemBookBinding
@@ -54,16 +54,34 @@ class ReadingFragment : Fragment(R.layout.fragment_reading) {
 
         binding.swipeRefresh.setOnRefreshListener { viewModel.loadData() }
 
+        binding.editTextSearch.addTextChangedListener {
+            viewModel.setSearchQuery(it.toString())
+        }
+
+        binding.chipGroupService.setOnCheckedStateChangeListener { _, checkedIds ->
+            val filter = when (checkedIds.firstOrNull()) {
+                R.id.chipServiceKindle -> "Kindle"
+                R.id.chipServiceAudible -> "Audible"
+                R.id.chipServiceLibby -> "Libby"
+                R.id.chipServiceGoogle -> "Google Play"
+                else -> "All"
+            }
+            viewModel.setServiceFilter(filter)
+            binding.layoutLibbyLive.isVisible = filter == "Libby"
+        }
+
         binding.chipGroupStatus.setOnCheckedStateChangeListener { _, checkedIds ->
             val filter = when (checkedIds.firstOrNull()) {
                 R.id.chipReading -> "Reading"
                 R.id.chipFinished -> "Finished"
                 R.id.chipWantToRead -> "Want to Read"
-                R.id.chipDNF -> "DNF"
                 else -> "All"
             }
             viewModel.setStatusFilter(filter)
         }
+
+        binding.btnSyncKindle.setOnClickListener { viewModel.syncService("kindle") }
+        binding.btnSyncGoogle.setOnClickListener { viewModel.syncService("google_play") }
 
         binding.fabAddBook.setOnClickListener { showAddBookDialog() }
     }
@@ -133,8 +151,6 @@ class ReadingFragment : Fragment(R.layout.fragment_reading) {
             stats?.let {
                 binding.textStatTotal.text = it.total.toString()
                 binding.textStatReading.text = it.byStatus["reading"]?.toString() ?: "0"
-                binding.textStatFinished.text = it.byStatus["finished"]?.toString() ?: "0"
-                binding.textStatWantToRead.text = it.byStatus["want_to_read"]?.toString() ?: "0"
             }
         }
 
@@ -143,11 +159,46 @@ class ReadingFragment : Fragment(R.layout.fragment_reading) {
             binding.textViewEmpty.isVisible = books.isEmpty()
         }
 
+        viewModel.libbyLoans.observe(viewLifecycleOwner) { loans ->
+            if (viewModel.serviceFilter.value == "Libby") {
+                updateLibbyPanel(loans, viewModel.libbyHolds.value ?: emptyList())
+            }
+        }
+
+        viewModel.libbyHolds.observe(viewLifecycleOwner) { holds ->
+            if (viewModel.serviceFilter.value == "Libby") {
+                updateLibbyPanel(viewModel.libbyLoans.value ?: emptyList(), holds)
+            }
+        }
+
         viewModel.error.observe(viewLifecycleOwner) { error ->
             error?.let {
                 Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
                 viewModel.clearError()
             }
+        }
+    }
+
+    private fun updateLibbyPanel(loans: List<LibbyLoan>, holds: List<LibbyHold>) {
+        binding.layoutLibbyItems.removeAllViews()
+        if (loans.isEmpty() && holds.isEmpty()) {
+            binding.layoutLibbyItems.addView(TextView(requireContext()).apply { text = "No active loans or holds." })
+            return
+        }
+        
+        loans.forEach { loan ->
+            val tv = TextView(requireContext()).apply {
+                text = "Loan: ${loan.title} (${loan.daysRemaining}d left)"
+                setPadding(0, 4, 0, 4)
+            }
+            binding.layoutLibbyItems.addView(tv)
+        }
+        holds.forEach { hold ->
+            val tv = TextView(requireContext()).apply {
+                text = "Hold: ${hold.title} (#${hold.queuePosition})"
+                setPadding(0, 4, 0, 4)
+            }
+            binding.layoutLibbyItems.addView(tv)
         }
     }
 

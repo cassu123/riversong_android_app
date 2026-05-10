@@ -9,7 +9,7 @@ class SettingsRepository(private val apiService: RiverSongApiService) {
 
     private val tag = "SettingsRepository"
 
-    suspend fun getModels(): Result<ModelCatalog> {
+    suspend fun getModelCatalog(): Result<ModelCatalog> {
         return try {
             val response = apiService.getModels()
             if (response.isSuccessful && response.body() != null) {
@@ -41,12 +41,22 @@ class SettingsRepository(private val apiService: RiverSongApiService) {
         }
     }
 
-    suspend fun saveLlmSettings(provider: String, modelId: String): Result<Unit> {
+    suspend fun saveLlmSettings(
+        provider: String,
+        modelId: String,
+        fallbackEnabled: Boolean? = null,
+        fallbackProvider: String? = null,
+        fallbackModel: String? = null
+    ): Result<Unit> {
         return try {
-            val body = mapOf<String, Any?>(
-                "provider" to provider,
-                "model_id" to modelId
+            val body = LlmSettings(
+                provider = provider,
+                model = modelId,
+                cloudFallbackEnabled = fallbackEnabled ?: false,
+                cloudFallbackProvider = fallbackProvider,
+                cloudFallbackModel = fallbackModel
             )
+
             val response = apiService.saveLlmSettings(body)
             if (response.isSuccessful) {
                 Result.success(Unit)
@@ -83,6 +93,32 @@ class SettingsRepository(private val apiService: RiverSongApiService) {
         else Result.failure(Exception("Error: ${response.code()}"))
     } catch (e: Exception) {
         Result.failure(e)
+    }
+
+    suspend fun getN8nSettings(): Result<com.riversongai.data.model.N8nSettings> {
+        return try {
+            val response = apiService.getOrchestrationSettings()
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("Failed to fetch n8n settings: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun saveN8nSettings(settings: com.riversongai.data.model.N8nSettings): Result<Unit> {
+        return try {
+            val response = apiService.saveOrchestrationSettings(settings)
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Failed to save n8n settings: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     suspend fun testVoice(voiceId: String) = try {

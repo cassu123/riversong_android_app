@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cardPlatform"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_marginVertical="6dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp"
     app:strokeWidth="1dp"
@@ -20,141 +18,66 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/imageViewPlatformIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_public"
-                app:tint="?attr/colorPrimary" />
-
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
             <TextView
                 android:id="@+id/textViewPlatformName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
                 android:layout_weight="1"
-                android:text="Platform Name"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
-
-            <LinearLayout
-                android:id="@+id/layoutSparkline"
-                android:layout_width="60dp"
-                android:layout_height="24dp"
-                android:gravity="bottom"
-                android:orientation="horizontal">
-                <View android:layout_width="4dp" android:layout_height="8dp" android:layout_marginEnd="2dp" android:background="?attr/colorPrimary" />
-                <View android:layout_width="4dp" android:layout_height="14dp" android:layout_marginEnd="2dp" android:background="?attr/colorPrimary" />
-                <View android:layout_width="4dp" android:layout_height="10dp" android:layout_marginEnd="2dp" android:background="?attr/colorPrimary" />
-                <View android:layout_width="4dp" android:layout_height="18dp" android:layout_marginEnd="2dp" android:background="?attr/colorPrimary" />
-                <View android:layout_width="4dp" android:layout_height="22dp" android:background="?attr/colorPrimary" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/textViewPrimaryMetricValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-                    android:textStyle="bold" />
-                <TextView
-                    android:id="@+id/textViewPrimaryMetricLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Followers"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutRevenue"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/textViewRevenueValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="$0.00"
-                    android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-                    android:textStyle="bold" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Revenue"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layoutExpandedMetrics"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
+                android:text="Platform"
+                android:textStyle="bold"
+                android:textSize="14sp" />
             <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?attr/colorOutlineVariant" />
+                android:id="@+id/viewConnectionDot"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/bg_audio_ring" />
+        </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            android:gravity="bottom">
+            
             <TextView
-                android:id="@+id/textViewAllMetrics"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Metric 1: Value\nMetric 2: Value"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonGetInsights"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Get AI Insights"
-                app:icon="@drawable/ic_lightbulb" />
-
-            <TextView
-                android:id="@+id/textViewAiInsights"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Loading insights..."
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                android:textColor="?attr/colorPrimary"
-                android:visibility="gone" />
-
-            <ProgressBar
-                android:id="@+id/progressBarInsights"
-                style="?android:attr/progressBarStyleSmall"
+                android:id="@+id/textViewPrimaryVal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:visibility="gone" />
+                android:text="--"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewDelta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="4dp"
+                android:text="0.0%"
+                android:textSize="11sp" />
 
         </LinearLayout>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/textViewMetricLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="METRIC"
+            android:textSize="10sp"
+            android:textAllCaps="true"
+            android:textColor="?attr/colorOnSurfaceVariant" />
 
+        <!-- Simple sparkline representation -->
+        <LinearLayout
+            android:id="@+id/layoutSparkline"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:gravity="bottom" />
+
+    </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

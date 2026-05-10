@@ -1,11 +1,13 @@
 package com.riversongai.ui.adapter
 
-import android.text.format.DateUtils
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.riversongai.R
 import com.riversongai.data.model.SportsMatch
 import com.riversongai.databinding.ItemSportsMatchBinding
@@ -23,29 +25,36 @@ class SportsMatchAdapter : ListAdapter<SportsMatch, SportsMatchAdapter.ViewHolde
 
     inner class ViewHolder(private val binding: ItemSportsMatchBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(match: SportsMatch) {
-            binding.textViewLeague.text = match.leagueName
+            binding.textViewLeague.text = match.league
             binding.textViewHomeTeam.text = match.homeTeam
             binding.textViewAwayTeam.text = match.awayTeam
             
-            if (match.status == "NS") {
-                binding.textViewScore.text = "vs"
-                binding.chipMatchStatus.text = "NS"
-                binding.chipMatchStatus.setChipBackgroundColorResource(R.color.river_song_surface_variant)
+            binding.imageViewHomeLogo.load(match.homeBadge) { placeholder(R.drawable.ic_public); error(R.drawable.ic_public) }
+            binding.imageViewAwayLogo.load(match.awayBadge) { placeholder(R.drawable.ic_public); error(R.drawable.ic_public) }
+
+            if (match.homeScore == null || match.awayScore == null) {
+                binding.textViewScore.isVisible = false
+                binding.textViewVS.isVisible = true
             } else {
+                binding.textViewScore.isVisible = true
+                binding.textViewVS.isVisible = false
                 binding.textViewScore.text = "${match.homeScore} - ${match.awayScore}"
-                binding.chipMatchStatus.text = match.status
-                if (match.status == "LIVE") {
-                    binding.chipMatchStatus.setChipBackgroundColorResource(R.color.river_song_error_container)
-                } else {
-                    binding.chipMatchStatus.setChipBackgroundColorResource(R.color.river_song_success_container)
+            }
+
+            binding.chipMatchStatus.text = match.status
+            when {
+                match.status.contains("LIVE", true) || match.status.contains("1st", true) || match.status.contains("2nd", true) -> {
+                    binding.chipMatchStatus.setChipBackgroundColorResource(com.google.android.material.R.color.material_dynamic_tertiary80)
+                }
+                match.finished -> {
+                    binding.chipMatchStatus.setChipBackgroundColorResource(com.google.android.material.R.color.material_dynamic_secondary80)
+                }
+                else -> {
+                    binding.chipMatchStatus.setChipBackgroundColorResource(com.google.android.material.R.color.material_dynamic_neutral80)
                 }
             }
 
-            binding.textViewMatchDate.text = DateUtils.getRelativeTimeSpanString(
-                match.kickoff,
-                System.currentTimeMillis(),
-                DateUtils.MINUTE_IN_MILLIS
-            )
+            binding.textViewMatchDate.text = if (match.time != null) "${match.date} ${match.time}" else match.date
         }
     }
 

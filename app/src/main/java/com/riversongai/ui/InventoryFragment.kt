@@ -6,19 +6,21 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.riversongai.R
-import com.riversongai.data.model.CreateInventoryItem
-import com.riversongai.data.model.InventoryHome
-import com.riversongai.data.model.InventoryItem
-import com.riversongai.databinding.FragmentInventoryBinding
-import com.riversongai.ui.adapter.InventoryItemAdapter
+import com.riversongai.data.model.*
+import com.riversongai.databinding.*
 import com.riversongai.ui.viewmodel.InventoryViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.File
 
 class InventoryFragment : Fragment(R.layout.fragment_inventory) {
 
@@ -32,7 +34,10 @@ class InventoryFragment : Fragment(R.layout.fragment_inventory) {
         super.onViewCreated(view, savedInstanceState)
         _b = FragmentInventoryBinding.bind(view)
 
-        adapter = InventoryItemAdapter(onDelete = { vm.deleteItem(it.id) })
+        adapter = InventoryItemAdapter(
+            onDelete = { vm.deleteItem(it.id) },
+            onClick = { showItemDetails(it) }
+        )
         b.rvItems.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@InventoryFragment.adapter
@@ -54,6 +59,8 @@ class InventoryFragment : Fragment(R.layout.fragment_inventory) {
         }
         b.btnCancelItem.setOnClickListener { b.cardAddItem.isVisible = false; clearItemForm() }
         b.btnSaveItem.setOnClickListener { saveItem() }
+        
+        b.btnAudit.setOnClickListener { showAuditManagement() }
 
         observeVm()
         vm.loadHomes()
@@ -67,12 +74,17 @@ class InventoryFragment : Fragment(R.layout.fragment_inventory) {
         vm.selectedHome.observe(viewLifecycleOwner) { home ->
             b.tvSelectedHome.text = home?.name ?: "No home selected"
             b.btnAddItem.isEnabled = home != null
+            b.btnAudit.isVisible = home != null
         }
 
         vm.items.observe(viewLifecycleOwner) { items ->
             allItems = items
             filterItems(b.etItemSearch.text?.toString() ?: "")
             b.tvItemCount.text = "${items.size} item${if (items.size == 1) "" else "s"}"
+        }
+
+        vm.activeAudit.observe(viewLifecycleOwner) { audit ->
+            b.btnAudit.text = if (audit != null) "Active Audit (${audit.scannedCount}/${audit.totalItems})" else "Start Audit"
         }
 
         vm.error.observe(viewLifecycleOwner) { err ->
@@ -107,19 +119,23 @@ class InventoryFragment : Fragment(R.layout.fragment_inventory) {
     }
 
     private fun showAddHomeDialog() {
-        val input = com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
-            .setTitle("New Home")
-        val editText = android.widget.EditText(requireContext()).apply {
-            hint = "Home name"
-            setPadding(48, 24, 48, 24)
+        val dialog = BottomSheetDialog(requireContext())
+        val layout = android.widget.LinearLayout(requireContext()).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(48, 48, 48, 48)
         }
-        input.setView(editText)
-            .setPositiveButton("Create") { _, _ ->
-                val name = editText.text.toString().trim()
+        val etName = com.google.android.material.textfield.TextInputEditText(requireContext()).apply { hint = "Home Name" }
+        val etDesc = com.google.android.material.textfield.TextInputEditText(requireContext()).apply { hint = "Description" }
+        val btnSave = com.google.android.material.button.MaterialButton(requireContext()).apply {
+            text = "Create"
+            setOnClickListener {
+                val name = etName.text.toString().trim()
                 if (name.isNotBlank()) vm.createHome(name)
+                dialog.dismiss()
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+        }
+        layout.addView(etName); layout.addView(etDesc); layout.addView(btnSave)
+        dialog.setContentView(layout); dialog.show()
     }
 
     private fun filterItems(query: String) {
@@ -146,6 +162,48 @@ class InventoryFragment : Fragment(R.layout.fragment_inventory) {
         clearItemForm()
     }
 
+    private fun showItemDetails(item: InventoryItem) {
+        val dialog = BottomSheetDialog(requireContext())
+        val sheetBinding = LayoutDeviceDetailBottomSheetBinding.inflate(layoutInflater) // Placeholder layout, need a specific one or reuse
+        // For now, let's just use a simple dynamic layout or an alert
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(item.name)
+            .setMessage("Category: ${item.category}\nLocation: ${item.location}\nStatus: ${item.assetStatus}\nEIN: ${item.ein}")
+            .setPositiveButton("Edit") { _, _ -> /* TODO: show edit form */ }
+            .setNeutralButton("Issue") { _, _ -> showIssueDialog(item) }
+            .setNegativeButton("Delete") { _, _ -> vm.deleteItem(item.id) }
+            .show()
+    }
+
+    private fun showIssueDialog(item: InventoryItem) {
+        val etEmail = android.widget.EditText(requireContext()).apply { hint = "Collaborator Email" }
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Issue Item")
+            .setView(etEmail)
+            .setPositiveButton("Issue") { _, _ -> vm.issueItem(item.id, etEmail.text.toString()) }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showAuditManagement() {
+        val audit = vm.activeAudit.value
+        if (audit == null) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Start Audit")
+                .setMessage("Begin scanning items in ${vm.selectedHome.value?.name}?")
+                .setPositiveButton("Start") { _, _ -> vm.startAudit() }
+                .setNegativeButton("Cancel", null)
+                .show()
+        } else {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Active Audit")
+                .setMessage("Progress: ${audit.scannedCount}/${audit.totalItems}\nStatus: ${audit.status}")
+                .setPositiveButton("Continue Scanning") { _, _ -> /* TODO: open scanner */ }
+                .setNegativeButton("Close", null)
+                .show()
+        }
+    }
+
     private fun clearItemForm() {
         b.etNewItemName.text?.clear()
         b.etNewItemCategory.text?.clear()
@@ -156,5 +214,38 @@ class InventoryFragment : Fragment(R.layout.fragment_inventory) {
     override fun onDestroyView() {
         super.onDestroyView()
         _b = null
+    }
+}
+
+// ── Item adapter ─────────────────────────────────────────────────────────────
+
+class InventoryItemAdapter(
+    private val onDelete: (InventoryItem) -> Unit,
+    private val onClick: (InventoryItem) -> Unit
+) : ListAdapter<InventoryItem, InventoryItemAdapter.VH>(DIFF) {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        VH(LayoutInflater.from(parent.context).inflate(R.layout.item_inventory_item, parent, false))
+
+    override fun onBindViewHolder(holder: VH, position: Int) = holder.bind(getItem(position))
+
+    inner class VH(view: View) : RecyclerView.ViewHolder(view) {
+        private val tvName: TextView     = view.findViewById(R.id.tvItemName)
+        private val tvMeta: TextView     = view.findViewById(R.id.tvItemMeta)
+        private val tvStatus: TextView   = view.findViewById(R.id.tvItemStatus)
+
+        fun bind(item: InventoryItem) {
+            tvName.text = item.name
+            tvMeta.text = "${item.category} • ${item.location}"
+            tvStatus.text = item.assetStatus
+            itemView.setOnClickListener { onClick(item) }
+        }
+    }
+
+    companion object {
+        private val DIFF = object : DiffUtil.ItemCallback<InventoryItem>() {
+            override fun areItemsTheSame(a: InventoryItem, b: InventoryItem) = a.id == b.id
+            override fun areContentsTheSame(a: InventoryItem, b: InventoryItem) = a == b
+        }
     }
 }

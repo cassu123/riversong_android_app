@@ -1,20 +1,15 @@
 package com.riversongai.ui.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.riversongai.data.model.Fact
-import com.riversongai.data.model.MemoryPreference
-import com.riversongai.data.model.MemoryStats
-import com.riversongai.data.model.MemorySummary
+import androidx.lifecycle.*
+import com.riversongai.data.model.*
 import com.riversongai.data.repository.MemoryRepository
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewModel() {
 
     private val _facts = MutableLiveData<List<Fact>>(emptyList())
+    val facts: LiveData<List<Fact>> = _facts
     
     private val _preferences = MutableLiveData<List<MemoryPreference>>(emptyList())
     val preferences: LiveData<List<MemoryPreference>> = _preferences
@@ -28,12 +23,24 @@ class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewMode
     private val _filterQuery = MutableLiveData("")
     val filterQuery: LiveData<String> = _filterQuery
 
-    val filteredFacts = MediatorLiveData<List<Fact>>().apply {
-        addSource(_facts) { facts ->
-            value = filterList(facts, _filterQuery.value.orEmpty())
+    val filteredFacts: LiveData<List<Fact>> = _filterQuery.switchMap { query ->
+        _facts.map { list ->
+            if (query.isBlank()) list
+            else list.filter { it.key.contains(query, ignoreCase = true) || it.value.contains(query, ignoreCase = true) }
         }
-        addSource(_filterQuery) { query ->
-            value = filterList(_facts.value.orEmpty(), query)
+    }
+
+    val filteredPreferences: LiveData<List<MemoryPreference>> = _filterQuery.switchMap { query ->
+        _preferences.map { list ->
+            if (query.isBlank()) list
+            else list.filter { it.category.contains(query, ignoreCase = true) || it.value.contains(query, ignoreCase = true) }
+        }
+    }
+
+    val filteredSummaries: LiveData<List<MemorySummary>> = _filterQuery.switchMap { query ->
+        _summaries.map { list ->
+            if (query.isBlank()) list
+            else list.filter { it.summary.contains(query, ignoreCase = true) }
         }
     }
 
@@ -47,49 +54,32 @@ class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewMode
     val actionResult: LiveData<String?> = _actionResult
 
     init {
-        loadFacts()
-        loadPreferences()
-        loadSummaries()
+        loadAll()
     }
 
-    fun loadFacts() {
+    fun loadAll() {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
-            memoryRepository.getFacts().fold(
-                onSuccess = { 
-                    _facts.value = it
-                    updateStats()
-                },
-                onFailure = { _error.value = it.message }
-            )
+            
+            val factsJob = async { memoryRepository.getFacts() }
+            val prefsJob  = async { memoryRepository.getPreferences() }
+            val sumsJob   = async { memoryRepository.getSummaries() }
+
+            val f = factsJob.await()
+            val p = prefsJob.await()
+            val s = sumsJob.await()
+
+            f.onSuccess { _facts.value = it }
+            p.onSuccess { _preferences.value = it }
+            s.onSuccess { _summaries.value = it }
+
+            updateStats()
             _isLoading.value = false
         }
     }
 
-    fun loadPreferences() {
-        viewModelScope.launch {
-            memoryRepository.getPreferences().fold(
-                onSuccess = {
-                    _preferences.value = it
-                    updateStats()
-                },
-                onFailure = { _error.value = it.message }
-            )
-        }
-    }
-
-    fun loadSummaries() {
-        viewModelScope.launch {
-            memoryRepository.getSummaries().fold(
-                onSuccess = {
-                    _summaries.value = it
-                    updateStats()
-                },
-                onFailure = { _error.value = it.message }
-            )
-        }
-    }
+    fun loadStats() = loadAll()
 
     private fun updateStats() {
         _memoryStats.value = MemoryStats(
@@ -103,14 +93,6 @@ class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewMode
         _filterQuery.value = query
     }
 
-    private fun filterList(facts: List<Fact>, query: String): List<Fact> {
-        if (query.isBlank()) return facts
-        return facts.filter {
-            it.key.contains(query, ignoreCase = true) ||
-            it.value.contains(query, ignoreCase = true)
-        }
-    }
-
     fun addFact(key: String, value: String) {
         if (key.isBlank() || value.isBlank()) {
             _error.value = "Key and value cannot be empty"
@@ -121,7 +103,7 @@ class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewMode
             memoryRepository.createFact(key.trim(), value.trim()).fold(
                 onSuccess = {
                     _actionResult.value = "Fact saved"
-                    loadFacts()
+                    loadAll()
                 },
                 onFailure = { _error.value = it.message }
             )
@@ -134,11 +116,26 @@ class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewMode
             memoryRepository.deleteFact(factId).fold(
                 onSuccess = {
                     _actionResult.value = "Fact deleted"
-                    val current = _facts.value.orEmpty().filter { it.id != factId }
-                    _facts.value = current
+                    _facts.value = _facts.value.orEmpty().filter { it.id != factId }
+                    updateStats()
                 },
                 onFailure = { _error.value = it.message }
             )
+        }
+    }
+
+    fun deleteFacts(ids: Set<String>) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            var successCount = 0
+            ids.forEach { id ->
+                memoryRepository.deleteFact(id).onSuccess { successCount++ }
+            }
+            if (successCount > 0) {
+                _actionResult.value = "Removed $successCount facts"
+                loadAll()
+            }
+            _isLoading.value = false
         }
     }
 
@@ -147,7 +144,8 @@ class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewMode
             memoryRepository.deletePreference(id).fold(
                 onSuccess = {
                     _actionResult.value = "Preference deleted"
-                    loadPreferences()
+                    _preferences.value = _preferences.value.orEmpty().filter { it.id != id }
+                    updateStats()
                 },
                 onFailure = { _error.value = it.message }
             )
@@ -159,18 +157,14 @@ class MemoryViewModel(private val memoryRepository: MemoryRepository) : ViewMode
             memoryRepository.deleteSummary(id).fold(
                 onSuccess = {
                     _actionResult.value = "Summary deleted"
-                    loadSummaries()
+                    _summaries.value = _summaries.value.orEmpty().filter { it.id != id }
+                    updateStats()
                 },
                 onFailure = { _error.value = it.message }
             )
         }
     }
 
-    fun clearActionResult() {
-        _actionResult.value = null
-    }
-
-    fun clearError() {
-        _error.value = null
-    }
+    fun clearActionResult() { _actionResult.value = null }
+    fun clearError() { _error.value = null }
 }

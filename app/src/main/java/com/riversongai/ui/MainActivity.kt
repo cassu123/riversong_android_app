@@ -20,6 +20,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.riversongai.R
 import com.riversongai.databinding.ActivityMainBinding
 import com.riversongai.utils.SessionManager
+import com.riversongai.utils.applyRiverSongLogo
 import org.koin.android.ext.android.inject
 
 private const val REQUEST_PERMISSIONS_CODE = 101
@@ -57,6 +58,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        
+        binding.webViewLogo.applyRiverSongLogo(this)
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment

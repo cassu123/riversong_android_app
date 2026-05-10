@@ -1,7 +1,10 @@
 package com.riversongai.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayoutMediator
@@ -63,13 +66,45 @@ class MemoryFragment : Fragment(R.layout.fragment_memory) {
             binding.swipeRefreshMemory.isRefreshing = it
         }
 
-        viewModel.stats.observe(viewLifecycleOwner) { stats ->
+        viewModel.memoryStats.observe(viewLifecycleOwner) { stats ->
             stats?.let {
-                binding.textStatFacts.text = "${it.facts} Facts"
-                binding.textStatPrefs.text = "${it.preferences} Preferences"
-                binding.textStatSessions.text = "${it.summaries} Summaries"
+                binding.textStatFacts.text = "${it.factsCount} Facts"
+                binding.textStatPrefs.text = "${it.prefsCount} Preferences"
+                binding.textStatSessions.text = "${it.sessionsCount} Summaries"
             }
         }
+    }
+
+    fun showAddFactDialog() {
+        val context = requireContext()
+        val layout = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            val padding = (24 * resources.displayMetrics.density).toInt()
+            setPadding(padding, padding, padding, padding)
+        }
+
+        val etKey = EditText(context).apply {
+            hint = "Fact (e.g. Favorite Food)"
+        }
+        val etValue = EditText(context).apply {
+            hint = "Value (e.g. Pizza)"
+        }
+
+        layout.addView(etKey)
+        layout.addView(etValue)
+
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
+            .setTitle("Add Memory Fact")
+            .setView(layout)
+            .setPositiveButton("Add") { _, _ ->
+                val key = etKey.text.toString()
+                val value = etValue.text.toString()
+                if (key.isNotBlank() && value.isNotBlank()) {
+                    viewModel.addFact(key, value)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     override fun onDestroyView() {

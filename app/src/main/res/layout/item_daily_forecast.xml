@@ -3,41 +3,57 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
+    android:orientation="vertical"
     android:paddingVertical="8dp"
     android:paddingHorizontal="16dp">
 
-    <TextView
-        android:id="@+id/textViewDailyDay"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Monday"
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/textViewDailyDay"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Monday"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+        <TextView
+            android:id="@+id/textViewDailyIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="⛅"
+            android:layout_marginEnd="16dp" />
+
+        <TextView
+            android:id="@+id/textViewDailyPrecip"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:text="20%"
+            android:textColor="?attr/colorPrimary"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            android:layout_marginEnd="16dp" />
+
+        <TextView
+            android:id="@+id/textViewDailyTempRange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="24° / 18°"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/textViewDailyIcon"
+        android:id="@+id/textViewSunriseSunset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:text="⛅"
-        android:layout_marginEnd="16dp" />
-
-    <TextView
-        android:id="@+id/textViewDailyPrecip"
-        android:layout_width="40dp"
-        android:layout_height="wrap_content"
-        android:text="20%"
-        android:textColor="?attr/colorPrimary"
+        android:layout_marginTop="2dp"
+        android:text="🌅 --  🌇 --"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
-        android:layout_marginEnd="16dp" />
-
-    <TextView
-        android:id="@+id/textViewDailyTempRange"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="24° / 18°"
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+        android:visibility="gone" />
 
 </LinearLayout>

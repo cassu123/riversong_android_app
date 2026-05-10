@@ -58,6 +58,15 @@
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAudit"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Audit"
+            android:visibility="gone"
+            android:textSize="12sp" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAddItem"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="wrap_content"

@@ -101,6 +101,18 @@
 
         </LinearLayout>
 
+        <!-- Edit button -->
+        <ImageView
+            android:id="@+id/btnEditProduct"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_edit"
+            android:padding="4dp"
+            app:tint="?attr/colorOnSurfaceVariant"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Edit product" />
+
         <!-- Delete button -->
         <ImageView
             android:id="@+id/btnDeleteProduct"

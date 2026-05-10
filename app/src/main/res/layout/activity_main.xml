@@ -22,7 +22,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorSurface"
-                app:titleTextColor="?attr/colorOnSurface" />
+                app:titleTextColor="?attr/colorOnSurface">
+                
+                <android.webkit.WebView
+                    android:id="@+id/webViewLogo"
+                    android:layout_width="280dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical" />
+                
+            </com.google.android.material.appbar.MaterialToolbar>
 
         </com.google.android.material.appbar.AppBarLayout>
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="8dp"
+    android:paddingHorizontal="16dp"
+    android:background="?attr/colorSurfaceVariant">
+
+    <TextView
+        android:id="@+id/textViewHeaderAbbr"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:text="POS"
+        android:textSize="11sp"
+        android:textAllCaps="true"
+        android:textColor="?attr/colorOnSurfaceVariant" />
+
+    <TextView
+        android:id="@+id/textViewHeaderTeam"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="TEAM"
+        android:textSize="11sp"
+        android:textAllCaps="true"
+        android:textColor="?attr/colorOnSurfaceVariant" />
+
+    <LinearLayout
+        android:id="@+id/layoutHeaderStats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" />
+
+</LinearLayout>

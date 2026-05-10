@@ -4,8 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.riversongai.data.model.SportsMatch
-import com.riversongai.data.model.SportsTeam
+import com.riversongai.data.model.*
 import com.riversongai.data.repository.SportsRepository
 import kotlinx.coroutines.launch
 
@@ -22,6 +21,12 @@ class SportsViewModel(private val sportsRepository: SportsRepository) : ViewMode
 
     private val _fixtures = MutableLiveData<List<SportsMatch>>(emptyList())
     val fixtures: LiveData<List<SportsMatch>> = _fixtures
+
+    private val _standings = MutableLiveData<List<StandingEntry>>(emptyList())
+    val standings: LiveData<List<StandingEntry>> = _standings
+
+    private val _eventStats = MutableLiveData<Map<String, List<SportsEventStat>>>(emptyMap())
+    val eventStats: LiveData<Map<String, List<SportsEventStat>>> = _eventStats
 
     private val _searchResults = MutableLiveData<List<SportsTeam>>(emptyList())
     val searchResults: LiveData<List<SportsTeam>> = _searchResults
@@ -49,6 +54,7 @@ class SportsViewModel(private val sportsRepository: SportsRepository) : ViewMode
     fun selectTeam(team: SportsTeam?) {
         _selectedTeam.value = team
         loadFixturesAndResults(team?.id)
+        team?.let { loadStandings(it.leagueId) }
     }
 
     fun loadFixturesAndResults(teamId: String?) {
@@ -57,6 +63,25 @@ class SportsViewModel(private val sportsRepository: SportsRepository) : ViewMode
             sportsRepository.getResults(teamId).onSuccess { _results.value = it }
             sportsRepository.getFixtures(teamId).onSuccess { _fixtures.value = it }
             _isLoading.value = false
+        }
+    }
+
+    fun loadStandings(leagueId: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            sportsRepository.getStandings(leagueId).onSuccess { _standings.value = it }
+            _isLoading.value = false
+        }
+    }
+
+    fun loadEventStats(eventId: String) {
+        if (_eventStats.value?.containsKey(eventId) == true) return
+        viewModelScope.launch {
+            sportsRepository.getEventStats(eventId).onSuccess { stats ->
+                val current = _eventStats.value.orEmpty().toMutableMap()
+                current[eventId] = stats
+                _eventStats.value = current
+            }
         }
     }
 

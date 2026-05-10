@@ -146,6 +146,7 @@
                 android:padding="16dp">
 
                 <TextView
+                    android:id="@+id/tvAddProductTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="ADD PRODUCT"

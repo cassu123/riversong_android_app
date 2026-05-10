@@ -52,7 +52,7 @@
             android:value="https://riversongai.com/privacy" />
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.RiverSong">
             <intent-filter>
@@ -60,6 +60,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.RiverSong" />
 
     </application>
 </manifest>

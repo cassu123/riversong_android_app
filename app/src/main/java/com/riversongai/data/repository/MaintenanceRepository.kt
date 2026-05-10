@@ -1,11 +1,8 @@
 package com.riversongai.data.repository
 
-import com.riversongai.data.model.CreateServiceLog
-import com.riversongai.data.model.CreateVehicle
-import com.riversongai.data.model.ServiceCheckpoint
-import com.riversongai.data.model.ServiceLog
-import com.riversongai.data.model.Vehicle
+import com.riversongai.data.model.*
 import com.riversongai.data.remote.RiverSongApiService
+import okhttp3.MultipartBody
 
 class MaintenanceRepository(private val api: RiverSongApiService) {
 
@@ -20,12 +17,8 @@ class MaintenanceRepository(private val api: RiverSongApiService) {
     }
 
     suspend fun deleteVehicle(vehicleId: String): Result<Unit> = runCatching {
-        api.deleteVehicle(vehicleId)
-    }
-
-    suspend fun getCheckpoints(vehicleId: String): Result<List<ServiceCheckpoint>> = runCatching {
-        val r = api.getServiceCheckpoints(vehicleId)
-        if (r.isSuccessful) r.body()!! else error(r.code().toString())
+        val r = api.deleteVehicle(vehicleId)
+        if (r.isSuccessful) Unit else error(r.code().toString())
     }
 
     suspend fun getServiceLogs(vehicleId: String): Result<List<ServiceLog>> = runCatching {
@@ -36,5 +29,10 @@ class MaintenanceRepository(private val api: RiverSongApiService) {
     suspend fun createServiceLog(vehicleId: String, body: CreateServiceLog): Result<ServiceLog> = runCatching {
         val r = api.createServiceLog(vehicleId, body)
         if (r.isSuccessful) r.body()!! else error(r.errorBody()?.string() ?: "Failed")
+    }
+
+    suspend fun getAssignments(vehicleId: String): Result<List<VehicleAssignment>> = runCatching {
+        val r = api.getVehicleAssignments(vehicleId)
+        if (r.isSuccessful) r.body()!! else error(r.code().toString())
     }
 }

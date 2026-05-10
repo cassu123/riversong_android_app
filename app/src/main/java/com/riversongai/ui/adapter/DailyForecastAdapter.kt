@@ -2,6 +2,7 @@ package com.riversongai.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -15,27 +16,32 @@ class DailyForecastAdapter : ListAdapter<DailyForecast, DailyForecastAdapter.Vie
         return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(getItem(position))
 
     inner class ViewHolder(private val binding: ItemDailyForecastBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(forecast: DailyForecast) {
             binding.textViewDailyDay.text = forecast.date
-            binding.textViewDailyIcon.text = getEmojiForCondition(forecast.conditionText)
-            binding.textViewDailyPrecip.text = "${forecast.precipMm}mm"
-            binding.textViewDailyTempRange.text = "%.0f° / %.0f°".format(forecast.maxTempC, forecast.minTempC)
+            binding.textViewDailyIcon.text = getEmojiForCondition(forecast.condition)
+            binding.textViewDailyPrecip.text = "%.1fmm".format(forecast.precipitation)
+            binding.textViewDailyTempRange.text = "%.0f° / %.0f°".format(forecast.tempMax, forecast.tempMin)
+            
+            if (forecast.sunrise.isNotBlank() && forecast.sunset.isNotBlank()) {
+                binding.textViewSunriseSunset.isVisible = true
+                binding.textViewSunriseSunset.text = "🌅 ${forecast.sunrise}  🌇 ${forecast.sunset}"
+            } else {
+                binding.textViewSunriseSunset.isVisible = false
+            }
         }
     }
 
     private fun getEmojiForCondition(text: String?): String {
         val t = text ?: ""
         return when {
-            t.contains("sun", true) -> "☀️"
-            t.contains("cloud", true) -> "☁️"
-            t.contains("rain", true) -> "🌧️"
+            t.contains("sun", true) || t.contains("clear", true) -> "☀️"
+            t.contains("cloud", true) || t.contains("overcast", true) -> "☁️"
+            t.contains("rain", true) || t.contains("drizzle", true) -> "🌧️"
             t.contains("snow", true) -> "❄️"
-            t.contains("storm", true) -> "⛈️"
+            t.contains("storm", true) || t.contains("thunder", true) -> "⛈️"
             else -> "⛅"
         }
     }
