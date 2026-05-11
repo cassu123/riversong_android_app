@@ -1,17 +1,10 @@
 package com.riversongai.data.remote
 
-import com.google.gson.FieldNamingPolicy
-import com.google.gson.GsonBuilder
-import com.riversongai.BuildConfig
 import com.riversongai.data.model.*
 import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
-import java.util.concurrent.TimeUnit
 
 interface RiverSongApiService {
 
@@ -19,14 +12,20 @@ interface RiverSongApiService {
     @POST("api/auth/login")
     suspend fun login(@Body body: Map<String, String>): Response<AuthResponse>
 
+    @POST("api/auth/login")
+    suspend fun loginUser(@Body body: LoginRequest): Response<AuthResponse>
+
     @POST("api/auth/register")
     suspend fun register(@Body body: Map<String, String>): Response<AuthResponse>
 
+    @POST("api/auth/register")
+    suspend fun signupUser(@Body body: SignupRequest): Response<AuthResponse>
+
     @GET("api/auth/me")
-    suspend fun getCurrentUser(): Response<UserProfile>
+    suspend fun getCurrentUser(): Response<User>
 
     @PATCH("api/auth/password")
-    suspend fun changePassword(@Body body: Map<String, String>): Response<Void>
+    suspend fun changePassword(@Body body: ChangePasswordRequest): Response<Void>
 
     @GET("api/auth/integrations")
     suspend fun getIntegrations(): Response<Integrations>
@@ -40,6 +39,9 @@ interface RiverSongApiService {
     @PATCH("api/auth/profile")
     suspend fun updateUserProfile(@Body body: UserProfileUpdate): Response<UserProfile>
 
+    @PATCH("api/auth/profile")
+    suspend fun updateProfile(@Body body: UpdateProfileRequest): Response<User>
+
     // --- Dashboard ---
     @GET("api/dashboard/summary")
     suspend fun getDashboard(): Response<DashboardStats>
@@ -48,7 +50,7 @@ interface RiverSongApiService {
     suspend fun callAction(@Body body: HomeActionRequest): Response<Void>
 
     @GET("api/home/status")
-    suspend fun getHomeStatus(): Response<Map<String, Boolean>>
+    suspend fun getHomeStatus(): Response<HomeStatus>
 
     @GET("api/home/devices")
     suspend fun getDevices(): Response<List<Device>>
@@ -59,7 +61,7 @@ interface RiverSongApiService {
 
     @POST("api/conversation/chat")
     @Streaming
-    suspend fun chatHttp(@Body body: ChatRequest): Response<okhttp3.ResponseBody>
+    suspend fun chatHttp(@Body body: ChatRequest): Response<ResponseBody>
 
     @POST("api/conversation/extract-facts")
     suspend fun extractFacts(@Body body: Map<String, Any?>): Response<Void>
@@ -83,11 +85,17 @@ interface RiverSongApiService {
     @GET("api/memory/preferences")
     suspend fun getPreferences(): Response<List<MemoryPreference>>
 
+    @GET("api/memory/preferences")
+    suspend fun getMemoryPreferences(): Response<List<MemoryPreference>>
+
     @DELETE("api/memory/preferences/{id}")
     suspend fun deletePreference(@Path("id") id: String): Response<Void>
 
     @GET("api/memory/summaries")
     suspend fun getSummaries(): Response<List<MemorySummary>>
+
+    @GET("api/memory/summaries")
+    suspend fun getMemorySummaries(): Response<List<MemorySummary>>
 
     @DELETE("api/memory/summaries/{id}")
     suspend fun deleteSummary(@Path("id") id: String): Response<Void>
@@ -95,8 +103,14 @@ interface RiverSongApiService {
     @GET("api/settings/memory")
     suspend fun getMemoryTtl(): Response<MemoryTtlSettings>
 
+    @GET("api/settings/memory")
+    suspend fun getMemorySettings(): Response<MemoryTtlSettings>
+
     @POST("api/settings/memory")
     suspend fun updateMemoryTtl(@Body body: MemoryTtlSettings): Response<MemoryTtlSettings>
+
+    @POST("api/settings/memory")
+    suspend fun saveMemorySettings(@Body body: MemoryTtlSettings): Response<Void>
 
     // --- Feeds & Preferences ---
     @GET("api/feeds/preferences")
@@ -139,7 +153,7 @@ interface RiverSongApiService {
     @GET("api/feeds/sports/search")
     suspend fun searchSportsTeams(@Query("q") query: String): Response<List<SportsTeam>>
 
-    // Legacy repository method names — correct distinct paths
+    // Repository compatibility aliases for Sports
     @GET("api/feeds/sports")
     suspend fun getSportsFollowing(): Response<List<SportsTeam>>
 
@@ -162,6 +176,9 @@ interface RiverSongApiService {
     @GET("api/settings/voice")
     suspend fun getVoices(): Response<List<VoiceOption>>
 
+    @GET("api/settings/voice")
+    suspend fun getVoiceSettings(): Response<List<VoiceOption>>
+
     @POST("api/settings/voice")
     suspend fun setVoice(@Body body: Map<String, String>): Response<Void>
 
@@ -169,7 +186,7 @@ interface RiverSongApiService {
     suspend fun previewVoice(@Path("voice_id") voiceId: String): Response<Map<String, String>>
 
     @POST("api/tts/preview")
-    suspend fun testVoice(@Body body: Map<String, String>): Response<okhttp3.ResponseBody>
+    suspend fun testVoice(@Body body: Map<String, String>): Response<ResponseBody>
 
     // --- Orchestration ---
     @GET("api/settings/orchestration")
@@ -181,6 +198,15 @@ interface RiverSongApiService {
     // --- Admin ---
     @GET("api/admin/users")
     suspend fun getAdminUsers(): Response<List<FamilyMember>>
+
+    @GET("api/admin/users")
+    suspend fun getUsers(): Response<List<AppUser>>
+
+    @POST("api/admin/users/{userId}/approve")
+    suspend fun approveUser(@Path("userId") userId: String): Response<Void>
+
+    @PATCH("api/admin/users/{userId}")
+    suspend fun updateUserRole(@Path("userId") userId: String, @Body body: RoleUpdateBody): Response<AppUser>
 
     @PATCH("api/admin/users/{user_id}")
     suspend fun updateAdminUser(@Path("user_id") userId: String, @Body body: Map<String, Any?>): Response<FamilyMember>
@@ -227,6 +253,9 @@ interface RiverSongApiService {
 
     @POST("api/analytics/snapshots")
     suspend fun addAnalyticsSnapshot(@Body body: AnalyticsSnapshot): Response<Void>
+
+    @DELETE("api/analytics/snapshots/{snap_id}")
+    suspend fun deleteSnapshot(@Path("snap_id") snapId: String): Response<Void>
 
     @GET("api/analytics/{platform}/summary")
     suspend fun getPlatformSummary(@Path("platform") platform: String): Response<PlatformInsight>
@@ -298,6 +327,9 @@ interface RiverSongApiService {
     @POST("api/culinary/recipes")
     suspend fun createRecipe(@Body recipe: RecipeCreate): Response<Recipe>
 
+    @DELETE("api/culinary/recipes/{id}")
+    suspend fun deleteRecipe(@Path("id") id: String): Response<Void>
+
     @POST("api/culinary/recipes/ingest")
     suspend fun ingestRecipe(@Body body: Map<String, String>): Response<Recipe>
 
@@ -307,14 +339,32 @@ interface RiverSongApiService {
     @POST("api/culinary/dinner/{id}/vote")
     suspend fun voteDinner(@Path("id") id: String, @Body body: DinnerVoteRequest): Response<Void>
 
+    @POST("api/culinary/dinner/{id}/cook-now")
+    suspend fun cookNowDinner(@Path("id") id: String): Response<CookNowResponse>
+
+    @POST("api/culinary/dinner/{id}/dismiss")
+    suspend fun dismissDinner(@Path("id") id: String): Response<Void>
+
     @GET("api/culinary/stockroom")
     suspend fun getStockroom(): Response<List<StockroomItem>>
 
     @POST("api/culinary/stockroom/scan")
     suspend fun scanStockroom(@Body body: ScanRequest): Response<StockroomItem>
 
+    @POST("api/culinary/stockroom/scan")
+    suspend fun scanStockroomBarcode(@Body body: ScanRequest): Response<StockroomItem>
+
+    @POST("api/culinary/stockroom/deplete")
+    suspend fun depleteStockroomItem(@Body body: ScanRequest): Response<Void>
+
     @GET("api/culinary/prep")
     suspend fun getActivePrep(): Response<PrepSession>
+
+    @POST("api/culinary/prep")
+    suspend fun createPrepSession(@Body body: PrepSessionCreate): Response<PrepSession>
+
+    @POST("api/culinary/prep/{id}/add-recipe")
+    suspend fun addRecipeToPrep(@Path("id") id: String, @Body body: AddRecipeToPrep): Response<Void>
 
     @POST("api/culinary/prep/scale")
     suspend fun scalePrep(@Body body: Map<String, Any?>): Response<PrepSession>
@@ -334,14 +384,23 @@ interface RiverSongApiService {
     @GET("api/culinary/household/equipment")
     suspend fun getEquipment(): Response<List<KitchenEquipment>>
 
+    @POST("api/culinary/household/equipment")
+    suspend fun addEquipment(@Body body: EquipmentCreate): Response<KitchenEquipment>
+
+    @DELETE("api/culinary/household/equipment/{id}")
+    suspend fun deleteEquipment(@Path("id") id: String): Response<Void>
+
     @POST("api/culinary/walmart/mapping")
     suspend fun createWalmartMapping(@Body body: Map<String, String>): Response<Void>
+
+    @DELETE("api/culinary/walmart/mappings/{id}")
+    suspend fun deleteWalmartMapping(@Path("id") id: String): Response<Void>
 
     @GET("api/culinary/walmart/mappings")
     suspend fun getWalmartMappings(): Response<List<WalmartMapping>>
 
     @GET("api/culinary/walmart/export")
-    suspend fun exportWalmartCart(@Query("prep_id") prepId: String?): Response<Map<String, String>>
+    suspend fun exportWalmartCart(@Query("prep_id") prepId: String?): Response<WalmartExportResponse>
 
     // --- Inventory ---
     @GET("api/inventory/homes")
@@ -349,6 +408,9 @@ interface RiverSongApiService {
 
     @POST("api/inventory/homes")
     suspend fun createInventoryHome(@Body body: CreateInventoryHome): Response<InventoryHome>
+
+    @DELETE("api/inventory/homes/{id}")
+    suspend fun deleteInventoryHome(@Path("id") id: String): Response<Void>
 
     @GET("api/inventory/homes/{id}/items")
     suspend fun getInventoryItems(@Path("id") homeId: String): Response<List<InventoryItem>>
@@ -412,7 +474,7 @@ interface RiverSongApiService {
 
     // --- Reading ---
     @GET("api/reading/shelf")
-    suspend fun getReadingShelf(@Query("service") service: String?, @Query("status") status: String?): Response<List<Book>>
+    suspend fun getReadingShelf(@Query("service") service: String? = null, @Query("status") status: String? = null): Response<List<Book>>
 
     @POST("api/reading/shelf")
     suspend fun addBook(@Body book: BookCreate): Response<Book>
@@ -446,8 +508,14 @@ interface RiverSongApiService {
     suspend fun getGoogleStatus(): Response<GoogleStatus>
 
     @GET("api/google/calendar/upcoming")
-    suspend fun getCalendarEvents(@Query("days") days: Int, @Query("max_results") maxResults: Int): Response<CalendarResponse>
+    suspend fun getCalendarEvents(@Query("days") days: Int = 7, @Query("max_results") maxResults: Int = 10): Response<CalendarResponse>
 
     @GET("api/google/gmail/unread")
-    suspend fun getGmailUnread(@Query("max_results") maxResults: Int): Response<GmailResponse>
+    suspend fun getGmailUnread(@Query("max_results") maxResults: Int = 10): Response<GmailResponse>
+
+    @GET("api/google/auth-url")
+    suspend fun getGoogleAuthUrl(@Query("redirect_uri") redirectUri: String): Response<GoogleAuthUrlResponse>
 }
+
+data class LoginRequest(val email: String, val password: String)
+data class SignupRequest(val email: String, val password: String, val displayName: String)

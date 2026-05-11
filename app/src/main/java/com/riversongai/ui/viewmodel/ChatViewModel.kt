@@ -83,7 +83,7 @@ class ChatViewModel(
                     message = t,
                     history = history.map { mapOf("role" to it.role, "content" to it.content) },
                     provider = _selectedModel.value?.provider,
-                    model_id = _selectedModel.value?.modelId
+                    model = _selectedModel.value?.modelId
                 )
 
                 // Use the new SSE-style streaming from the conversation repository

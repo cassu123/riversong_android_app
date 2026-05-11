@@ -43,7 +43,7 @@ class UserDashboardViewModel(
     fun loadDashboardData() {
         viewModelScope.launch {
             try {
-                val profileResp = apiService.getCurrentUser()
+                val profileResp = apiService.getUserProfile()
                 if (profileResp.isSuccessful) _currentUser.value = profileResp.body()
 
                 val dashResp = apiService.getDashboard()
@@ -106,7 +106,7 @@ class UserDashboardViewModel(
     fun changePassword(current: String, next: String) {
         viewModelScope.launch {
             try {
-                val resp = apiService.changePassword(mapOf("current_password" to current, "new_password" to next))
+                val resp = apiService.changePassword(ChangePasswordRequest(current, next))
                 if (resp.isSuccessful) {
                     _passwordChangeResult.value = "Password updated successfully"
                 } else {

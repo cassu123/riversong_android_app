@@ -125,16 +125,24 @@ class CulinaryViewModel(private val apiService: RiverSongApiService) : ViewModel
 
     // --- Actions ---
 
+    fun createRecipe(body: RecipeCreate) {
+        viewModelScope.launch {
+            try {
+                if (apiService.createRecipe(body).isSuccessful) loadRecipes()
+            } catch (e: Exception) { _error.value = e.message }
+        }
+    }
+
     fun ingestRecipe(url: String?, file: File?, force: Boolean) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val urlPart = url?.toRequestBody("text/plain".toMediaTypeOrNull())
-                val filePart = file?.let {
-                    val requestFile = it.asRequestBody("application/pdf".toMediaTypeOrNull())
-                    MultipartBody.Part.createFormData("file", it.name, requestFile)
-                }
-                val resp = apiService.ingestRecipe(urlPart, filePart, force)
+                // The API expects Map<String, String> for simple JSON or Multipart
+                // If it's the Map version:
+                val body = mutableMapOf<String, String>()
+                url?.let { body["url"] = it }
+                body["force"] = force.toString()
+                val resp = apiService.ingestRecipe(body)
                 if (resp.isSuccessful) loadRecipes()
                 else _error.value = resp.errorBody()?.string() ?: "Ingest failed"
             } catch (e: Exception) { _error.value = e.message }
@@ -240,7 +248,7 @@ class CulinaryViewModel(private val apiService: RiverSongApiService) : ViewModel
     fun createWalmartMapping(name: String, itemId: String) {
         viewModelScope.launch {
             try {
-                if (apiService.createWalmartMapping(WalmartMappingCreate(name, itemId)).isSuccessful) loadWalmartMappings()
+                if (apiService.createWalmartMapping(mapOf("ingredient_name" to name, "walmart_item_id" to itemId)).isSuccessful) loadWalmartMappings()
             } catch (e: Exception) { _error.value = e.message }
         }
     }

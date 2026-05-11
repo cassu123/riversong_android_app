@@ -162,8 +162,43 @@ data class FeedPreferences(
     @SerializedName("weather_unit") val weatherUnit: String = "celsius",
     @SerializedName("sport_teams") val sportTeams: List<String> = emptyList(),
     @SerializedName("stock_tickers") val stockTickers: List<String> = emptyList(),
-    @SerializedName("refresh_news_min") val refreshNewsMin: Int = 30,
+    @SerializedName("refresh_news_min") val refreshNewsMins: Int = 30,
     @SerializedName("refresh_weather_min") val refreshWeatherMin: Int = 30,
     @SerializedName("refresh_sports_min") val refreshSportsMin: Int = 60,
     @SerializedName("refresh_stocks_min") val refreshStocksMin: Int = 60
+)
+
+data class GoogleAuthUrlResponse(
+    @SerializedName("auth_url") val authUrl: String
+)
+
+data class CalendarResponse(
+    val events: List<CalendarEvent> = emptyList()
+)
+
+data class CalendarEvent(
+    val id: String,
+    val summary: String,
+    val start: String,
+    val end: String,
+    val location: String? = null
+)
+
+data class GmailResponse(
+    val messages: List<GmailMessage> = emptyList(),
+    @SerializedName("unread_count") val unreadCount: Int = 0
+)
+
+data class GmailMessage(
+    val id: String,
+    val threadId: String,
+    val subject: String,
+    val from: String,
+    val date: String,
+    val snippet: String
+)
+
+data class GoogleStatus(
+    val connected: Boolean = false,
+    val email: String? = null
 )

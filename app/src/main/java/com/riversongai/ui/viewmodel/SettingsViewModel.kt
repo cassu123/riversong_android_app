@@ -156,7 +156,7 @@ class SettingsViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             settingsRepository.testConnection().fold(
-                onSuccess = { _connectionTestResult.value = it },
+                onSuccess = { _connectionTestResult.value = it.status },
                 onFailure = { _error.value = it.message }
             )
             _isLoading.value = false

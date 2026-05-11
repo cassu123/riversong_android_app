@@ -24,10 +24,21 @@ data class HomeActionRequest(
     val temperature: Float? = null
 )
 
+data class HomeStatus(
+    val status: String = "operational",
+    val configured: Boolean = true,
+    val reachable: Boolean = true,
+    val url: String? = null
+)
+
 data class ChatSession(
-    val time: String,
-    val date: String,
-    val text: String,
-    val count: Int,
-    val model: String
+    val id: String = "",
+    val title: String = "",
+    val time: String = "",
+    val date: String = "",
+    val text: String = "",
+    val count: Int = 0,
+    val messageCount: Int = 0,
+    val model: String = "",
+    val timestamp: Long = 0L
 )

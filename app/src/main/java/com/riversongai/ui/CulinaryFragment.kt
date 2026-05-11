@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +29,7 @@ import com.riversongai.data.model.*
 import com.riversongai.databinding.*
 import com.riversongai.ui.viewmodel.CulinaryViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlinx.coroutines.launch
 
 class CulinaryFragment : Fragment(R.layout.fragment_culinary) {
 
@@ -78,7 +80,7 @@ class CulinaryFragment : Fragment(R.layout.fragment_culinary) {
         sheetBinding.buttonSaveRecipe.setOnClickListener {
             val title = sheetBinding.editTextTitle.text.toString()
             if (title.isBlank()) { sheetBinding.layoutTitle.error = "Title required"; return@setOnClickListener }
-            viewModel.addRecipe(RecipeCreate(
+            viewModel.createRecipe(RecipeCreate(
                 title = title,
                 mealType = sheetBinding.autoCompleteMealType.text.toString(),
                 servings = sheetBinding.editTextServings.text.toString().toIntOrNull() ?: 1,
@@ -133,7 +135,7 @@ class CulinaryFragment : Fragment(R.layout.fragment_culinary) {
             val recipeAdapter = RecipeAdapter()
             fun bind() {
                 b.recyclerViewRecipes.apply { adapter = recipeAdapter; layoutManager = LinearLayoutManager(requireContext()) }
-                b.swipeRefreshRecipes.setOnRefreshListener { viewModel.loadRecipes() }
+                b.swipeRefreshRecipes.setOnRefreshListener { lifecycleScope.launch { viewModel.loadRecipes() } }
                 b.editTextRecipeSearch.addTextChangedListener(object : TextWatcher {
                     override fun afterTextChanged(s: Editable?) { viewModel.setSearchQuery(s?.toString() ?: "") }
                     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -161,7 +163,7 @@ class CulinaryFragment : Fragment(R.layout.fragment_culinary) {
             val adapter = DinnerAdapter()
             fun bind() {
                 b.recyclerViewDinner.apply { adapter = this@DinnerViewHolder.adapter; layoutManager = LinearLayoutManager(requireContext()) }
-                b.swipeRefreshDinner.setOnRefreshListener { viewModel.loadDinnerProposals() }
+                b.swipeRefreshDinner.setOnRefreshListener { lifecycleScope.launch { viewModel.loadDinnerProposals() } }
                 viewModel.dinnerProposals.observe(viewLifecycleOwner) {
                     adapter.submitList(it)
                     b.textViewEmptyDinner.isVisible = it.isEmpty()
@@ -174,7 +176,7 @@ class CulinaryFragment : Fragment(R.layout.fragment_culinary) {
             val adapter = StockroomAdapter()
             fun bind() {
                 b.recyclerViewStockroom.apply { adapter = this@StockroomViewHolder.adapter; layoutManager = LinearLayoutManager(requireContext()) }
-                b.swipeRefreshStockroom.setOnRefreshListener { viewModel.loadStockroom() }
+                b.swipeRefreshStockroom.setOnRefreshListener { lifecycleScope.launch { viewModel.loadStockroom() } }
                 viewModel.stockroom.observe(viewLifecycleOwner) {
                     adapter.submitList(it)
                     b.swipeRefreshStockroom.isRefreshing = false
@@ -186,7 +188,7 @@ class CulinaryFragment : Fragment(R.layout.fragment_culinary) {
 
         inner class PrepDeckViewHolder(val b: LayoutCulinaryPrepBinding) : RecyclerView.ViewHolder(b.root) {
             fun bind() {
-                b.swipeRefreshPrep.setOnRefreshListener { viewModel.loadActivePrep() }
+                b.swipeRefreshPrep.setOnRefreshListener { lifecycleScope.launch { viewModel.loadActivePrep() } }
                 viewModel.activePrep.observe(viewLifecycleOwner) { session ->
                     b.swipeRefreshPrep.isRefreshing = false
                     if (session != null) {
@@ -210,7 +212,7 @@ class CulinaryFragment : Fragment(R.layout.fragment_culinary) {
             val adapter = WalmartAdapter()
             fun bind() {
                 b.recyclerViewWalmart.apply { adapter = this@WalmartViewHolder.adapter; layoutManager = LinearLayoutManager(requireContext()) }
-                b.swipeRefreshWalmart.setOnRefreshListener { viewModel.loadWalmartMappings() }
+                b.swipeRefreshWalmart.setOnRefreshListener { lifecycleScope.launch { viewModel.loadWalmartMappings() } }
                 b.buttonExportCart.setOnClickListener {
                     viewModel.exportWalmart { resp ->
                         resp.cartUrl?.let { url -> startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
@@ -243,7 +245,7 @@ class CulinaryFragment : Fragment(R.layout.fragment_culinary) {
             val bannedAdapter = BannedAdapter()
             fun bind() {
                 b.recyclerViewBanned.apply { adapter = bannedAdapter; layoutManager = LinearLayoutManager(requireContext()) }
-                b.swipeRefreshBanned.setOnRefreshListener { viewModel.loadBannedItems() }
+                b.swipeRefreshBanned.setOnRefreshListener { lifecycleScope.launch { viewModel.loadBannedItems() } }
                 b.buttonAddBanned.setOnClickListener { showAddBannedDialog() }
                 
                 ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {

@@ -7,10 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
@@ -231,12 +234,14 @@ class InventoryItemAdapter(
 
     inner class VH(view: View) : RecyclerView.ViewHolder(view) {
         private val tvName: TextView     = view.findViewById(R.id.tvItemName)
-        private val tvMeta: TextView     = view.findViewById(R.id.tvItemMeta)
+        private val tvCat: TextView      = view.findViewById(R.id.tvItemCategory)
+        private val tvLoc: TextView      = view.findViewById(R.id.tvItemLocation)
         private val tvStatus: TextView   = view.findViewById(R.id.tvItemStatus)
 
         fun bind(item: InventoryItem) {
             tvName.text = item.name
-            tvMeta.text = "${item.category} • ${item.location}"
+            tvCat.text = item.category
+            tvLoc.text = item.location
             tvStatus.text = item.assetStatus
             itemView.setOnClickListener { onClick(item) }
         }

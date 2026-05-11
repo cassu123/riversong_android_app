@@ -84,7 +84,7 @@ class RoutinesViewModel(private val repository: RoutinesRepository) : ViewModel(
     }
 
     fun toggleRoutine(routine: Routine) {
-        updateRoutine(routine.id, mapOf("enabled" to !routine.enabled))
+        updateRoutine(routine.id, mapOf("enabled" to !routine.isEnabled))
     }
 
     fun clearOutput() { _routineOutput.value = null }

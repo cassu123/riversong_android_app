@@ -2,6 +2,32 @@ package com.riversongai.data.model
 
 import com.google.gson.annotations.SerializedName
 
+data class User(
+    val id: String,
+    val email: String,
+    @SerializedName("display_name") val displayName: String,
+    val role: String,
+    val username: String? = null,
+    val birthday: String? = null,
+    val theme: String = "halo",
+    @SerializedName("is_approved") val isApproved: Boolean = false,
+    @SerializedName("is_active") val isActive: Boolean = true
+) {
+    val isAdmin: Boolean get() = role == "admin"
+    val firstName: String get() = displayName.split(" ").first()
+}
+
+data class AuthResponse(
+    @SerializedName("access_token") val accessToken: String? = null,
+    @SerializedName("token_type") val tokenType: String? = null,
+    val token: String = "",
+    val user: User? = null
+)
+
+data class SignupResponse(
+    val detail: String? = null
+)
+
 data class UserProfile(
     val id: String,
     val email: String,
@@ -17,6 +43,17 @@ data class UserProfileUpdate(
     val username: String? = null,
     val birthday: String? = null,
     val theme: String? = null
+)
+
+data class UpdateProfileRequest(
+    val firstName: String,
+    val lastName: String,
+    val callsign: String?
+)
+
+data class ChangePasswordRequest(
+    @SerializedName("current_password") val currentPassword: String,
+    @SerializedName("new_password") val newPassword: String
 )
 
 data class Integrations(
@@ -36,4 +73,17 @@ data class AmazonSpApiKeys(
 data class WalmartApiKeys(
     @SerializedName("client_id") val clientId: String = "",
     @SerializedName("client_secret") val clientSecret: String = ""
+)
+
+data class AppUser(
+    val id: String,
+    val email: String,
+    @SerializedName("display_name") val displayName: String,
+    val role: String,
+    @SerializedName("is_approved") val isApproved: Boolean = false,
+    @SerializedName("is_pending") val isPending: Boolean = false
+)
+
+data class RoleUpdateBody(
+    val role: String
 )

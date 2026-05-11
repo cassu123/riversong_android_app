@@ -2,7 +2,7 @@ package com.riversongai.data.repository
 
 import android.util.Log
 import com.riversongai.data.model.Device
-import com.riversongai.data.remote.HomeActionRequest
+import com.riversongai.data.model.HomeActionRequest
 import com.riversongai.data.remote.RiverSongApiService
 
 class SmartHomeRepository(private val apiService: RiverSongApiService) {

@@ -63,8 +63,23 @@
         android:id="@+id/layoutStoreContent"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
+        android:layout_height="match_parent">
+
+        <!-- Workspace Selection -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:paddingVertical="8dp">
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupWorkspaces"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                app:singleLine="true"
+                app:singleSelection="true"
+                app:selectionRequired="true" />
+        </HorizontalScrollView>
 
         <!-- Workspace header -->
         <LinearLayout
@@ -73,7 +88,7 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingHorizontal="16dp"
-            android:paddingTop="12dp"
+            android:paddingTop="4dp"
             android:paddingBottom="8dp">
 
             <LinearLayout
@@ -110,7 +125,19 @@
 
         </LinearLayout>
 
-        <!-- Search -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayoutStore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabMode="fixed" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPagerStore"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Search (moved inside fragments if needed, but keeping for compatibility) -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layoutSearch"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -118,7 +145,8 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="8dp"
-            android:hint="Search products…">
+            android:hint="Search products…"
+            android:visibility="gone">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etSearch"
                 android:layout_width="match_parent"
@@ -126,7 +154,7 @@
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Add product form (shown/hidden) -->
+        <!-- Add product form (keeping for compatibility) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardAddProduct"
             android:layout_width="match_parent"
@@ -240,21 +268,16 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Products list -->
+        <!-- Hidden compat swipe refresh -->
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefresh"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
-
+            android:visibility="gone">
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvProducts"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="4dp"
-                android:paddingBottom="80dp"
-                android:clipToPadding="false" />
-
+                android:layout_height="match_parent" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </LinearLayout>

@@ -21,8 +21,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.riversongai.R
 import com.riversongai.data.model.*
-import com.riversongai.data.remote.ModelVisibilityItem
-import com.riversongai.data.remote.ModelVisibilityUpdate
 import com.riversongai.databinding.FragmentSettingsBinding
 import com.riversongai.ui.viewmodel.SettingsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -138,7 +136,6 @@ class SettingsFragment : Fragment() {
                 return v
             }
             override fun getDropDownView(p: Int, c: View?, parent: ViewGroup): View = getView(p, c, parent)
-            override fun convertSelectionToString(item: Any?): CharSequence = (item as? ModelEntry)?.displayName ?: ""
         }
         binding.spinnerModel.setAdapter(adapter)
         if (preselectModel != null) {
@@ -188,8 +185,8 @@ class SettingsFragment : Fragment() {
     private fun loadModelVisibility() {
         viewLifecycleOwner.lifecycleScope.launch {
             settingsViewModel.getApiService().getModelVisibility().body()?.let { data ->
-                populateModelToggles(binding.layoutModelVisibility, data.allLlms, { it.modelId }, data.hiddenLlms.toMutableSet(), true)
-                populateModelToggles(binding.layoutVoiceVisibility, data.allVoices, { it.voiceId }, data.hiddenVoices.toMutableSet(), false)
+                populateModelToggles(binding.layoutModelVisibility, data.allLlms, { it.modelId ?: "" }, data.hiddenLlms.toMutableSet(), true)
+                populateModelToggles(binding.layoutVoiceVisibility, data.allVoices, { it.voiceId ?: "" }, data.hiddenVoices.toMutableSet(), false)
             }
         }
     }

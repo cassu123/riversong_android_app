@@ -14,6 +14,8 @@ import com.riversongai.data.model.Routine
 
 import android.text.format.DateUtils
 import com.riversongai.databinding.ItemRoutineBinding
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class RoutineAdapter(
     private val onToggle: (Routine, Boolean) -> Unit,
@@ -42,9 +44,9 @@ class RoutineAdapter(
         ) {
             binding.textViewRoutineName.text = routine.name
             
-            binding.chipRoutineSchedule.text = when (routine.triggerType) {
-                "daily" -> "Daily ${routine.scheduleTime ?: ""}"
-                "weekly" -> "Weekly ${routine.scheduleDays?.joinToString(",") ?: ""} ${routine.scheduleTime ?: ""}"
+            binding.chipRoutineSchedule.text = when (routine.trigger) {
+                "daily" -> "Daily ${routine.time ?: ""}"
+                "weekly" -> "Weekly ${routine.days.joinToString(",") ?: ""} ${routine.time ?: ""}"
                 "startup" -> "On Startup"
                 else -> "Manual"
             }
@@ -55,8 +57,13 @@ class RoutineAdapter(
                 routine.prompt
             }
 
-            binding.textViewLastRun.text = if (routine.lastRunAt != null) {
-                "Last run: ${DateUtils.getRelativeTimeSpanString(routine.lastRunAt, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS)}"
+            binding.textViewLastRun.text = if (routine.lastRun != null) {
+                try {
+                    val time = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).parse(routine.lastRun)?.time ?: 0L
+                    "Last run: ${DateUtils.getRelativeTimeSpanString(time, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS)}"
+                } catch (e: Exception) {
+                    "Last run: ${routine.lastRun}"
+                }
             } else {
                 "Never run"
             }

@@ -14,7 +14,9 @@ data class ModelEntry(
     @SerializedName("cost_per_1k_input_usd") val costInputUsd: Double? = null,
     @SerializedName("cost_per_1k_output_usd") val costOutputUsd: Double? = null,
     val notes: String? = null
-)
+) {
+    override fun toString(): String = displayName
+}
 
 data class LlmSettings(
     val provider: String = "",
@@ -56,4 +58,22 @@ data class N8nSettings(
     val url: String = "",
     @SerializedName("api_key") val apiKey: String = "",
     @SerializedName("webhook_secret") val webhookSecret: String = ""
+)
+
+data class ModelVisibilityItem(
+    @SerializedName("model_id") val modelId: String? = null,
+    @SerializedName("voice_id") val voiceId: String? = null,
+    @SerializedName("display_name") val displayName: String
+)
+
+data class ModelVisibilityResponse(
+    @SerializedName("all_llms") val allLlms: List<ModelVisibilityItem> = emptyList(),
+    @SerializedName("hidden_llms") val hiddenLlms: List<String> = emptyList(),
+    @SerializedName("all_voices") val allVoices: List<ModelVisibilityItem> = emptyList(),
+    @SerializedName("hidden_voices") val hiddenVoices: List<String> = emptyList()
+)
+
+data class ModelVisibilityUpdate(
+    @SerializedName("hidden_llms") val hiddenLlms: List<String>,
+    @SerializedName("hidden_voices") val hiddenVoices: List<String>
 )
