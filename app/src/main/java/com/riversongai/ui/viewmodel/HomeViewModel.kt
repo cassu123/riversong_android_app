@@ -13,6 +13,9 @@ import com.riversongai.utils.SessionManager
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HomeViewModel(
     private val userRepository: UserRepository,
@@ -138,19 +141,41 @@ class HomeViewModel(
     }
 
     private fun loadLocalSessions() {
-        // In the web app, this comes from localStorage.
-        // For the thin-client Android app, we should ideally get this from the server
-        // but if it's strictly local, we might need a dedicated endpoint or local storage logic.
-        // Assuming we have a chat history endpoint for parity.
         viewModelScope.launch {
             try {
                 val resp = apiService.getChatHistory()
                 if (resp.isSuccessful) {
-                    // Map ChatMessage to ChatSession summary if needed, or just use history
-                    // For now, let's keep it empty or mock a few if history is available
+                    _recentSessions.value = buildRecentSessions(resp.body().orEmpty())
                 }
             } catch (e: Exception) {}
         }
+    }
+
+    /**
+     * The history endpoint returns a flat transcript of messages rather than
+     * the discrete "sessions" the web app keeps in localStorage. Group the
+     * transcript by day so the dashboard can still show a recent-activity list.
+     */
+    private fun buildRecentSessions(messages: List<ChatMessage>): List<ChatSession> {
+        val dayFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+        return messages
+            .groupBy { dayFormat.format(Date(it.timestamp)) }
+            .map { (dateLabel, dayMessages) ->
+                val sorted = dayMessages.sortedBy { it.timestamp }
+                val title = sorted.firstOrNull { it.isUser }?.content
+                    ?.replace('\n', ' ')?.trim()?.take(48)
+                    ?.takeIf { it.isNotBlank() } ?: "Conversation"
+                ChatSession(
+                    id = dateLabel,
+                    title = title,
+                    date = dateLabel,
+                    messageCount = dayMessages.size,
+                    model = "RiverSong AI",
+                    timestamp = sorted.last().timestamp
+                )
+            }
+            .sortedByDescending { it.timestamp }
+            .take(5)
     }
 
     fun loadUserDataAndDevices() = loadAllData()
