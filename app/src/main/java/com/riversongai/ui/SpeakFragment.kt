@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import com.riversongai.R
 import com.riversongai.databinding.FragmentSpeakBinding
 import com.riversongai.ui.viewmodel.ChatViewModel
+import com.riversongai.ui.widget.PresenceOrbView
 import com.riversongai.utils.SessionManager
 import okhttp3.*
 import okio.ByteString.Companion.toByteString
@@ -67,24 +68,43 @@ class SpeakFragment : Fragment(R.layout.fragment_speak) {
                 val type = msg.optString("type")
                 activity?.runOnUiThread {
                     when (type) {
-                        "listening" -> binding.textViewStatus.text = "LISTENING"
-                        "transcribing" -> binding.textViewStatus.text = "TRANSCRIBING"
+                        "listening" -> {
+                            binding.textViewStatus.text = "LISTENING"
+                            binding.viewOrbPulse.setState(PresenceOrbView.OrbState.LISTENING)
+                        }
+                        "transcribing" -> {
+                            binding.textViewStatus.text = "TRANSCRIBING"
+                            binding.viewOrbPulse.setState(PresenceOrbView.OrbState.THINKING)
+                        }
                         "transcript" -> binding.textViewTranscript.text = msg.optString("text")
-                        "thinking" -> binding.textViewStatus.text = "THINKING"
+                        "thinking" -> {
+                            binding.textViewStatus.text = "THINKING"
+                            binding.viewOrbPulse.setState(PresenceOrbView.OrbState.THINKING)
+                        }
                         "response_chunk" -> binding.textViewResponse.append(msg.optString("text"))
                         "response_complete" -> {
                             binding.textViewResponse.text = msg.optString("text")
                             binding.textViewStatus.text = "SPEAKING"
+                            binding.viewOrbPulse.setState(PresenceOrbView.OrbState.SPEAKING)
                         }
                         "audio" -> playAudio(msg.optString("data"))
-                        "idle" -> binding.textViewStatus.text = "IDLE"
-                        "error" -> Toast.makeText(context, msg.optString("message"), Toast.LENGTH_LONG).show()
+                        "idle" -> {
+                            binding.textViewStatus.text = "IDLE"
+                            binding.viewOrbPulse.setState(PresenceOrbView.OrbState.IDLE)
+                        }
+                        "error" -> {
+                            Toast.makeText(context, msg.optString("message"), Toast.LENGTH_LONG).show()
+                            binding.viewOrbPulse.setState(PresenceOrbView.OrbState.ATTENTION)
+                        }
                     }
                 }
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                activity?.runOnUiThread { binding.textViewStatus.text = "DISCONNECTED" }
+                activity?.runOnUiThread {
+                    binding.textViewStatus.text = "DISCONNECTED"
+                    binding.viewOrbPulse.setState(PresenceOrbView.OrbState.IDLE)
+                }
             }
         })
     }

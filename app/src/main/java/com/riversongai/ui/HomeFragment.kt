@@ -113,8 +113,12 @@ class HomeFragment : Fragment() {
                 binding.textViewMemorySummaries.text = it.memory.summaries.toString()
                 
                 binding.textViewStatus.text = "RIVER IS ${it.status.uppercase()}"
-                val color = if (it.status == "operational") com.google.android.material.R.attr.colorTertiary else com.google.android.material.R.attr.colorError
-                binding.viewStatusDot.backgroundTintList = android.content.res.ColorStateList.valueOf(UIStyleManager.resolveAttrColor(requireContext(), color))
+                val statusAttr = when (it.status) {
+                    "operational" -> com.riversongai.R.attr.colorStatusNominal
+                    "degraded", "warning" -> com.riversongai.R.attr.colorStatusWarning
+                    else -> com.riversongai.R.attr.colorStatusCritical
+                }
+                binding.viewStatusDot.backgroundTintList = android.content.res.ColorStateList.valueOf(UIStyleManager.resolveAttrColor(requireContext(), statusAttr))
                 
                 drawMemoryBars(it.memory.facts + it.memory.summaries)
             }

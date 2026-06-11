@@ -3,6 +3,8 @@
     <string name="app_name">River Song AI</string>
     <string name="welcome_message">Welcome to River Song AI!</string>
 
+    <string name="presence_orb_description">River\'s presence indicator — tap to speak</string>
+
     <string name="login_username_hint">Username or Email</string>
     <string name="login_password_hint">Password</string>
     <string name="login_button_text">Log In</string>

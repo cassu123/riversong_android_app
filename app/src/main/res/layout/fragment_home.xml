@@ -34,8 +34,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Good morning, Operator"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.RiverSong.Display" />
                     <TextView
                         android:id="@+id/textViewDate"
                         android:layout_width="wrap_content"
@@ -47,11 +46,10 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnArrange"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    style="@style/Widget.RiverSong.Button.Pill"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ARRANGE"
-                    android:textSize="12sp" />
+                    android:text="ARRANGE" />
 
             </LinearLayout>
 
@@ -71,10 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutlineVariant">
+                style="@style/Widget.RiverSong.Card.Glass">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -91,7 +86,7 @@
                             android:id="@+id/viewStatusDot"
                             android:layout_width="8dp"
                             android:layout_height="8dp"
-                            android:background="@drawable/bg_audio_ring" />
+                            android:background="@drawable/bg_status_dot" />
                         <TextView
                             android:id="@+id/textViewStatus"
                             android:layout_width="wrap_content"
@@ -118,7 +113,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintEnd_toStartOf="@id/cellUptime">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LATENCY" android:textSize="10sp" android:textColor="?attr/colorOnSurfaceVariant" />
-                            <TextView android:id="@+id/textViewLatency" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--" android:textStyle="bold" android:textSize="16sp" />
+                            <TextView android:id="@+id/textViewLatency" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--" android:textStyle="bold" android:textSize="16sp" android:textAppearance="@style/TextAppearance.RiverSong.Mono" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -130,7 +125,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintEnd_toEndOf="parent">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="UPTIME" android:textSize="10sp" android:textColor="?attr/colorOnSurfaceVariant" />
-                            <TextView android:id="@+id/textViewUptime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--" android:textStyle="bold" android:textSize="16sp" />
+                            <TextView android:id="@+id/textViewUptime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--" android:textStyle="bold" android:textSize="16sp" android:textAppearance="@style/TextAppearance.RiverSong.Mono" />
                         </LinearLayout>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -168,7 +163,7 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnQuickListen"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            style="@style/Widget.RiverSong.Button.Pill"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
@@ -178,7 +173,7 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnQuickRoutine"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            style="@style/Widget.RiverSong.Button.Pill"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
@@ -188,7 +183,7 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnQuickHomeScene"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            style="@style/Widget.RiverSong.Button.Pill"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
@@ -198,7 +193,7 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnQuickLogEvent"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            style="@style/Widget.RiverSong.Button.Pill"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:minWidth="0dp"
@@ -215,10 +210,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutlineVariant">
+                style="@style/Widget.RiverSong.Card.Glass">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -240,9 +232,9 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:layout_marginTop="8dp">
-                        <TextView android:id="@+id/textViewMemoryFacts" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textStyle="bold" android:textSize="20sp" android:textColor="?attr/colorPrimary" />
+                        <TextView android:id="@+id/textViewMemoryFacts" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textStyle="bold" android:textSize="20sp" android:textColor="?attr/colorPrimary" android:textAppearance="@style/TextAppearance.RiverSong.Mono" />
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=" FACTS" android:textSize="12sp" android:layout_marginStart="4dp" />
-                        <TextView android:id="@+id/textViewMemorySummaries" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textStyle="bold" android:textSize="20sp" android:layout_marginStart="16dp" />
+                        <TextView android:id="@+id/textViewMemorySummaries" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textStyle="bold" android:textSize="20sp" android:layout_marginStart="16dp" android:textAppearance="@style/TextAppearance.RiverSong.Mono" />
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=" SUMMARIES" android:textSize="12sp" android:layout_marginStart="4dp" />
                     </LinearLayout>
 
@@ -263,10 +255,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutlineVariant">
+                style="@style/Widget.RiverSong.Card.Glass">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -313,10 +302,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutlineVariant">
+                style="@style/Widget.RiverSong.Card.Glass">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -349,10 +335,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutlineVariant">
+                style="@style/Widget.RiverSong.Card.Glass">
 
                 <LinearLayout
                     android:layout_width="match_parent"

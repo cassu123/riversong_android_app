@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="colorWarning" format="color" />
+
+    <!-- "Spatial Edition" glass design tokens -->
+    <!-- Translucent zinc fill for Double-Bezel glass cards: rgba(zinc, 45%) -->
+    <attr name="colorGlassSurface" format="color" />
+    <!-- Faint translucent fill for rs-pill chips/buttons: on-surface-variant @ 8% -->
+    <attr name="colorPillSurface" format="color" />
+    <!-- Three-axis status colors (River's vitals) -->
+    <attr name="colorStatusNominal" format="color" />
+    <attr name="colorStatusWarning" format="color" />
+    <attr name="colorStatusCritical" format="color" />
+
+    <!-- PresenceOrbView -->
+    <declare-styleable name="PresenceOrbView">
+        <!-- Core/glow color of the orb. Defaults to ?attr/colorPrimary. -->
+        <attr name="orbColor" format="color" />
+    </declare-styleable>
 </resources>

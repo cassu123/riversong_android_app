@@ -114,4 +114,26 @@
     <color name="status_disconnected">#FFB4AB</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         "Spatial Edition" tokens — mirrors riversongai.com frontend
+         (frontend/src/styles/global.css + chrome-shell.css)
+         ════════════════════════════════════════════════════════════════ -->
+
+    <!-- Double-Bezel glass card fill: rgba(zinc-900, 45%) on dark themes,
+         rgba(white, 55%) on the two light themes (Peach / Arctic). -->
+    <color name="rs_glass_surface_dark">#73181A1E</color>
+    <color name="rs_glass_surface_light">#8CFFFFFF</color>
+
+    <!-- rs-pill chip fill: on-surface-variant @ ~8% -->
+    <color name="rs_pill_surface_dark">#16FFFFFF</color>
+    <color name="rs_pill_surface_light">#14000000</color>
+
+    <!-- River's vitals — Three-Axis status colors -->
+    <color name="rs_status_nominal">#4ADE80</color>
+    <color name="rs_status_warning">#FACC15</color>
+    <color name="rs_status_critical">#FF8B8B</color>
+
+    <!-- River Blue — current web primary accent (#0B6CF5) -->
+    <color name="rs_river_blue">#0B6CF5</color>
 </resources>
