@@ -227,8 +227,9 @@ Instructions: For each screen below, paste a screenshot from the Android app on 
 |---|---|
 | *(paste web screenshot here)* | *(paste app screenshot here)* |
 
-**Status:** ⚠️ Partial  
-**Known gap:** Android only supports one workspace (firstOrNull). Web supports multiple workspaces with switching.
+**Status:** ✅ Aligned  
+`CommerceViewModel` loads all workspaces and `StoreFragment` renders a workspace chip
+selector with create-workspace support — multi-workspace switching is implemented.
 
 ---
 
@@ -241,6 +242,11 @@ Instructions: For each screen below, paste a screenshot from the Android app on 
 | Web | Android App |
 |---|---|
 | *(paste web screenshot here)* | *(paste app screenshot here)* |
+
+**Status:** ✅ Aligned  
+Homes/items list with search, add-item form, item detail with full Edit dialog
+(name, category, location, quantity, cost, manufacturer, model/serial, status),
+issue/return, and audit start + scanned/missing progress view.
 
 ---
 
@@ -308,6 +314,10 @@ Instructions: For each screen below, paste a screenshot from the Android app on 
 |---|---|
 | *(paste web screenshot here)* | *(paste app screenshot here)* |
 
+**Status:** ✅ Aligned  
+List with run/toggle/edit/delete, n8n availability chip, run-output dialog,
+and a create/edit bottom sheet (`RoutineCreateEditBottomSheet`).
+
 ---
 
 ### Home Node
@@ -319,6 +329,10 @@ Instructions: For each screen below, paste a screenshot from the Android app on 
 | Web | Android App |
 |---|---|
 | *(paste web screenshot here)* | *(paste app screenshot here)* |
+
+**Status:** ✅ Aligned  
+Connection status card, domain filter chips (lights/switches/fans/locks/climate),
+and a grouped-by-room device list with quick toggle.
 
 ---
 
@@ -341,11 +355,12 @@ Instructions: For each screen below, paste a screenshot from the Android app on 
 
 | # | Screen | Issue | Priority |
 |---|---|---|---|
-| 1 | Weather | Verify °F default is set in server preferences for US users | High |
-| 2 | Store | Only supports one workspace — multi-workspace switching missing | Medium |
-| 3 | Home | Latency/uptime showing 0 sometimes — check dashboard API | Medium |
-| 4 | Logo | SVG WebView logo only recolors on theme switch (requires recreate) | Low |
-| 5 | All | Full build test not yet completed — compile errors may exist | Critical |
+| 1 | Weather | °F vs °C default is a server-side user preference (`/api/feeds/preferences`); Android just renders whatever unit the server returns and lets the user toggle it on the Weather screen. Nothing to fix client-side. | Low |
+| 2 | Store | ~~Only supports one workspace~~ — **Resolved**: `CommerceViewModel`/`StoreFragment` already support multi-workspace switching + creation. | Done |
+| 3 | Home | ~~Latency/uptime showing 0~~ — **Resolved**: `HomeFragment` now derives uptime from `started_at` client-side when the server omits `uptime`. | Done |
+| 4 | Logo | ~~SVG WebView logo only recolors on theme switch~~ — confirmed `requireActivity().recreate()` already runs on every theme change (`UserDashboardScreen`), so the WebView reloads with the new palette. | Done |
+| 5 | Home | ~~Recent Sessions card always empty~~ — **Resolved**: `HomeViewModel.loadLocalSessions()` now groups `/api/chat/history` into per-day `ChatSession`s and `HomeFragment` renders them. | Done |
+| 6 | All | Full build test not yet completed — compile errors may exist | Critical |
 
 ---
 

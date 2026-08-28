@@ -66,6 +66,11 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
+        binding.presenceOrb.setOnClickListener {
+            if (navController.currentDestination?.id != R.id.speakFragment)
+                navController.navigate(R.id.speakFragment)
+        }
+
         appBarConfig = AppBarConfiguration(mainDestinations, binding.drawerLayout)
         setupActionBarWithNavController(navController, appBarConfig)
         binding.navigationView.setupWithNavController(navController)

@@ -37,13 +37,11 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed">
 
-        <!-- Pulse Effect View -->
-        <View
+        <!-- PresenceOrb — reflects River's conversational state -->
+        <com.riversongai.ui.widget.PresenceOrbView
             android:id="@+id/viewOrbPulse"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:alpha="0"
-            android:background="@drawable/bg_audio_ring" />
+            android:layout_height="match_parent" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/buttonMic"
@@ -78,7 +76,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Connecting..."
-        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+        android:textAppearance="@style/TextAppearance.RiverSong.Mono"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.08"
         android:textColor="?attr/colorPrimary"
         app:layout_constraintBottom_toTopOf="@+id/cardTranscript"
         app:layout_constraintEnd_toEndOf="parent"
@@ -90,10 +91,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="32dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="0dp"
-        app:strokeWidth="1dp"
-        app:strokeColor="?attr/colorOutlineVariant"
+        style="@style/Widget.RiverSong.Card.Glass"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewStatus">
 

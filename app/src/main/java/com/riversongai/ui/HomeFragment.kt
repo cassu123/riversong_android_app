@@ -14,7 +14,9 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.riversongai.R
+import com.riversongai.data.model.ChatSession
 import com.riversongai.databinding.FragmentHomeBinding
+import com.riversongai.databinding.ItemChatHistoryBinding
 import com.riversongai.ui.viewmodel.HomeViewModel
 import com.riversongai.utils.UIStyleManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -108,13 +110,17 @@ class HomeFragment : Fragment() {
         homeViewModel.dashboard.observe(viewLifecycleOwner) { stats ->
             stats?.let {
                 binding.textViewLatency.text = "${it.latencyMs}ms"
-                binding.textViewUptime.text = it.uptime
+                binding.textViewUptime.text = formatUptime(it.uptime, it.startedAt)
                 binding.textViewMemoryFacts.text = it.memory.facts.toString()
                 binding.textViewMemorySummaries.text = it.memory.summaries.toString()
                 
                 binding.textViewStatus.text = "RIVER IS ${it.status.uppercase()}"
-                val color = if (it.status == "operational") com.google.android.material.R.attr.colorTertiary else com.google.android.material.R.attr.colorError
-                binding.viewStatusDot.backgroundTintList = android.content.res.ColorStateList.valueOf(UIStyleManager.resolveAttrColor(requireContext(), color))
+                val statusAttr = when (it.status) {
+                    "operational" -> com.riversongai.R.attr.colorStatusNominal
+                    "degraded", "warning" -> com.riversongai.R.attr.colorStatusWarning
+                    else -> com.riversongai.R.attr.colorStatusCritical
+                }
+                binding.viewStatusDot.backgroundTintList = android.content.res.ColorStateList.valueOf(UIStyleManager.resolveAttrColor(requireContext(), statusAttr))
                 
                 drawMemoryBars(it.memory.facts + it.memory.summaries)
             }
@@ -127,6 +133,10 @@ class HomeFragment : Fragment() {
                 binding.textViewWeatherCondition.text = it.current.condition
                 binding.textViewWeatherIcon.text = conditionToEmoji(it.current.condition)
             }
+        }
+
+        homeViewModel.recentSessions.observe(viewLifecycleOwner) { sessions ->
+            populateRecentSessions(sessions)
         }
 
         homeViewModel.routines.observe(viewLifecycleOwner) { routines ->
@@ -175,6 +185,29 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun populateRecentSessions(sessions: List<ChatSession>) {
+        binding.layoutRecentSessions.removeAllViews()
+        if (sessions.isEmpty()) {
+            val empty = TextView(requireContext()).apply {
+                text = "No recent conversations yet"
+                setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodySmall)
+                setTextColor(UIStyleManager.resolveAttrColor(requireContext(), com.google.android.material.R.attr.colorOnSurfaceVariant))
+                setPadding(0, 8, 0, 8)
+            }
+            binding.layoutRecentSessions.addView(empty)
+            return
+        }
+        sessions.forEach { session ->
+            val item = ItemChatHistoryBinding.inflate(layoutInflater, binding.layoutRecentSessions, false)
+            item.textViewSessionTitle.text = session.title
+            item.textViewSessionModel.text = session.model
+            item.textViewSessionDate.text = session.date
+            item.textViewMessageCount.text = "${session.messageCount} msgs"
+            item.root.setOnClickListener { findNavController().navigate(R.id.chatFragment) }
+            binding.layoutRecentSessions.addView(item.root)
+        }
+    }
+
     private fun drawMemoryBars(total: Int) {
         binding.layoutMemoryBars.removeAllViews()
         val bars = 30
@@ -191,6 +224,36 @@ class HomeFragment : Fragment() {
                 alpha = if (i % 2 == 0) 0.8f else 0.4f
             }
             binding.layoutMemoryBars.addView(bar)
+        }
+    }
+
+    /**
+     * The dashboard summary doesn't always populate "uptime" directly, but
+     * does include the service start time. Fall back to computing the
+     * elapsed duration client-side so the card never shows a stale "0".
+     */
+    private fun formatUptime(uptime: String, startedAt: String): String {
+        if (uptime.isNotBlank()) return uptime
+        if (startedAt.isBlank()) return "--"
+        val startMillis = parseIsoToMillis(startedAt) ?: return "--"
+        val elapsed = (System.currentTimeMillis() - startMillis).coerceAtLeast(0)
+        val days = elapsed / 86_400_000
+        val hours = (elapsed % 86_400_000) / 3_600_000
+        val minutes = (elapsed % 3_600_000) / 60_000
+        return when {
+            days > 0 -> "${days}d ${hours}h"
+            hours > 0 -> "${hours}h ${minutes}m"
+            else -> "${minutes}m"
+        }
+    }
+
+    private fun parseIsoToMillis(value: String): Long? = try {
+        java.time.Instant.parse(value).toEpochMilli()
+    } catch (e: Exception) {
+        try {
+            java.time.LocalDateTime.parse(value).toInstant(java.time.ZoneOffset.UTC).toEpochMilli()
+        } catch (e2: Exception) {
+            null
         }
     }
 

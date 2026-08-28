@@ -166,15 +166,81 @@ class InventoryFragment : Fragment(R.layout.fragment_inventory) {
     }
 
     private fun showItemDetails(item: InventoryItem) {
-        val dialog = BottomSheetDialog(requireContext())
-        val sheetBinding = LayoutDeviceDetailBottomSheetBinding.inflate(layoutInflater) // Placeholder layout, need a specific one or reuse
-        // For now, let's just use a simple dynamic layout or an alert
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(item.name)
             .setMessage("Category: ${item.category}\nLocation: ${item.location}\nStatus: ${item.assetStatus}\nEIN: ${item.ein}")
-            .setPositiveButton("Edit") { _, _ -> /* TODO: show edit form */ }
+            .setPositiveButton("Edit") { _, _ -> showEditItemDialog(item) }
             .setNeutralButton("Issue") { _, _ -> showIssueDialog(item) }
             .setNegativeButton("Delete") { _, _ -> vm.deleteItem(item.id) }
+            .show()
+    }
+
+    private fun showEditItemDialog(item: InventoryItem) {
+        val ctx = requireContext()
+        val density = resources.displayMetrics.density
+        val pad = (24 * density).toInt()
+        fun fieldParams() = android.widget.LinearLayout.LayoutParams(
+            android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply { topMargin = (4 * density).toInt() }
+
+        fun input(hint: String, value: String, type: Int = android.text.InputType.TYPE_CLASS_TEXT) =
+            com.google.android.material.textfield.TextInputEditText(ctx).apply {
+                this.hint = hint
+                setText(value)
+                inputType = type
+                layoutParams = fieldParams()
+            }
+
+        val etName = input("Item Name", item.name)
+        val etCategory = input("Category", item.category)
+        val etLocation = input("Location / Room", item.location)
+        val etQuantity = input("Quantity", item.quantity.toString(), android.text.InputType.TYPE_CLASS_NUMBER)
+        val etCost = input(
+            "Replacement Cost ($)", item.replacementCost?.toString().orEmpty(),
+            android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+        )
+        val etManufacturer = input("Manufacturer", item.manufacturer)
+        val etModelNumber = input("Model Number", item.modelNumber)
+        val etSerialNumber = input("Serial Number", item.serialNumber)
+        val etDescription = input("Description", item.description)
+
+        val statusOptions = listOf("Serviceable", "Unserviceable", "Missing", "In-Use")
+        val spinnerStatus = android.widget.Spinner(ctx).apply {
+            adapter = ArrayAdapter(ctx, android.R.layout.simple_spinner_dropdown_item, statusOptions)
+            setSelection(statusOptions.indexOf(item.assetStatus).coerceAtLeast(0))
+            layoutParams = fieldParams()
+        }
+
+        val layout = android.widget.LinearLayout(ctx).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(pad, pad / 2, pad, 0)
+            listOf(
+                etName, etCategory, etLocation, etQuantity, etCost,
+                etManufacturer, etModelNumber, etSerialNumber, etDescription, spinnerStatus
+            ).forEach { addView(it) }
+        }
+
+        MaterialAlertDialogBuilder(ctx)
+            .setTitle("Edit Item")
+            .setView(android.widget.ScrollView(ctx).apply { addView(layout) })
+            .setPositiveButton("Save") { _, _ ->
+                vm.updateItem(
+                    item.id, mapOf(
+                        "name" to etName.text.toString().trim(),
+                        "category" to etCategory.text.toString().trim().ifBlank { "Other" },
+                        "location" to etLocation.text.toString().trim(),
+                        "quantity" to (etQuantity.text.toString().toIntOrNull() ?: item.quantity),
+                        "replacement_cost" to etCost.text.toString().toDoubleOrNull(),
+                        "manufacturer" to etManufacturer.text.toString().trim(),
+                        "model_number" to etModelNumber.text.toString().trim(),
+                        "serial_number" to etSerialNumber.text.toString().trim(),
+                        "description" to etDescription.text.toString().trim(),
+                        "asset_status" to statusOptions[spinnerStatus.selectedItemPosition]
+                    )
+                )
+            }
+            .setNegativeButton("Cancel", null)
             .show()
     }
 
@@ -198,11 +264,25 @@ class InventoryFragment : Fragment(R.layout.fragment_inventory) {
                 .setNegativeButton("Cancel", null)
                 .show()
         } else {
+            fun itemLabel(map: Map<String, String>) =
+                map["name"] ?: map["item_name"] ?: map["ein"] ?: "Unnamed item"
+
+            val message = buildString {
+                append("Progress: ${audit.scannedCount}/${audit.totalItems}\n")
+                append("Status: ${audit.status}")
+                if (audit.missing.isNotEmpty()) {
+                    append("\n\nNot yet scanned:")
+                    audit.missing.take(10).forEach { append("\n• ${itemLabel(it)}") }
+                    if (audit.missing.size > 10) append("\n…and ${audit.missing.size - 10} more")
+                } else if (audit.totalItems > 0) {
+                    append("\n\nAll items scanned!")
+                }
+            }
+
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Active Audit")
-                .setMessage("Progress: ${audit.scannedCount}/${audit.totalItems}\nStatus: ${audit.status}")
-                .setPositiveButton("Continue Scanning") { _, _ -> /* TODO: open scanner */ }
-                .setNegativeButton("Close", null)
+                .setMessage(message)
+                .setPositiveButton("Close", null)
                 .show()
         }
     }
@@ -236,14 +316,36 @@ class InventoryItemAdapter(
         private val tvName: TextView     = view.findViewById(R.id.tvItemName)
         private val tvCat: TextView      = view.findViewById(R.id.tvItemCategory)
         private val tvLoc: TextView      = view.findViewById(R.id.tvItemLocation)
+        private val tvCost: TextView     = view.findViewById(R.id.tvItemCost)
         private val tvStatus: TextView   = view.findViewById(R.id.tvItemStatus)
+        private val btnDelete: View      = view.findViewById(R.id.btnDeleteItem)
 
         fun bind(item: InventoryItem) {
             tvName.text = item.name
             tvCat.text = item.category
-            tvLoc.text = item.location
-            tvStatus.text = item.assetStatus
+            tvLoc.text = if (item.location.isNotBlank()) "  ·  ${item.location}" else ""
+
+            tvCost.isVisible = item.replacementCost != null && item.replacementCost > 0
+            if (tvCost.isVisible) {
+                tvCost.text = "Repl. value: $%.2f".format(item.replacementCost)
+            }
+
+            val (label, bg, fg) = when (item.assetStatus) {
+                "Serviceable"   -> Triple("SERVICEABLE",   "#1A3A1A", "#3DCC79")
+                "Unserviceable" -> Triple("UNSERVICEABLE", "#3A1A1A", "#FFB4AB")
+                "Missing"       -> Triple("MISSING",       "#3A2A0A", "#FFB86C")
+                "In-Use"        -> Triple("IN USE",        "#1A2A3A", "#96CBFF")
+                else            -> Triple(item.assetStatus.uppercase(), "#2A2A2A", "#BFC8CE")
+            }
+            tvStatus.text = label
+            tvStatus.setTextColor(android.graphics.Color.parseColor(fg))
+            tvStatus.background = android.graphics.drawable.GradientDrawable().apply {
+                cornerRadius = 4f * itemView.resources.displayMetrics.density
+                setColor(android.graphics.Color.parseColor(bg))
+            }
+
             itemView.setOnClickListener { onClick(item) }
+            btnDelete.setOnClickListener { onDelete(item) }
         }
     }
 

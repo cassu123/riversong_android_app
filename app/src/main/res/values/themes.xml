@@ -34,9 +34,20 @@
         <item name="colorOutlineVariant">@color/rs_blue_outline_variant</item>
         <item name="colorWarning">@color/rs_blue_warn</item>
 
+        <!-- "Spatial Edition" glass design tokens -->
+        <item name="colorGlassSurface">@color/rs_glass_surface_dark</item>
+        <item name="colorPillSurface">@color/rs_pill_surface_dark</item>
+        <item name="colorStatusNominal">@color/rs_status_nominal</item>
+        <item name="colorStatusWarning">@color/rs_status_warning</item>
+        <item name="colorStatusCritical">@color/rs_status_critical</item>
+
         <item name="android:statusBarColor">?attr/colorSurface</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:navigationBarColor">?attr/colorSurface</item>
+
+        <!-- "Spatial Edition" base typeface — Plus Jakarta Sans -->
+        <item name="android:fontFamily">@font/plus_jakarta_sans</item>
+        <item name="fontFamily">@font/plus_jakarta_sans</item>
 
         <!-- Shape Appearances -->
         <!-- Use standard Material3 attributes -->
@@ -93,6 +104,8 @@
         <item name="colorSecondary">@color/peach_secondary</item>
         <item name="colorOnSurface">@color/peach_text</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="colorGlassSurface">@color/rs_glass_surface_light</item>
+        <item name="colorPillSurface">@color/rs_pill_surface_light</item>
     </style>
 
     <style name="Theme.RiverSong.Arctic" parent="Theme.RiverSong">
@@ -102,6 +115,8 @@
         <item name="colorSecondary">@color/arctic_secondary</item>
         <item name="colorOnSurface">@color/arctic_text</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="colorGlassSurface">@color/rs_glass_surface_light</item>
+        <item name="colorPillSurface">@color/rs_pill_surface_light</item>
     </style>
 
     <style name="Theme.RiverSong.Cyberpunk" parent="Theme.RiverSong">
@@ -136,6 +151,41 @@
     </style>
     <style name="ShapeAppearance.RiverSong.XL" parent="">
         <item name="cornerSize">20dp</item>
+    </style>
+    <style name="ShapeAppearance.RiverSong.Glass" parent="">
+        <item name="cornerSize">32dp</item>
+    </style>
+
+    <!-- "Spatial Edition" Widget Styles -->
+    <style name="Widget.RiverSong.Card.Glass" parent="Widget.Material3.CardView.Outlined">
+        <item name="cardBackgroundColor">?attr/colorGlassSurface</item>
+        <item name="strokeColor">?attr/colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.RiverSong.Glass</item>
+    </style>
+
+    <style name="Widget.RiverSong.Button.Pill" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="backgroundTint">?attr/colorPillSurface</item>
+        <item name="strokeColor">?attr/colorOutlineVariant</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">999dp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:letterSpacing">0.05</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <!-- "Spatial Edition" Text Appearances -->
+    <style name="TextAppearance.RiverSong.Mono" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">@font/jetbrains_mono</item>
+        <item name="fontFamily">@font/jetbrains_mono</item>
+    </style>
+
+    <style name="TextAppearance.RiverSong.Display" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">@font/plus_jakarta_sans_display</item>
+        <item name="fontFamily">@font/plus_jakarta_sans_display</item>
+        <item name="android:letterSpacing">0.01</item>
     </style>
 
     <!-- Other Styles -->
